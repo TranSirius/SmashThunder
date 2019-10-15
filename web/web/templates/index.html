@@ -9,11 +9,15 @@
 	<script src="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
 	<!-- import Vue -->
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<!-- import animate -->
+	<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css"> -->
+	<link rel="stylesheet" href="../static/animate.css">
 </head>
 
 <body>
 	<!-- Vue object -->
 	<div id="app">
+		<!-- Navbar -->
 		<nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
 			<!-- Brand -->
 			<a class="navbar-brand" href="/">SmashThunder</a>
@@ -33,7 +37,7 @@
 					</div>
 				</form>
 				<!-- if logged in -->
-				<div v-if="username">
+				<div v-if="loggedIn">
 					<ul class="navbar-nav">
 						<li class="nav-item">
 							<a class="nav-link" href="#">{{ username }}</a>
@@ -50,25 +54,82 @@
 				<div v-else>
 					<ul class="navbar-nav">
 						<li class="nav-item">
-							<a class="nav-link" href="#">Sign in</a>
+							<a class="nav-link" href="#" @click="toggleForm(1)">Sign in</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="#">Sign up</a>
+							<a class="nav-link" href="#" @click="toggleForm(2)">Sign up</a>
 						</li>
 					</ul>
 				</div>
 			</div>
 		</nav>
+		<!-- Sign in form -->
+		<transition name="fade" enter-active-class="animated fadeInDown" leave-active-class="animated fadeOutUp">
+			<div v-if="formLevel > 0" class="container">
+				<form style="margin-top:80px">
+					<div v-if="formErr">
+						<div class="alert alert-danger" role="alert">
+							{{ formErr }}
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="signInUsername">Username</label>
+						<input type="text" class="form-control" id="signInUsername" placeholder="Enter username" v-model="username">
+					</div>
+					<div class="form-group">
+						<label for="signInPassword">Password</label>
+						<input type="password" class="form-control" id="signInPassword" placeholder="Password" v-model="password">
+					</div>
+					<transition name="fade" enter-active-class="animated fadeInDown" leave-active-class="animated fadeOutUp">
+						<div v-if="formLevel > 1" class="form-group">
+							<label for="signInPassword2">Repeat Password</label>
+							<input type="password" class="form-control" id="signInPassword2" placeholder="Repeat password"
+								v-model="password2">
+						</div>
+					</transition>
+					<button type="button" class="btn btn-primary" @click="submitClicked">
+						<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" v-if="submitting"></span>
+						<span class="sr-only">Loading...</span>Submit</button>
+			</div>
+		</transition>
+		<!-- test -->
+		<div class="container">
+
+		</div>
 	</div>
 </body>
 
 <script>
 	var data = {
-		username: ''
+		loggedIn: false,
+		formLevel: 0, // 0 means no form, 1 means show sign in form, 2 means show sign up form
+		formErr: '',
+		username: '',
+		password: '',
+		password2: '',
+		submitting: false,
 	}
 	var vue = new Vue({
 		el: '#app',
-		data
+		data,
+		methods: {
+			toggleForm: function (targetForm) {
+				if (data.formLevel != targetForm) data.formLevel = targetForm
+				else data.formLevel = 0
+			},
+			submitClicked: function () {
+				data.submitting = true
+				if (data.formLevel == 1) {
+					// sign in
+				} else if (data.formLevel == 2) {
+					// sign up
+					if (data.password != data.password2) {
+						data.formErr = 'different password!'
+						data.submitting = false
+					}
+				}
+			}
+		}
 	})
 </script>
 
