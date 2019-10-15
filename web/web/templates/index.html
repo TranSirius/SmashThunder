@@ -128,8 +128,13 @@
 						$('#signInForm').collapse('show')
 					} else {
 						// targetForm == 'sign-up'
-						$('#password2').collapse('show')
-						$('#signInForm').collapse('show')
+						if (data.formMode == '') {
+							$('#password2').addClass('show')
+							$('#signInForm').collapse('show')
+						}
+						else {
+							$('#password2').collapse('show')
+						}
 					}
 					data.formMode = targetForm
 				}
