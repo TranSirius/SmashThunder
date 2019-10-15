@@ -80,10 +80,12 @@
 						<label for="signInPassword">Password</label>
 						<input type="password" class="form-control" id="signInPassword" placeholder="Password" v-model="password">
 					</div>
-					<div class="collapse form-group" id="password2">
-						<label for="signInPassword2">Repeat Password</label>
-						<input type="password" class="form-control" id="signInPassword2" placeholder="Repeat password"
-							v-model="password2">
+					<div class="collapse" id="password2">
+						<div class="form-group">
+							<label for="signInPassword2">Repeat Password</label>
+							<input type="password" class="form-control" id="signInPassword2" placeholder="Repeat password"
+								v-model="password2">
+						</div>
 					</div>
 					<button type="button" class="btn btn-primary" @click="submitClicked">
 						<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" v-if="submitting"></span>
