@@ -1,3 +1,4 @@
-from web import app
+from web import create_app
 
-app.run(debug=True, host = "0.0.0.0")
+app = create_app()
+app.run(debug = True, host = "0.0.0.0", threaded = True)

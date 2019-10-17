@@ -6,6 +6,8 @@ from flask import g
 from flask import redirect
 from flask import url_for
 
+from web import databases
+
 mod = Blueprint('auth', __name__, url_prefix = '/auth')
 
 mod.add_url_rule("/", endpoint = "login")

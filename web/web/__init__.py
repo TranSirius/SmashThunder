@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import Flask, session, g, render_template
+from flask import Flask, session, g, render_template, send_file
 
 def create_app(test_config = None):
     app = Flask(__name__, instance_relative_config = True)
@@ -12,11 +12,11 @@ def create_app(test_config = None):
 
     @app.errorhandler(404)
     def not_found(error):
-        return render_template('404.html'), 404
+        return send_file('templates/index.html')
 
     @app.route('/')
     def index():
-        return "index"
+        return send_file('templates/index.html')
 
     from web import databases
     databases.registerInitDatabase(app)

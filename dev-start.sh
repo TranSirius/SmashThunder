@@ -1,3 +1,4 @@
-export FLASK_APP=`pwd`/web/web
-export FLASK_ENV=development
-flask run --host=0.0.0.0
+# export FLASK_APP=`pwd`/web/web
+# export FLASK_ENV=development
+# flask run --host=0.0.0.0 
+python web/setup.py
