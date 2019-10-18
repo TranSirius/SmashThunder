@@ -33,9 +33,9 @@
       </b-collapse>
     </b-navbar>
     <!-- Main content -->
-    <div class="container" style="margin-top:80px">
+    <div class="container">
       <!-- Sign in form -->
-      <b-collapse id="signInForm">
+      <b-collapse ref="signInForm">
         <b-card>
           <b-card-body>
             <b-form>
@@ -58,7 +58,7 @@
                   required
                 />
               </b-form-group>
-              <b-collapse id="password2">
+              <b-collapse ref="password2">
                 <b-form-group label="Repeat Password" label-for="signInPassword2">
                   <b-form-input
                     type="password"
@@ -102,25 +102,25 @@ export default {
   },
   methods: {
     toggleForm: function(targetForm) {
-      this.formMode = targetForm;
-      // if (this.formMode == targetForm) {
-      //   $("#signInForm").collapse("hide");
-      //   this.formMode = "";
-      // } else {
-      //   if (targetForm == "sign-in") {
-      //     $("#password2").collapse("hide");
-      //     $("#signInForm").collapse("show");
-      //   } else {
-      //     // targetForm == 'sign-up'
-      //     if (this.formMode == "") {
-      //       $("#password2").addClass("show");
-      //       $("#signInForm").collapse("show");
-      //     } else {
-      //       $("#password2").collapse("show");
-      //     }
-      //   }
-      //   this.formMode = targetForm;
-      // }
+      // targetForm is 'sign-in' or 'sign-up'
+      if (this.formMode == targetForm) {
+        this.$refs.signInForm.show = false;
+        this.formMode = "";
+      } else {
+        if (targetForm == "sign-in") {
+          this.$refs.password2.show = false;
+          this.$refs.signInForm.show = true;
+        } else {
+          // targetForm == 'sign-up'
+          if (this.formMode == "") {
+            this.$refs.password2.show = true;
+            this.$refs.signInForm.show = true;
+          } else {
+            this.$refs.password2.show = true;
+          }
+        }
+        this.formMode = targetForm;
+      }
     },
     submitClicked: function() {
       this.submitting = true;
