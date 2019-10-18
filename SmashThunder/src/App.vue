@@ -37,7 +37,6 @@
       <b-collapse id="signInForm">
         <b-jumbotron header="Welcome!" lead="SmashThunder is a very awsome blog management system.">
           <b-form>
-            <b-alert variant="danger">{{ formErr }}</b-alert>
             <b-form-radio-group
               buttons
               size="sm"
@@ -47,6 +46,7 @@
               v-on:change="()=>{this.$root.$emit('bv::toggle::collapse', 'password2')}"
             ></b-form-radio-group>
             <hr />
+            <b-alert variant="danger" ref="formAlert">{{ formErr }}</b-alert>
             <b-form-group label="Username" label-for="signInUsername">
               <b-form-input
                 id="signInUsername"
@@ -114,12 +114,14 @@ export default {
   methods: {
     submitClicked: function() {
       this.submitting = true;
+      this.$refs.formAlert.localShow = false;
       if (this.formMode == "sign-in") {
         // sign in
       } else if (this.formMode == "sign-up") {
         // sign up
         if (this.password != this.password2) {
           this.formErr = "different password!";
+          this.$refs.formAlert.localShow = true;
           this.submitting = false;
         }
       }
