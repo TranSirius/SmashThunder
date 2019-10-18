@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <!-- Navbar -->
-    <b-navbar toggleable="lg" fixed type="dark" variant="dark">
+    <b-navbar toggleable="lg" fixed="top" type="dark" variant="dark">
       <!-- Brand -->
       <b-navbar-brand href="/">SmashThunder</b-navbar-brand>
       <!-- Collapse btn -->
@@ -33,7 +33,7 @@
       </b-collapse>
     </b-navbar>
     <!-- Main content -->
-    <div class="container">
+      <b-container style="margin-top:80px">
       <!-- Sign in form -->
       <b-collapse ref="signInForm">
         <b-card>
@@ -78,7 +78,7 @@
         </b-card>
       </b-collapse>
       <Content></Content>
-    </div>
+    </b-container>
   </div>
 </template>
 
