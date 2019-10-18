@@ -27,19 +27,26 @@
         </b-navbar-nav>
         <b-navbar-nav v-else>
           <!-- not logged in -->
-          <b-nav-item href="#" @click="toggleForm('sign-in')">Sign in</b-nav-item>
-          <b-nav-item href="#" @click="toggleForm('sign-up')">Sign up</b-nav-item>
+          <b-nav-item href="#" v-b-toggle.signInForm>Sign In/Up</b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
     <!-- Main content -->
     <b-container style="margin-top:80px">
       <!-- Sign in form -->
-      <b-collapse ref="signInForm">
+      <b-collapse id="signInForm">
         <b-card>
           <b-card-body>
             <b-form>
               <b-alert variant="danger">{{ formErr }}</b-alert>
+              <b-form-radio-group
+                buttons
+                size="sm"
+                button-variant="outline-primary"
+                :options="signInFormOptions"
+                v-model="formMode"
+                v-on:change="()=>{this.$root.$emit('bv::toggle::collapse', 'password2')}"
+              ></b-form-radio-group>
               <b-form-group label="Username" label-for="signInUsername">
                 <b-form-input
                   id="signInUsername"
@@ -58,7 +65,7 @@
                   required
                 />
               </b-form-group>
-              <b-collapse ref="password2">
+              <b-collapse id="password2">
                 <b-form-group label="Repeat Password" label-for="signInPassword2">
                   <b-form-input
                     type="password"
@@ -93,36 +100,19 @@ export default {
   data() {
     return {
       loggedIn: false,
-      formMode: "", // '' means no form, 'sign-in' means show sign in form, 'sign up' means show sign up form
       formErr: "",
       username: "",
       password: "",
       password2: "",
-      submitting: false
+      submitting: false,
+      formMode: "sign-in", // '' means no form, 'sign-in' means show sign in form, 'sign up' means show sign up form
+      signInFormOptions: [
+        { text: "Sign In", value: "sign-in" },
+        { text: "Sign Up", value: "sign-up" }
+      ]
     };
   },
   methods: {
-    toggleForm: function(targetForm) {
-      // targetForm is 'sign-in' or 'sign-up'
-      if (this.formMode == targetForm) {
-        this.$refs.signInForm.show = false;
-        this.formMode = "";
-      } else {
-        if (targetForm == "sign-in") {
-          this.$refs.password2.$el.style.display = "none";
-          this.$refs.signInForm.show = true;
-        } else {
-          // targetForm == 'sign-up'
-          if (this.formMode == "") {
-            this.$refs.password2.$el.style.display = "";
-            this.$refs.signInForm.show = true;
-          } else {
-            this.$refs.password2.show = true;
-          }
-        }
-        this.formMode = targetForm;
-      }
-    },
     submitClicked: function() {
       this.submitting = true;
       if (this.formMode == "sign-in") {
