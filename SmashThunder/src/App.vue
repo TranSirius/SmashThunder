@@ -35,58 +35,47 @@
     <!-- Main content -->
     <div class="container" style="margin-top:80px">
       <!-- Sign in form -->
-      <div class="collapse" id="signInForm">
-        <div class="card mb-3">
-          <div class="card-body">
-            <form>
-              <div v-if="formErr">
-                <div class="alert alert-danger" role="alert">{{ formErr }}</div>
-              </div>
-              <div class="form-group">
-                <label for="signInUsername">Username</label>
-                <input
-                  type="text"
-                  class="form-control"
+      <b-collapse id="signInForm">
+        <b-card>
+          <b-card-body>
+            <b-form>
+              <b-alert variant="danger">{{ formErr }}</b-alert>
+              <b-form-group label="Username" label-for="signInUsername">
+                <b-form-input
                   id="signInUsername"
-                  placeholder="Enter username"
                   v-model="username"
+                  placeholder="Enter username"
+                  type="text"
+                  required
                 />
-              </div>
-              <div class="form-group">
-                <label for="signInPassword">Password</label>
-                <input
+              </b-form-group>
+              <b-form-group label="Password" label-for="signInPassword">
+                <b-form-input
                   type="password"
-                  class="form-control"
                   id="signInPassword"
                   placeholder="Password"
                   v-model="password"
+                  required
                 />
-              </div>
-              <div class="collapse" id="password2">
-                <div class="form-group">
-                  <label for="signInPassword2">Repeat Password</label>
-                  <input
+              </b-form-group>
+              <b-collapse id="password2">
+                <b-form-group label="Repeat Password" label-for="signInPassword2">
+                  <b-form-input
                     type="password"
-                    class="form-control"
                     id="signInPassword2"
                     placeholder="Repeat password"
                     v-model="password2"
+                    required
                   />
-                </div>
-              </div>
-              <button type="button" class="btn btn-primary" @click="submitClicked">
-                <span
-                  class="spinner-border spinner-border-sm"
-                  role="status"
-                  aria-hidden="true"
-                  v-if="submitting"
-                ></span>
-                <span class="sr-only">Loading...</span>Submit
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
+                </b-form-group>
+              </b-collapse>
+              <b-button variant="primary" @click="submitClicked">
+                <b-spinner label="loading" v-if="submitting"></b-spinner>Submit
+              </b-button>
+            </b-form>
+          </b-card-body>
+        </b-card>
+      </b-collapse>
       <Content></Content>
     </div>
   </div>
