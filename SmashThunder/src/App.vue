@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <!-- Navbar -->
-    <b-navbar class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+    <b-navbar toggleable="lg" fixed type="dark" variant="dark">
       <!-- Brand -->
       <b-navbar-brand href="/">SmashThunder</b-navbar-brand>
       <!-- Collapse btn -->
