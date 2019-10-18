@@ -33,7 +33,7 @@
       </b-collapse>
     </b-navbar>
     <!-- Main content -->
-      <b-container style="margin-top:80px">
+    <b-container style="margin-top:80px">
       <!-- Sign in form -->
       <b-collapse ref="signInForm">
         <b-card>
@@ -109,12 +109,12 @@ export default {
         this.formMode = "";
       } else {
         if (targetForm == "sign-in") {
-          this.$refs.password2.show = false;
+          this.$refs.password2.$el.style.display = "none";
           this.$refs.signInForm.show = true;
         } else {
           // targetForm == 'sign-up'
           if (this.formMode == "") {
-            this.$refs.password2.show = true;
+            this.$refs.password2.$el.style.display = "";
             this.$refs.signInForm.show = true;
           } else {
             this.$refs.password2.show = true;
