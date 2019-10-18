@@ -1,56 +1,37 @@
 <template>
   <div id="app">
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+    <b-navbar class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
       <!-- Brand -->
-      <a class="navbar-brand" href="/">SmashThunder</a>
+      <b-navbar-brand href="/">SmashThunder</b-navbar-brand>
       <!-- Collapse btn -->
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbar">
-        <!-- Search bar -->
-        <form class="form-inline ml-auto mr-2">
-          <div class="input-group">
-            <input
-              type="text"
-              class="form-control form-control-sm"
-              placeholder="User or post"
-              aria-label="Recipient's username"
-              aria-describedby="basic-addon2"
-            />
-            <div class="input-group-append">
-              <button class="btn btn-outline-light btn-sm" type="button">Search</button>
-            </div>
-          </div>
-        </form>
-        <!-- if logged in -->
-        <div v-if="loggedIn">
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link" href="#">{{ username }}</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">New</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Sign out</a>
-            </li>
-          </ul>
-        </div>
-        <!-- not logged in -->
-        <div v-else>
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link" href="#" @click="toggleForm('sign-in')">Sign in</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#" @click="toggleForm('sign-up')">Sign up</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+      <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+      <b-collapse is-nav id="nav-collapse">
+        <!-- Right aligned nav items -->
+        <b-navbar-nav class="ml-auto">
+          <!-- Search bar -->
+          <b-nav-form class="form-inline ml-auto mr-2">
+            <b-input-group>
+              <b-form-input size="sm" placeholder="User or post" />
+              <b-input-group-append>
+                <b-button variant="outline-light" size="sm">Search</b-button>
+              </b-input-group-append>
+            </b-input-group>
+          </b-nav-form>
+        </b-navbar-nav>
+        <b-navbar-nav v-if="loggedIn">
+          <!-- if logged in -->
+          <b-nav-item href="#">{{ username }}</b-nav-item>
+          <b-nav-item href="#">New</b-nav-item>
+          <b-nav-item href="#">Sign out</b-nav-item>
+        </b-navbar-nav>
+        <b-navbar-nav v-else>
+          <!-- not logged in -->
+          <b-nav-item href="#" @click="toggleForm('sign-in')">Sign in</b-nav-item>
+          <b-nav-item href="#" @click="toggleForm('sign-up')">Sign up</b-nav-item>
+        </b-navbar-nav>
+      </b-collapse>
+    </b-navbar>
     <!-- Main content -->
     <div class="container" style="margin-top:80px">
       <!-- Sign in form -->
@@ -113,8 +94,6 @@
 
 <script>
 import Content from "./components/Content.vue";
-import JQuery from 'jquery'
-var $ = JQuery
 
 export default {
   name: "app",
@@ -134,24 +113,25 @@ export default {
   },
   methods: {
     toggleForm: function(targetForm) {
-      if (this.formMode == targetForm) {
-        $("#signInForm").collapse("hide");
-        this.formMode = "";
-      } else {
-        if (targetForm == "sign-in") {
-          $("#password2").collapse("hide");
-          $("#signInForm").collapse("show");
-        } else {
-          // targetForm == 'sign-up'
-          if (this.formMode == "") {
-            $("#password2").addClass("show");
-            $("#signInForm").collapse("show");
-          } else {
-            $("#password2").collapse("show");
-          }
-        }
-        this.formMode = targetForm;
-      }
+      this.formMode = targetForm;
+      // if (this.formMode == targetForm) {
+      //   $("#signInForm").collapse("hide");
+      //   this.formMode = "";
+      // } else {
+      //   if (targetForm == "sign-in") {
+      //     $("#password2").collapse("hide");
+      //     $("#signInForm").collapse("show");
+      //   } else {
+      //     // targetForm == 'sign-up'
+      //     if (this.formMode == "") {
+      //       $("#password2").addClass("show");
+      //       $("#signInForm").collapse("show");
+      //     } else {
+      //       $("#password2").collapse("show");
+      //     }
+      //   }
+      //   this.formMode = targetForm;
+      // }
     },
     submitClicked: function() {
       this.submitting = true;
