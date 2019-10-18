@@ -70,7 +70,8 @@
                 </b-form-group>
               </b-collapse>
               <b-button variant="primary" @click="submitClicked">
-                <b-spinner label="loading" v-if="submitting"></b-spinner>Submit
+                <b-spinner label="loading" small v-if="submitting" type="grow"></b-spinner>
+                <span class="sr-only">Loading...</span> Submit
               </b-button>
             </b-form>
           </b-card-body>
