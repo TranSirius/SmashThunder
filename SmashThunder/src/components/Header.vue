@@ -22,7 +22,7 @@
           <!-- if logged in -->
           <b-nav-item href="#">{{ user.username }}</b-nav-item>
           <b-nav-item href="#">New</b-nav-item>
-          <b-nav-item href="#" @click="()=>{this.user.loggedIn=false}">Sign out</b-nav-item>
+          <b-nav-item href="#" @click="()=>{this.$refs.form.logout()}">Sign out</b-nav-item>
         </b-navbar-nav>
         <b-navbar-nav v-else>
           <!-- not logged in -->
@@ -32,7 +32,7 @@
     </b-navbar>
     <div style="margin-top:80px"></div>
     <b-container>
-      <SignForm :user="user"></SignForm>
+      <SignForm :user="user" ref="form"></SignForm>
     </b-container>
   </div>
 </template>

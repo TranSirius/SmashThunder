@@ -78,6 +78,12 @@ export default {
       this.$refs.formAlert.localShow = true;
       this.submitting = false;
     },
+    resetForm: function() {
+      this.user.password = this.password2 = "";
+      this.formErr = "";
+      this.submitting = false;
+      this.formMode = "sign-in";
+    },
     checkUsername: function() {
       if (!this.user.username.match("[A-Za-z0-9_]{7,}")) {
         this.showFormErr(
@@ -86,6 +92,10 @@ export default {
         return false;
       }
       return true;
+    },
+    logout: function() {
+      axios.post("/auth/logout");
+      this.user.loggedIn = false;
     },
     submitClicked: function() {
       this.submitting = true;
@@ -101,7 +111,7 @@ export default {
           .then(res => {
             if (res.data.status == "ok") {
               this.user.loggedIn = true;
-              this.submitting = false;
+              this.resetForm();
             } else {
               this.showFormErr(res.data.status);
             }
@@ -126,7 +136,7 @@ export default {
           .then(res => {
             if (res.data.status == "ok") {
               this.user.loggedIn = true;
-              this.submitting = false;
+              this.resetForm();
             } else {
               this.showFormErr(res.data.status);
             }
