@@ -22,7 +22,7 @@
           <!-- if logged in -->
           <b-nav-item href="#">{{ user.username }}</b-nav-item>
           <b-nav-item href="#">New</b-nav-item>
-          <b-nav-item href="#">Sign out</b-nav-item>
+          <b-nav-item href="#" @click="()=>{this.user.loggedIn=false}">Sign out</b-nav-item>
         </b-navbar-nav>
         <b-navbar-nav v-else>
           <!-- not logged in -->

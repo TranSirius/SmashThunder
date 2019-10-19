@@ -52,6 +52,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "SignForm",
   props: {
@@ -80,21 +82,46 @@ export default {
       this.$refs.formAlert.localShow = false;
       if (this.formMode == "sign-in") {
         // sign in
-        // axios.post('http://123.56.23.140:5000/auth/register', {
-        //   username: this.username,
-        //   password: this.password
-        // })
+        // test
+        this.user.loggedIn = true;
+        axios
+          .post("/auth/login", {
+            username: this.user.username,
+            password: this.user.password
+          })
+          .then(res => {
+            if (res.data.status == "ok") {
+              this.user.loggedIn = true;
+              this.submitting = false;
+            } else {
+              this.showFormErr(res.data.status);
+            }
+          })
+          .catch(() => {
+            this.showFormErr("Internal Error in Server!");
+          });
       } else if (this.formMode == "sign-up") {
         // sign up
         // data check
-        if (this.password != this.password2) {
+        if (this.user.password != this.password2) {
           this.showFormErr("Different password!");
         } else {
-          // axios.post("http://123.56.23.140:5000/auth/register", {
-          //   username: this.username,
-          //   password: this.password
-          // }).then((res)=>{
-          // });
+          axios
+            .post("/auth/register", {
+              username: this.user.username,
+              password: this.user.password
+            })
+            .then(res => {
+              if (res.data.status == "ok") {
+                this.user.loggedIn = true;
+                this.submitting = false;
+              } else {
+                this.showFormErr(res.data.status);
+              }
+            })
+            .catch(() => {
+              this.showFormErr("Internal Error in Server!");
+            });
         }
       }
     }
