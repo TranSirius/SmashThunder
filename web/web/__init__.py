@@ -1,8 +1,12 @@
 from flask import Flask
 from flask import Flask, session, g, render_template, send_file
 
+from datetime import timedelta
+
 def create_app(test_config = None):
     app = Flask(__name__, instance_relative_config = True)
+    app.permanent_session_lifetime = timedelta(minutes = 10)
+    app.config['SECRET_KEY'] = 'ZEOAOWEHFKLDSF'
 
     if test_config is None:
         app.config.from_pyfile('config.py', silent=True)

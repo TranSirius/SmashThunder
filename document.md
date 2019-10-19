@@ -34,7 +34,7 @@ POST
 ### 用户名格式
 
 ```py
-[A-Za-z][a-zA-Z0-9_]{7:}
+[a-zA-Z0-9_]{7,}
 ```
 
 ### 密码格式
@@ -54,6 +54,20 @@ POST
 }
 ```
 
+### Response 格式
 
+## 自动登陆
+
+### 路由
+
+/auth/autoLogin
+
+### Request 格式
 
 ### Response 格式
+```json
+{
+    'status':str,           //ok, error
+    'username':str,
+}
+```

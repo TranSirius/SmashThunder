@@ -38,6 +38,7 @@ class User(Model):
     __tablename__ = 'Users'
 
     ID = Column('ID', Integer, primary_key = True, autoincrement = True)
+    # super_admin, admin, user
     user_type = Column('user_type', String(50), nullable = False, default = 'user')
     user_name = Column('user_name', String(200), unique = True, nullable = True)
     pass_word = Column('pass_word', String(100), nullable = False)
