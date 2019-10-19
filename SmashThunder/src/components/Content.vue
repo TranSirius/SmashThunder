@@ -8,27 +8,22 @@
     <!-- New posts -->
     <h2>News</h2>
     <hr />
-    <div class="card-columns">
-      <div class="card" v-for="num in 50" :key="num">
-        <div class="card-body">
-          <h5 class="card-title">Blog's Title</h5>
-          <h6 class="card-subtitle mb-2">
-            <a href="#">Author</a>
-          </h6>
-          <p
-            class="card-text"
-          >{{ "Blog's subtitle and other description.".repeat((Math.floor(Math.random() * 10) + 1)) }}</p>
-          <p class="card-text">
-            <small class="text-muted">
-              Last updated {{ Math.floor(Math.random() * 10) + 1 }} mins
-              ago
-            </small>
-          </p>
-          <a href="#" class="btn btn-primary">Star</a>
-          <a href="#" class="btn btn-primary">Detail</a>
-        </div>
-      </div>
-    </div>
+    <b-card-group columns>
+      <b-card
+        v-for="num in 10"
+        :key="num"
+        img-src="https://discretetom.github.io/img/me.jpg"
+        img-top
+      >
+        <b-card-title>Blog's Title</b-card-title>
+        <b-card-sub-title class="mb-2">Author</b-card-sub-title>
+        <b-card-text>{{ "Blog's subtitle and other description.".repeat((Math.floor(Math.random() * 10) + 1)) }}</b-card-text>
+        <b-card-text class="small text-muted">
+          Last updated {{ Math.floor(Math.random() * 10) + 1 }} mins
+          ago
+        </b-card-text>
+      </b-card>
+    </b-card-group>
   </div>
 </template>
 
@@ -40,4 +35,3 @@ export default {
   }
 };
 </script>
-
