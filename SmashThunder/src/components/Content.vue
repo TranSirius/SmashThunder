@@ -1,7 +1,7 @@
 <template>
   <div class="Content">
     <!-- Friends Activities -->
-    <div v-if="loggedIn">
+    <div v-if="user.loggedIn">
       <h2>Friends Activities</h2>
       <hr />
     </div>
@@ -34,27 +34,10 @@
 
 <script>
 export default {
-  name: "Content"
-  // props: {
-  //   msg: String
-  // }
+  name: "Content",
+  props: {
+    user: Object
+  }
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-/* h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-} */
-</style>

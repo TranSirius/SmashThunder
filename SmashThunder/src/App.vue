@@ -3,7 +3,7 @@
     <Header :user="userData"></Header>
     <!-- Main content -->
     <b-container>
-      <Content></Content>
+      <Content :user="userData"></Content>
     </b-container>
   </div>
 </template>
