@@ -147,6 +147,17 @@ export default {
           });
       }
     }
+  },
+  mounted: function() {
+    axios
+      .post("/auth/autoLogin")
+      .then(res => {
+        if (res.data.status == "ok") {
+          this.user.username = res.data.username;
+          this.user.loggedIn = true;
+        }
+      })
+      .catch(() => {});
   }
 };
 </script>
