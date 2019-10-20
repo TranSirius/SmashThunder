@@ -94,8 +94,9 @@ export default {
       return true;
     },
     logout: function() {
-      axios.post("/auth/logout");
-      this.user.loggedIn = false;
+      axios.post("/auth/logout").then(() => {
+        this.user.loggedIn = false;
+      });
     },
     submitClicked: function() {
       this.submitting = true;
