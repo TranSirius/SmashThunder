@@ -22,9 +22,9 @@
           <!-- if logged in -->
           <!-- <b-nav-item :to="user.username">{{ user.username }}</b-nav-item> -->
           <b-nav-item-dropdown :text="user.username" right>
-            <b-dropdown-item :to="user.name">Home</b-dropdown-item>
-            <b-dropdown-item :to="user.name + '/album'">Album</b-dropdown-item>
-            <b-dropdown-item :to="user.name + '/posts'">Posts</b-dropdown-item>
+            <b-dropdown-item :to="user.username">Home</b-dropdown-item>
+            <b-dropdown-item :to="user.username + '/album'">Album</b-dropdown-item>
+            <b-dropdown-item :to="user.username + '/posts'">Posts</b-dropdown-item>
           </b-nav-item-dropdown>
           <b-nav-item to="#">New</b-nav-item>
           <b-nav-item to="#" @click="()=>{this.$refs.form.logout()}">Sign out</b-nav-item>
