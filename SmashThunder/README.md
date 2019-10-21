@@ -1,24 +1,29 @@
 # SmashThunder
 
-## Project setup
-```
-npm install
-```
+## Front route
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+- `/` - News
+- `/static/` - Static asset files
+- `/:username` - User homepage
+- `/:username/album` - User's image management page
+- `/:username/posts` - User's posts management page
+- `/:username/posts/:post` - User's post
+- `/edit` - New post or edit existing post
+- `/admin` - Admin homepage
 
-### Compiles and minifies for production
-```
-npm run build
-```
+## Data format
 
-### Lints and fixes files
-```
-npm run lint
-```
+### News page
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+```json
+{
+	news: [{
+		title: str,
+		author: str,
+		description: str,
+		img: url,
+		time: Unix Time Stamp str,
+	}],
+	friendsActivities: // the same as `news`
+}
+```
