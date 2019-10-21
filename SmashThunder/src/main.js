@@ -10,10 +10,10 @@ Vue.use(BootstrapVue)
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
-import Content from "./components/Content.vue"
+import News from "./components/News.vue"
 
 const routes = [
-  { path: '/', component: Content },
+  { path: '/', component: News },
 ]
 
 const router = new VueRouter({

@@ -1,5 +1,5 @@
 <template>
-  <div class="Content">
+  <div>
     <!-- Friends Activities -->
     <div v-if="$root.$data.user.loggedIn">
       <h2>Friends Activities</h2>
@@ -52,6 +52,6 @@
 
 <script>
 export default {
-  name: "Content"
+  name: "News"
 };
 </script>
