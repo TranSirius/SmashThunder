@@ -27,7 +27,7 @@
             type="password"
             id="signInPassword"
             placeholder="Password"
-            v-model="user.password"
+            v-model="password"
             required
           />
         </b-form-group>
@@ -63,6 +63,7 @@ export default {
   data() {
     return {
       formErr: "",
+      password: "",
       password2: "",
       submitting: false,
       formMode: "sign-in", // can be 'sign-in' and 'sign-up'
@@ -79,7 +80,7 @@ export default {
       this.submitting = false;
     },
     resetForm: function() {
-      this.user.password = this.password2 = "";
+      this.password = this.password2 = "";
       this.formErr = "";
       this.submitting = false;
       this.formMode = "sign-in";
@@ -107,7 +108,7 @@ export default {
         axios
           .post("/auth/login", {
             username: this.user.username,
-            password: sha256(this.user.password)
+            password: sha256(this.password)
           })
           .then(res => {
             if (res.data.status == "ok") {
@@ -125,14 +126,14 @@ export default {
         if (!this.checkUsername()) {
           return;
         }
-        if (this.user.password != this.password2) {
+        if (this.password != this.password2) {
           this.showFormErr("Different password!");
           return;
         }
         axios
           .post("/auth/register", {
             username: this.user.username,
-            password: sha256(this.user.password)
+            password: sha256(this.password)
           })
           .then(res => {
             if (res.data.status == "ok") {
