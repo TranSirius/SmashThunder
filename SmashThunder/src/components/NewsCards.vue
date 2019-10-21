@@ -29,7 +29,7 @@ export default {
   filters: {
     timeOffset: function(s) {
       var now = new Date(Date.now());
-      var t = new Date(parseInt(s));
+      var t = new Date(s);
       var offset = new Date(now - t);
       // different year
       if (offset.getFullYear() - 1970 == 1) return "1 year";

@@ -17,13 +17,13 @@
 
 ```json
 {
-	news: [{
-		title: str,
-		author: str,
-		description: str,
-		img: url,
-		time: Unix Time Stamp str,
+	"news": [{
+		"title": "str",
+		"author": "str",
+		"description": "str",
+		"img": "url",
+		"time": "Unix Time Stamp(int)",
 	}],
-	friendsActivities: // the same as `news`
+	"friendsActivities": [{}] // the same as `news`
 }
 ```

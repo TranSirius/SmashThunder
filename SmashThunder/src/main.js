@@ -27,7 +27,6 @@ new Vue({
   data: {
     user: {
       username: "",
-      password: "",
       loggedIn: false
     }
   },
