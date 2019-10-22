@@ -2,7 +2,7 @@
   <!-- Sign in form -->
   <b-collapse id="signInForm" v-if="!user.loggedIn">
     <b-jumbotron header="Welcome!" lead="SmashThunder is a very awsome blog management system.">
-      <b-form>
+      <b-form @submit.prevent="submitClicked">
         <b-form-radio-group
           buttons
           size="sm"
@@ -38,11 +38,10 @@
               id="signInPassword2"
               placeholder="Repeat password"
               v-model="password2"
-              required
             />
           </b-form-group>
         </b-collapse>
-        <b-button variant="primary" @click="submitClicked">
+        <b-button type="submit" variant="primary">
           <b-spinner label="loading" small v-if="submitting" type="grow"></b-spinner>
           <span class="sr-only">Loading...</span> Submit
         </b-button>
