@@ -15,7 +15,7 @@
 
 ### News page
 
-```json
+```jsonc
 {
 	"news": [{
 		"title": "str",
@@ -27,3 +27,43 @@
 	"friendsActivities": [{}] // the same as `news`
 }
 ```
+
+### Album page
+
+```jsonc
+{
+	"albums": [{
+		"title": "str",
+		"imgs": [{
+			"url": "str",
+			"title": "str",
+			"subtitle": "str",
+			"time": "Unix Time Stamp(int)"
+		}]
+	}]
+}
+```
+
+## Backend folder structure
+
+### User data
+
+- data/
+  - :username/
+    - img/
+      - :foldername/
+        - :filename
+    - html/
+      - :filename
+    - md/
+      - :filename
+
+### Static
+
+- dist/
+  - index.html
+  - static/
+    - css/
+      - :filename
+    - js/
+      - :filename
