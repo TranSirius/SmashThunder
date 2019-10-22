@@ -47,7 +47,7 @@ def register():
             session.clear()
         except:
             pass
-        session.ID = new_user.ID
+        session['ID'] = new_user.ID
         session.permanent = True
 
         ret['status'] = 'ok'
@@ -79,8 +79,7 @@ def login():
         ret['status'] = 'Password error!'
         return ret
 
-    
-    session.ID = user.ID
+    session['ID'] = user.ID
     session.permanent = True
     
     ret['status'] = 'ok'
