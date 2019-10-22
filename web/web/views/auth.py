@@ -12,6 +12,8 @@ from web import databases
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 
+import os
+
 mod = Blueprint('auth', __name__, url_prefix = '/auth')
 
 @mod.before_app_request
@@ -47,6 +49,11 @@ def register():
             pass
         session['ID'] = new_user.ID
         session.permanent = True
+
+        os.mkdir('/share/data/' + str(username))
+        os.mkdir('/share/data/' + str(username) + '/img')
+        os.mkdir('/share/data/' + str(username) + '/md')
+        os.mkdir('/share/data/' + str(username) + '/html')
 
         ret['status'] = 'ok'
         return ret

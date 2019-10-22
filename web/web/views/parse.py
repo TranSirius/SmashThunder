@@ -1,3 +1,5 @@
+import pypandoc as pdc
+
 from flask import Blueprint
 from flask import render_template
 from flask import jsonify
@@ -13,3 +15,5 @@ from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 
 mod = Blueprint('parse', __name__, url_prefix = '/parse')
+
+mod.route('/', methods = ['POST'])

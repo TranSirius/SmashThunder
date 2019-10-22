@@ -26,6 +26,8 @@ from flask import g
 from flask.cli import with_appcontext 
 
 import click
+import os
+import shutil
 
 engine = create_engine('mysql+mysqldb://test:test@localhost/test')
 session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -41,6 +43,10 @@ from web.datamodels import *
 def dropDatabaseCommand():
     """Clear the existing data."""
     Model.metadata.drop_all(bind=engine)
+    try:
+        shutil.rmtree('/share/data')
+    except:
+        pass
     click.echo('drop the database.')
 
 def registerDropDatabase(app):
@@ -51,6 +57,10 @@ def registerDropDatabase(app):
 def initDatabaseCommand():
     """Create new tables."""
     Model.metadata.create_all(bind=engine)
+    try:
+        os.mkdir('/share/data')
+    except:
+        pass
     click.echo('Initialized the database.')
 
 def registerInitDatabase(app):

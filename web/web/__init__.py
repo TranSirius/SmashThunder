@@ -29,6 +29,9 @@ def create_app(test_config = None):
     from web.views import auth
     app.register_blueprint(auth.mod)
 
+    from web.views import get
+    app.register_blueprint(get.mod)
+
     from web.views import parse
     app.register_blueprint(parse.mod)
     
