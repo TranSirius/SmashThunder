@@ -14,8 +14,6 @@ from werkzeug.security import generate_password_hash
 
 mod = Blueprint('auth', __name__, url_prefix = '/auth')
 
-mod.add_url_rule("/", endpoint = "login")
-
 @mod.before_app_request
 def loadLoggedUser():
     user_id = session.get("ID")
