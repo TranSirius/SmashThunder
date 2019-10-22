@@ -48,6 +48,8 @@
 
 ### User data
 
+This folder is under `/share`.
+
 - data/
   - :username/
     - img/
@@ -60,7 +62,9 @@
 
 ### Static
 
-- dist/
+This folder is under `/share`.
+
+- SmashThunder/
   - index.html
   - static/
     - css/
