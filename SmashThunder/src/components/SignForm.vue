@@ -27,7 +27,7 @@
             type="password"
             id="signInPassword"
             placeholder="Password"
-            v-model="user.password"
+            v-model="password"
             required
           />
         </b-form-group>
@@ -52,6 +52,9 @@
 </template>
 
 <script>
+import axios from "axios";
+import sha256 from "js-sha256";
+
 export default {
   name: "SignForm",
   props: {
@@ -60,6 +63,7 @@ export default {
   data() {
     return {
       formErr: "",
+      password: "",
       password2: "",
       submitting: false,
       formMode: "sign-in", // can be 'sign-in' and 'sign-up'
@@ -75,29 +79,86 @@ export default {
       this.$refs.formAlert.localShow = true;
       this.submitting = false;
     },
+    resetForm: function() {
+      this.password = this.password2 = "";
+      this.formErr = "";
+      this.submitting = false;
+      this.formMode = "sign-in";
+    },
+    checkUsername: function() {
+      if (!this.user.username.match("[A-Za-z0-9_]{7,}")) {
+        this.showFormErr(
+          "Username must consists of `A-Z`, `a-z`, `0-9` and `_`, and must be longer than 6!"
+        );
+        return false;
+      }
+      return true;
+    },
+    logout: function() {
+      axios.post("/auth/logout").then(() => {
+        this.user.loggedIn = false;
+      });
+    },
     submitClicked: function() {
       this.submitting = true;
       this.$refs.formAlert.localShow = false;
       if (this.formMode == "sign-in") {
         // sign in
-        // axios.post('http://123.56.23.140:5000/auth/register', {
-        //   username: this.username,
-        //   password: this.password
-        // })
+        if (!this.checkUsername()) return;
+        axios
+          .post("/auth/login", {
+            username: this.user.username,
+            password: sha256(this.password)
+          })
+          .then(res => {
+            if (res.data.status == "ok") {
+              this.user.loggedIn = true;
+              this.resetForm();
+            } else {
+              this.showFormErr(res.data.status);
+            }
+          })
+          .catch(() => {
+            this.showFormErr("Internal Error in Server!");
+          });
       } else if (this.formMode == "sign-up") {
         // sign up
-        // data check
+        if (!this.checkUsername()) {
+          return;
+        }
         if (this.password != this.password2) {
           this.showFormErr("Different password!");
-        } else {
-          // axios.post("http://123.56.23.140:5000/auth/register", {
-          //   username: this.username,
-          //   password: this.password
-          // }).then((res)=>{
-          // });
+          return;
         }
+        axios
+          .post("/auth/register", {
+            username: this.user.username,
+            password: sha256(this.password)
+          })
+          .then(res => {
+            if (res.data.status == "ok") {
+              this.user.loggedIn = true;
+              this.resetForm();
+            } else {
+              this.showFormErr(res.data.status);
+            }
+          })
+          .catch(() => {
+            this.showFormErr("Internal Error in Server!");
+          });
       }
     }
+  },
+  mounted: function() {
+    axios
+      .post("/auth/autoLogin")
+      .then(res => {
+        if (res.data.status == "ok") {
+          this.user.username = res.data.username;
+          this.user.loggedIn = true;
+        }
+      })
+      .catch(() => {});
   }
 };
 </script>

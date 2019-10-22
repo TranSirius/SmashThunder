@@ -1,31 +1,20 @@
 <template>
   <div id="app">
-    <Header :user="userData"></Header>
+    <Header :user="$root.$data.user"></Header>
     <!-- Main content -->
     <b-container>
-      <Content :user="userData"></Content>
+      <router-view></router-view>
     </b-container>
   </div>
 </template>
 
 <script>
-import Content from "./components/Content.vue";
 import Header from "./components/Header.vue";
 
 export default {
   name: "app",
   components: {
     Header,
-    Content
-  },
-  data() {
-    return {
-      userData: {
-        username: "",
-        password: "",
-        loggedIn: false
-      }
-    };
   }
 };
 </script>

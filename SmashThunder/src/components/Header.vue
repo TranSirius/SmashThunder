@@ -2,7 +2,7 @@
   <div>
     <b-navbar toggleable="lg" fixed="top" type="dark" variant="dark">
       <!-- Brand -->
-      <b-navbar-brand href="/">SmashThunder</b-navbar-brand>
+      <b-navbar-brand to="/">SmashThunder</b-navbar-brand>
       <!-- Collapse btn -->
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse is-nav id="nav-collapse">
@@ -20,19 +20,24 @@
         </b-navbar-nav>
         <b-navbar-nav v-if="user.loggedIn">
           <!-- if logged in -->
-          <b-nav-item href="#">{{ user.username }}</b-nav-item>
-          <b-nav-item href="#">New</b-nav-item>
-          <b-nav-item href="#">Sign out</b-nav-item>
+          <!-- <b-nav-item :to="user.username">{{ user.username }}</b-nav-item> -->
+          <b-nav-item-dropdown :text="user.username" right>
+            <b-dropdown-item :to="user.username">Home</b-dropdown-item>
+            <b-dropdown-item :to="user.username + '/album'">Album</b-dropdown-item>
+            <b-dropdown-item :to="user.username + '/posts'">Posts</b-dropdown-item>
+          </b-nav-item-dropdown>
+          <b-nav-item to="#">New</b-nav-item>
+          <b-nav-item to="#" @click="()=>{this.$refs.form.logout()}">Sign out</b-nav-item>
         </b-navbar-nav>
         <b-navbar-nav v-else>
           <!-- not logged in -->
-          <b-nav-item href="#" v-b-toggle.signInForm>Sign In/Up</b-nav-item>
+          <b-nav-item v-b-toggle.signInForm>Sign In/Up</b-nav-item>
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
     <div style="margin-top:80px"></div>
     <b-container>
-      <SignForm :user="user"></SignForm>
+      <SignForm :user="user" ref="form"></SignForm>
     </b-container>
   </div>
 </template>
