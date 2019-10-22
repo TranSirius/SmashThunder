@@ -5,11 +5,7 @@ from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy import event
 
-from sqlalchemy.ext.declarative import declarative_base
-from web.databases import db_session
-
-Model = declarative_base(name='BaseDataModel')
-Model.query = db_session.query_property()
+from web.databases import Model
 
 class User(Model):
     __tablename__ = 'Users'

@@ -34,7 +34,7 @@ db_session = scoped_session(session)
 Model = declarative_base(name='Model')
 Model.query = db_session.query_property()
 
-from web.datamodels import User
+from web.datamodels import *
 
 @click.command('drop-db')
 @with_appcontext
