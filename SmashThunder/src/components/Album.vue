@@ -38,20 +38,26 @@
       </b-form>
     </b-modal>
     <div v-for="album in albums" :key="album.title">
-      <h2>{{ album.title }}</h2>
+      <h2>
+        {{ album.title }}
+        <b-button class="mb-1 ml-3" variant="primary" @click="showModal(album.title)">Upload</b-button>
+      </h2>
+      <h6>Created at {{ album.createTime | peekDate }}.</h6>
       <hr />
       <b-card-group columns>
         <b-card
           v-for="img in album.imgs"
           :key="img.time"
-          overlay
           :img-src="img.url"
           :img-alt="img.title"
-          text-variant="white"
-          :title="img.title"
-        ></b-card>
+          no-body
+        >
+          <b-card-body>
+            <b-card-title>{{ img.title }}</b-card-title>
+            <b-card-sub-title class="mb-2">Uploaded {{ img.time | timeOffset }} ago.</b-card-sub-title>
+          </b-card-body>
+        </b-card>
       </b-card-group>
-      <b-button @click="showModal(album.title)">Upload</b-button>
     </div>
   </div>
 </template>
@@ -122,7 +128,7 @@ export default {
         "albumTitle",
         this.modalForm.newAlbumTitle || this.modalForm.albumTitle
       );
-      data.append('time', Date.now())
+      data.append("time", Date.now());
       for (var i = 0; i < this.modalForm.files.length; i++) {
         let file = this.modalForm.files[i];
         data.append("files[" + i + "]", file);
