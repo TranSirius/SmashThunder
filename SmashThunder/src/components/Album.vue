@@ -89,6 +89,31 @@ export default {
       this.modalForm.newAlbumTitle = "";
       this.$refs.modalForm.show();
     },
+    /**
+     * Reload the target album. If `albumTitle` not in `this.albums`, create it in `this.albums`
+     */
+    refresh(albumTitle) {
+      axios
+        .post("/get/album", {
+          username: v.$route.params.username,
+          target: albumTitle
+        })
+        .then(
+          res => {
+            if (res.data.status == "ok") {
+              for (let i = 0; i < this.albums.length; ++i) {
+                if (this.albums[i].title == albumTitle) {
+                  this.albums[i] = res.data.albums[0].imgs;
+                  return;
+                }
+              }
+              // albumTitle not found, this is a new album
+              this.albums = [res.data.albums[0]] + this.albums;
+            }
+          },
+          () => {}
+        );
+    },
     submit() {
       this.modalForm.err = "";
       this.submitting = true;
@@ -110,6 +135,9 @@ export default {
         .then(res => {
           if (res.data.status == "ok") {
             this.$refs.modalForm.hide();
+            this.refresh(
+              this.modalForm.newAlbumTitle || this.modalForm.albumTitle
+            );
           } else {
             this.modalForm.err = res.data.status;
           }
