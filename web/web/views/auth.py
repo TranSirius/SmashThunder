@@ -50,8 +50,6 @@ def register():
 
     query_res = db_session.query(datamodels.User).filter_by(user_name = username).first()
     if query_res is None:
-        password = generate_password_hash(password)
-        
         datamodels.User.generateUser(username = username, password = password)
         try:
             session.clear()
