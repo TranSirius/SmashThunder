@@ -92,9 +92,9 @@ class Album(Model):
 class Photo(Model):
     __tablename__ = 'Photo'
 
-    ID = Column('ID', Integer, primary_key = True, autoincrement = True)
-    album_ID = Column('AlbumID', Integer, ForeignKey('Album.ID', ondelete = 'CASCADE', onupdate = 'CASCADE'))
-    photo_title = Column('PhotoTitle', String(200), nullable = True)
+    # ID = Column('ID', Integer, primary_key = True, autoincrement = True)
+    album_ID = Column('AlbumID', Integer, ForeignKey('Album.ID', ondelete = 'CASCADE', onupdate = 'CASCADE'), primary_key = True)
+    photo_title = Column('PhotoTitle', String(200), nullable = True, primary_key = True)
     create_time = Column('CreateTime', BigInteger, nullable = False)
 
     def __str__(self):

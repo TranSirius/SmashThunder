@@ -1,12 +1,12 @@
 from flask import Blueprint
-from flask import render_template
-from flask import jsonify
 from flask import session
 from flask import g
 from flask import redirect
 from flask import url_for
 from flask import request
 from flask import current_app as app
+
+import sqlalchemy
 
 from web.db import databases
 from web.db import datamodels
@@ -39,12 +39,16 @@ def uploadPic():
         album = db_session.query(Album).filter(Album.user_ID == g.user_id).filter(Album.album_title == album_title).first()
 
     for img in img_list:
-        img.save(app.config['USER_DATA'] + user_name + '/img/' + album_title + '/' + img.filename)
         new_img = Photo(album_ID = album.ID, photo_title = img.filename, create_time = time)
         db_session.add(new_img)
 
     ret['status'] = 'ok'
-    db_session.commit()
+    try:
+        db_session.commit()
+        for img in img_list:
+            img.save(app.config['USER_DATA'] + user_name + '/img/' + album_title + '/' + img.filename)
+    except sqlalchemy.exc.IntegrityError:
+        ret['status'] = 'You cannot upload the same photos'
     return ret
     
 
