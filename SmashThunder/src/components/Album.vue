@@ -10,6 +10,19 @@
             :options="modalForm.options"
           ></b-form-select>
         </b-form-group>
+        <b-form-group
+          label="Name of the new album"
+          label-for="newAlbumTitle"
+          v-if="modalForm.albumTitle==newAlbumHint"
+        >
+          <b-form-input
+            id="newAlbumTitle"
+            name="newAlbumTitle"
+            v-model="modalForm.newAlbumTitle"
+            type="text"
+            placeholder="New album name"
+          ></b-form-input>
+        </b-form-group>
         <b-form-group label="Files" label-for="files">
           <b-form-file
             id="files"
@@ -58,18 +71,16 @@ export default {
         files: [],
         options: []
       },
-      submitting: false
+      submitting: false,
+      newAlbumHint: "-- create a new album --"
     };
   },
   methods: {
     showModal(current) {
       this.modalForm.albumTitle = current;
-      this.modalForm.options = [];
+      this.modalForm.options = [this.newAlbumHint];
       for (let i = 0; i < this.albums.length; ++i) {
-        this.modalForm.options.push({
-          value: this.albums[i].title,
-          text: this.albums[i].title
-        });
+        this.modalForm.options.push(this.albums[i].title);
       }
       this.$refs.modalForm.show();
     }
