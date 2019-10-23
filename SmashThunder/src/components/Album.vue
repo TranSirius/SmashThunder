@@ -95,7 +95,7 @@ export default {
     refresh(albumTitle) {
       axios
         .post("/get/album", {
-          username: v.$route.params.username,
+          username: this.$route.params.username,
           target: albumTitle
         })
         .then(
