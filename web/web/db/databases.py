@@ -21,7 +21,7 @@ from werkzeug import http_date
 
 from flask import url_for
 from flask import Markup
-from flask import g
+from flask import g, current_app
 
 from flask.cli import with_appcontext 
 
@@ -29,14 +29,14 @@ import click
 import os
 import shutil
 
-engine = create_engine('mysql+mysqldb://test:test@localhost/test')
+engine = create_engine(current_app.config['DATABASE_ENGINE'], encoding='utf-8')
 session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 db_session = scoped_session(session)
 
 Model = declarative_base(name='Model')
 Model.query = db_session.query_property()
 
-from web.datamodels import *
+from web.db.datamodels import *
 
 @click.command('drop-db')
 @with_appcontext

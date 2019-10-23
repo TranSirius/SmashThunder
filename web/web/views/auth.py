@@ -6,20 +6,36 @@ from flask import g
 from flask import redirect
 from flask import url_for
 from flask import request
+from flask import current_app as app
 
-from web import databases
+from web.db import datamodels
+from web.db import databases
 
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 
 import os
+import time
+import datetime
+import functools
 
 mod = Blueprint('auth', __name__, url_prefix = '/auth')
 
 @mod.before_app_request
 def loadLoggedUser():
     user_id = session.get("ID")
-    print("get ID!", user_id)
+    g.user_id = user_id
+
+def loginRequest(view):
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if g.user_id is None:
+            ret = dict()
+            ret['status'] = 'please login first'
+            return ret
+        return view(**kwargs)
+    return wrapped_view
+
 
 @mod.route('/register', methods = ['POST'])
 def register():
@@ -32,30 +48,21 @@ def register():
         return ret
     db_session = databases.db_session()
 
-    query_res = db_session.query(databases.User).filter_by(user_name = username).first()
+    query_res = db_session.query(datamodels.User).filter_by(user_name = username).first()
     if query_res is None:
         password = generate_password_hash(password)
         
-        new_user = databases.User(user_name = username, pass_word = password)
-        db_session.add(new_user)
-        db_session.commit()
-
-        new_user = db_session.query(databases.User).filter_by(user_name = username).first()
-        print(new_user.ID)
-        
+        datamodels.User.generateUser(username = username, password = password)
         try:
             session.clear()
         except:
             pass
-        session['ID'] = new_user.ID
+
+        session['ID'] = g.user_id
         session.permanent = True
 
-        os.mkdir('/share/data/' + str(username))
-        os.mkdir('/share/data/' + str(username) + '/img')
-        os.mkdir('/share/data/' + str(username) + '/md')
-        os.mkdir('/share/data/' + str(username) + '/html')
-
         ret['status'] = 'ok'
+        db_session.commit()
         return ret
     else:
         ret['status'] = "User already exists"

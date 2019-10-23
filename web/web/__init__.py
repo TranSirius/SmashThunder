@@ -1,28 +1,25 @@
-from flask import Flask
 from flask import Flask, session, g, render_template, send_file
+from flask import current_app
 
 from datetime import timedelta
 
 def create_app(test_config = None):
     app = Flask(__name__, instance_relative_config = True)
     app.permanent_session_lifetime = timedelta(minutes = 10)
-    app.config['SECRET_KEY'] = 'ZEOAOWEHFKLDSF'
 
-    if test_config is None:
-        app.config.from_pyfile('config.py', silent=True)
+    if test_config == 'debug':
+        app.config.from_pyfile('config_debug.py')
+    elif test_config == 'release':
+        app.config.from_pyfile('config_release.py')
+    elif test_config == 'backend':
+        app.config.from_pyfile('config_backend.py')
     else:
-        app.config.from_mapping(test_config)
-    
+        app.config.from_pyfile('config_backend.py')
 
-    @app.errorhandler(404)
-    def not_found(error):
-        return send_file('templates/index.html')
+    ctx = app.app_context()
+    ctx.push()
 
-    @app.route('/')
-    def index():
-        return send_file('templates/index.html')
-
-    from web import databases
+    from web.db import databases
     databases.registerInitDatabase(app)
     databases.registerDropDatabase(app)
 
@@ -32,7 +29,10 @@ def create_app(test_config = None):
     from web.views import submit
     app.register_blueprint(submit.mod)
 
+    from web.views import get
+    app.register_blueprint(get.mod)
+
     from web.views import parse
     app.register_blueprint(parse.mod)
-    
+
     return app

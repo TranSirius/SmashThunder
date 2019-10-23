@@ -9,11 +9,11 @@ from flask import redirect
 from flask import url_for
 from flask import request
 
-from web import databases
+from web.db import databases
 
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 
 mod = Blueprint('parse', __name__, url_prefix = '/parse')
 
-mod.route('/', methods = ['POST'])
+# mod.route('/', methods = ['POST'])
