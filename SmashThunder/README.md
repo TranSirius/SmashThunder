@@ -15,7 +15,7 @@
 
 ### News page
 
-```json
+```jsonc
 {
 	"news": [{
 		"title": "str",
@@ -27,3 +27,47 @@
 	"friendsActivities": [{}] // the same as `news`
 }
 ```
+
+### Album page
+
+```jsonc
+{
+	"albums": [{
+		"title": "str",
+		"createTime": "Unix Time Stamp(int)",
+		"imgs": [{
+			"url": "str",
+			"title": "str",
+			"time": "Unix Time Stamp(int)"
+		}]
+	}]
+}
+```
+
+## Backend folder structure
+
+### User data
+
+This folder is under `/share`.
+
+- data/
+  - :username/
+    - img/
+      - :foldername/
+        - :filename
+    - html/
+      - :filename
+    - md/
+      - :filename
+
+### Static
+
+This folder is under `/share`.
+
+- SmashThunder/
+  - index.html
+  - static/
+    - css/
+      - :filename
+    - js/
+      - :filename
