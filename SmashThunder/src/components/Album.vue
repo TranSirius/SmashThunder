@@ -20,7 +20,7 @@
             drop-placeholder="Drop files here..."
           ></b-form-file>
         </b-form-group>
-        <b-button type="submit" variant="primary">
+        <b-button type="submit" variant="primary" block>
           <b-spinner label="loading" small v-if="submitting" type="grow"></b-spinner>
           <span class="sr-only">Loading...</span> Upload
         </b-button>
