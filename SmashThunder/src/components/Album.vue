@@ -74,12 +74,17 @@ export default {
     };
   },
   methods: {
+    /**
+     * Reset form(set album title, get options, reset files, reset newAlbumTitle) then show form
+     */
     showModal(current) {
       this.modalForm.albumTitle = current;
       this.modalForm.options = [this.newAlbumHint];
       for (let i = 0; i < this.albums.length; ++i) {
         this.modalForm.options.push(this.albums[i].title);
       }
+      this.modalForm.files = [];
+      this.modalForm.newAlbumTitle = "";
       this.$refs.modalForm.show();
     },
     submit() {
