@@ -1,10 +1,9 @@
 <template>
   <div>
     <b-modal ref="modalForm" title="Upload new image" hide-footer>
-      <b-form @submit.prevent enctype="multipart/form-data" action="/submit/img" method="POST">
+      <b-form>
         <b-form-group label="Album" label-for="albumTitle">
           <b-form-select
-            name="albumTitle"
             id="albumTitle"
             v-model="modalForm.albumTitle"
             :options="modalForm.options"
@@ -17,7 +16,6 @@
         >
           <b-form-input
             id="newAlbumTitle"
-            name="newAlbumTitle"
             v-model="modalForm.newAlbumTitle"
             type="text"
             placeholder="New album name"
@@ -26,14 +24,13 @@
         <b-form-group label="Files" label-for="files">
           <b-form-file
             id="files"
-            name="files"
             v-model="modalForm.files"
             multiple
             placeholder="Choose files or drop them here..."
             drop-placeholder="Drop files here..."
           ></b-form-file>
         </b-form-group>
-        <b-button type="submit" variant="primary" block>
+        <b-button variant="primary" block @click="submit">
           <b-spinner label="loading" small v-if="submitting" type="grow"></b-spinner>
           <span class="sr-only">Loading...</span> Upload
         </b-button>
@@ -69,7 +66,8 @@ export default {
       modalForm: {
         albumTitle: "",
         files: [],
-        options: []
+        options: [],
+        newAlbumTitle: ""
       },
       submitting: false,
       newAlbumHint: "-- create a new album --"
@@ -83,6 +81,33 @@ export default {
         this.modalForm.options.push(this.albums[i].title);
       }
       this.$refs.modalForm.show();
+    },
+    submit() {
+      this.submitting = true;
+      var data = new FormData();
+      data.append(
+        "albumTitle",
+        this.modalForm.newAlbumTitle || this.modalForm.albumTitle
+      );
+      for (var i = 0; i < this.modalForm.files.length; i++) {
+        let file = this.modalForm.files[i];
+        data.append("files[" + i + "]", file);
+      }
+      axios({
+        method: "post",
+        url: "/submit/img",
+        data: data,
+        config: { headers: { "Content-Type": "multipart/form-data" } }
+      })
+        .then(res => {
+          if (res.data.status == "ok") {
+            this.$refs.modalForm.hide();
+          }
+          this.submitting = false;
+        })
+        .catch(() => {
+          this.submitting = false;
+        });
     }
   },
   beforeRouteEnter: (from, to, next) => {
