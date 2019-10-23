@@ -40,7 +40,16 @@
     <div v-for="album in albums" :key="album.title">
       <h2>
         {{ album.title }}
-        <b-button class="mb-1 ml-3" variant="primary" @click="showModal(album.title)">Upload</b-button>
+        <b-dropdown
+          split
+          text="Upload"
+          class="mb-1 ml-3"
+          variant="primary"
+          @click="showModal(album.title)"
+        >
+          <b-dropdown-item href="#">Rename</b-dropdown-item>
+          <b-dropdown-item href="#" variant="danger">Delete</b-dropdown-item>
+        </b-dropdown>
       </h2>
       <h6>Created at {{ album.createTime | peekDate }}.</h6>
       <hr />
