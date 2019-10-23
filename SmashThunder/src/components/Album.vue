@@ -122,6 +122,7 @@ export default {
         "albumTitle",
         this.modalForm.newAlbumTitle || this.modalForm.albumTitle
       );
+      data.append('time', Date.now())
       for (var i = 0; i < this.modalForm.files.length; i++) {
         let file = this.modalForm.files[i];
         data.append("files[" + i + "]", file);
