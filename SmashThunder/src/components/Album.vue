@@ -1,6 +1,7 @@
 <template>
   <div>
     <b-modal ref="modalForm" title="Upload new image" hide-footer>
+      <b-alert variant="danger" show v-if="modalForm.err">{{ modalForm.err }}</b-alert>
       <b-form>
         <b-form-group label="Album" label-for="albumTitle">
           <b-form-select
@@ -67,7 +68,8 @@ export default {
         albumTitle: "",
         files: [],
         options: [],
-        newAlbumTitle: ""
+        newAlbumTitle: "",
+        err: ""
       },
       submitting: false,
       newAlbumHint: "-- create a new album --"
@@ -88,6 +90,7 @@ export default {
       this.$refs.modalForm.show();
     },
     submit() {
+      this.modalForm.err = "";
       this.submitting = true;
       var data = new FormData();
       data.append(
@@ -107,10 +110,13 @@ export default {
         .then(res => {
           if (res.data.status == "ok") {
             this.$refs.modalForm.hide();
+          } else {
+            this.modalForm.err = res.data.status;
           }
           this.submitting = false;
         })
         .catch(() => {
+          this.modalForm.err = "Internal Error in Server!";
           this.submitting = false;
         });
     }
