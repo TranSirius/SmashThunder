@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-modal id="modalForm" title="Upload new image" hide-footer>
+    <b-modal ref="modalForm" title="Upload new image" hide-footer>
       <b-form @submit.prevent enctype="multipart/form-data" action="/submit/img" method="POST">
         <b-form-group label="Album" label-for="albumTitle">
           <b-form-select
@@ -66,8 +66,12 @@ export default {
       this.modalForm.albumTitle = current;
       this.modalForm.options = [];
       for (let i = 0; i < this.albums.length; ++i) {
-        this.modalForm.options.push({ value: this.albums[i].title });
+        this.modalForm.options.push({
+          value: this.albums[i].title,
+          text: this.albums[i].title
+        });
       }
+      this.$refs.modalForm.show();
     }
   },
   beforeRouteEnter: (from, to, next) => {
