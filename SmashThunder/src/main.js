@@ -14,7 +14,7 @@ import News from "./components/News.vue"
 import Album from "./components/Album.vue"
 
 // register global filter
-Vue.filter('timeOffset', function (s) {
+Vue.filter('timeOffset', s => {
   var now = new Date(Date.now());
   var t = new Date(s);
   var offset = new Date(now - t);
@@ -36,6 +36,10 @@ Vue.filter('timeOffset', function (s) {
   else if (offset.getMinutes() > 0) return offset.getMinutes() + " minutes";
   // just now
   else return "less than 1 minute";
+})
+Vue.filter('peekDate', s => {
+  var t = new Date(s);
+  return t.toDateString();
 })
 
 const routes = [
