@@ -11,9 +11,15 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 import News from "./components/News.vue"
+import Album from "./components/Album.vue"
 
 const routes = [
-  { path: '/', component: News },
+  {
+    path: '/', component: News,
+  },
+  {
+    path: '/:username/album', component: Album
+  }
 ]
 
 const router = new VueRouter({
