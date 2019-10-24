@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- modalForm -->
     <b-modal ref="modalForm" title="Upload new image" hide-footer>
       <b-alert variant="danger" show v-if="modalForm.err">{{ modalForm.err }}</b-alert>
       <b-form>
@@ -37,7 +38,13 @@
         </b-button>
       </b-form>
     </b-modal>
-    <div v-for="album in albums" :key="album.title">
+    <!-- Image Filter -->
+    <b-form inline>
+      <label label-for="img-filter" class="ml-auto mr-sm-2">Image Filter</label>
+      <b-form-input id="img-filter" v-model="imgFilter" placeholder="Enter image filter..."></b-form-input>
+    </b-form>
+    <div v-for="album in sortedAlbums" :key="album.title" class="mb-5">
+      <!-- Album title -->
       <h2>
         {{ album.title }}
         <b-dropdown
@@ -54,11 +61,21 @@
       </h2>
       <h6>Created at {{ album.createTime | peekDate }}.</h6>
       <hr />
+      <!-- Imgs -->
       <b-card-group columns>
-        <b-card v-for="img in album.imgs" :key="img.title" :img-src="img.url" :img-alt="img.title">
+        <b-card
+          v-for="img in sortedImgs(filtedImgs(album.imgs))"
+          :key="img.title"
+          :img-src="img.url"
+          :img-alt="img.title"
+        >
           <b-card-title>{{ img.title }}</b-card-title>
           <b-card-sub-title class="mb-2">Uploaded {{ img.time | timeOffset }} ago.</b-card-sub-title>
-          <b-dropdown split text="Download" v-if="$root.$data.user.username==$route.params.username">
+          <b-dropdown
+            split
+            text="Download"
+            v-if="$root.$data.user.username==$route.params.username"
+          >
             <b-dropdown-item>Rename</b-dropdown-item>
             <b-dropdown-item variant="danger">Delete</b-dropdown-item>
           </b-dropdown>
@@ -85,7 +102,8 @@ export default {
         err: ""
       },
       submitting: false,
-      newAlbumHint: "-- create a new album --"
+      newAlbumHint: "-- create a new album --",
+      imgFilter: ""
     };
   },
   methods: {
@@ -121,11 +139,21 @@ export default {
                 }
               }
               // albumTitle not found, this is a new album
-              this.albums.push(res.data.albums[0])
+              this.albums.push(res.data.albums[0]);
             }
           },
           () => {}
         );
+    },
+    filtedImgs(imgs) {
+      return imgs.filter(i => {
+        return i.title.includes(this.imgFilter);
+      });
+    },
+    sortedImgs(imgs) {
+      return imgs.sort((a, b) => {
+        return b.time - a.time;
+      });
     },
     submit() {
       this.modalForm.err = "";
@@ -176,6 +204,13 @@ export default {
           () => {}
         );
     });
+  },
+  computed: {
+    sortedAlbums() {
+      return this.albums.slice().sort((a, b) => {
+        return a.title.localeCompare(b.title);
+      });
+    }
   }
 };
 </script>
