@@ -8,7 +8,7 @@
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse is-nav id="nav-collapse">
         <!-- Right aligned nav items -->
-        <b-navbar-nav class="ml-auto">
+        <b-navbar-nav class="ml-auto mt-1 mb-auto">
           <!-- Search bar -->
           <b-nav-form class="form-inline ml-auto mr-2">
             <b-input-group>
