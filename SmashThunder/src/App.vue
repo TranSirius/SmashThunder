@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <Header :user="$root.$data.user"></Header>
+    <Header></Header>
     <!-- Main content -->
     <b-container>
       <router-view></router-view>

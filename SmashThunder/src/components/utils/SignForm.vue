@@ -1,6 +1,6 @@
 <template>
   <!-- Sign in form -->
-  <b-collapse id="signInForm" v-if="!user.loggedIn">
+  <b-collapse id="signInForm" v-if="!$root.$data.user.loggedIn">
     <b-jumbotron header="Welcome!" lead="SmashThunder is a very awsome blog management system.">
       <b-form @submit.prevent="submitClicked">
         <b-form-radio-group
@@ -16,7 +16,7 @@
         <b-form-group label="Username" label-for="signInUsername">
           <b-form-input
             id="signInUsername"
-            v-model="user.username"
+            v-model="$root.$data.user.username"
             placeholder="Enter username"
             type="text"
             required
@@ -56,9 +56,6 @@ import sha256 from "js-sha256";
 
 export default {
   name: "SignForm",
-  props: {
-    user: Object
-  },
   data() {
     return {
       formErr: "",
@@ -85,7 +82,7 @@ export default {
       this.formMode = "sign-in";
     },
     checkUsername: function() {
-      if (!this.user.username.match("[A-Za-z0-9_]{7,}")) {
+      if (!this.$root.$data.user.username.match("[A-Za-z0-9_]{7,}")) {
         this.showFormErr(
           "Username must consists of `A-Z`, `a-z`, `0-9` and `_`, and must be longer than 6!"
         );
@@ -95,7 +92,7 @@ export default {
     },
     logout: function() {
       axios.post("/auth/logout").then(() => {
-        this.user.loggedIn = false;
+        this.$root.$data.user.loggedIn = false;
       });
     },
     submitClicked: function() {
@@ -106,12 +103,12 @@ export default {
         if (!this.checkUsername()) return;
         axios
           .post("/auth/login", {
-            username: this.user.username,
+            username: this.$root.$data.user.username,
             password: sha256(this.password)
           })
           .then(res => {
             if (res.data.status == "ok") {
-              this.user.loggedIn = true;
+              this.$root.$data.user.loggedIn = true;
               this.resetForm();
             } else {
               this.showFormErr(res.data.status);
@@ -131,12 +128,12 @@ export default {
         }
         axios
           .post("/auth/register", {
-            username: this.user.username,
+            username: this.$root.$data.user.username,
             password: sha256(this.password)
           })
           .then(res => {
             if (res.data.status == "ok") {
-              this.user.loggedIn = true;
+              this.$root.$data.user.loggedIn = true;
               this.resetForm();
             } else {
               this.showFormErr(res.data.status);
@@ -153,8 +150,8 @@ export default {
       .post("/auth/autoLogin")
       .then(res => {
         if (res.data.status == "ok") {
-          this.user.username = res.data.username;
-          this.user.loggedIn = true;
+          this.$root.$data.user.username = res.data.username;
+          this.$root.$data.user.loggedIn = true;
         }
       })
       .catch(() => {});
