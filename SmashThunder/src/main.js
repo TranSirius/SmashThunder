@@ -27,7 +27,7 @@ Vue.filter('timeOffset', s => {
   else if (offset.getDate() > 1) return offset.getDay() - 1 + " days";
   // different hour
   else if (offset.getHours() == 9) return "1 hour";
-  else if (offset.getHours() > 8) return offset.getHours() - 8 + "hours";
+  else if (offset.getHours() > 8) return offset.getHours() - 8 + " hours";
   // different minutes
   else if (offset.getMinutes() == 1) return "1 minute";
   else if (offset.getMinutes() > 0) return offset.getMinutes() + " minutes";
