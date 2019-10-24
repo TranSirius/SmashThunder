@@ -46,6 +46,7 @@
           class="mb-1 ml-3"
           variant="primary"
           @click="showModal(album.title)"
+          v-if="$root.$data.user.username==$route.params.username"
         >
           <b-dropdown-item href="#">Rename</b-dropdown-item>
           <b-dropdown-item href="#" variant="danger">Delete</b-dropdown-item>
@@ -57,10 +58,11 @@
         <b-card v-for="img in album.imgs" :key="img.title" :img-src="img.url" :img-alt="img.title">
           <b-card-title>{{ img.title }}</b-card-title>
           <b-card-sub-title class="mb-2">Uploaded {{ img.time | timeOffset }} ago.</b-card-sub-title>
-          <b-dropdown split text="Download">
+          <b-dropdown split text="Download" v-if="$root.$data.user.username==$route.params.username">
             <b-dropdown-item>Rename</b-dropdown-item>
             <b-dropdown-item variant="danger">Delete</b-dropdown-item>
           </b-dropdown>
+          <b-button v-else>Download</b-button>
         </b-card>
       </b-card-group>
     </div>
