@@ -10,9 +10,6 @@ Vue.use(BootstrapVue)
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
-import News from "./components/view/News.vue"
-import Album from "./components/view/Album.vue"
-
 // register global filter
 Vue.filter('timeOffset', s => {
   var now = new Date(Date.now());
@@ -41,6 +38,9 @@ Vue.filter('peekDate', s => {
   var t = new Date(s);
   return t.toDateString();
 })
+
+import News from "./components/view/News.vue"
+import Album from "./components/view/Album.vue"
 
 const routes = [
   {
