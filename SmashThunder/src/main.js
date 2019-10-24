@@ -10,8 +10,8 @@ Vue.use(BootstrapVue)
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
-import News from "./components/News.vue"
-import Album from "./components/Album.vue"
+import News from "./components/view/News.vue"
+import Album from "./components/view/Album.vue"
 
 // register global filter
 Vue.filter('timeOffset', s => {

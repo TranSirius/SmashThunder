@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import SignForm from "./SignForm.vue";
+import SignForm from "./utils/SignForm.vue";
 
 export default {
   name: "Navbar",

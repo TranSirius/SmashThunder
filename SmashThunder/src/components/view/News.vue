@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import NewsCards from "./NewsCards.vue";
+import NewsCards from "../utils/NewsCards.vue";
 import axios from "axios";
 
 export default {
