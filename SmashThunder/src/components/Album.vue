@@ -54,7 +54,7 @@
       <h6>Created at {{ album.createTime | peekDate }}.</h6>
       <hr />
       <b-card-group columns>
-        <b-card v-for="img in album.imgs" :key="img.time" :img-src="img.url" :img-alt="img.title">
+        <b-card v-for="img in album.imgs" :key="img.title" :img-src="img.url" :img-alt="img.title">
           <b-card-title>{{ img.title }}</b-card-title>
           <b-card-sub-title class="mb-2">Uploaded {{ img.time | timeOffset }} ago.</b-card-sub-title>
           <b-dropdown split text="Download">
