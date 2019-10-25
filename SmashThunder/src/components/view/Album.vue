@@ -216,9 +216,9 @@ export default {
         .then(
           res => {
             if (res.data.status == "ok") {
-              v.albums = res.data.albums;
-              for (let i = 0; i < v.albums.length; ++i) {
-                v.albums[i].show = false;
+              for (let i = 0; i < res.data.albums.length; ++i) {
+                res.data.albums[i].show = true;
+                v.albums.push(res.data.albums[i]);
               }
             }
           },
