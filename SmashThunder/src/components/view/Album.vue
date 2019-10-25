@@ -60,14 +60,14 @@
         </b-dropdown>
         <b-button
           class="mb-1 ml-3"
-          variant="outline-secondary"
-          v-b-toggle="album.title"
-        >Hide</b-button>
+          variant="outline-info"
+          :pressed.sync="album.show"
+        >{{ album.show ? 'Hide' : 'Show' }}</b-button>
       </h2>
       <h6>Created at {{ album.createTime | peekDate }}.</h6>
       <hr />
       <!-- Imgs -->
-      <b-collapse visible :id="album.title">
+      <b-collapse v-model="album.show">
         <b-card-group columns>
           <b-card
             v-for="img in sortedImgs(filtedImgs(album.imgs))"
@@ -146,6 +146,7 @@ export default {
                 }
               }
               // albumTitle not found, this is a new album
+              res.data.albums[0].show = true;
               this.albums.push(res.data.albums[0]);
             }
           },
@@ -206,7 +207,12 @@ export default {
         })
         .then(
           res => {
-            if (res.data.status == "ok") v.albums = res.data.albums;
+            if (res.data.status == "ok") {
+              v.albums = res.data.albums;
+              for (let i = 0; i < v.albums.length; ++i) {
+                v.albums[i].show = false;
+              }
+            }
           },
           () => {}
         );
