@@ -43,7 +43,7 @@
       <label label-for="img-filter" class="ml-auto mr-sm-2">Image Filter</label>
       <b-form-input id="img-filter" v-model="imgFilter" placeholder="Enter image filter..."></b-form-input>
     </b-form>
-    <div v-for="album in sortedAlbums" :key="album.title" class="mb-5">
+    <div v-for="album in sortedAlbums" :key="album.title" class="pb-5">
       <!-- Album title -->
       <h2>
         {{ album.title }}
@@ -58,30 +58,37 @@
           <b-dropdown-item href="#">Rename</b-dropdown-item>
           <b-dropdown-item href="#" variant="danger">Delete</b-dropdown-item>
         </b-dropdown>
+        <b-button
+          class="mb-1 ml-3"
+          variant="outline-secondary"
+          v-b-toggle="album.title"
+        >Hide</b-button>
       </h2>
       <h6>Created at {{ album.createTime | peekDate }}.</h6>
       <hr />
       <!-- Imgs -->
-      <b-card-group columns>
-        <b-card
-          v-for="img in sortedImgs(filtedImgs(album.imgs))"
-          :key="img.title"
-          :img-src="img.url"
-          :img-alt="img.title"
-        >
-          <b-card-title>{{ img.title }}</b-card-title>
-          <b-card-sub-title class="mb-2">Uploaded {{ img.time | timeOffset }} ago.</b-card-sub-title>
-          <b-dropdown
-            split
-            text="Download"
-            v-if="$root.$data.user.username==$route.params.username"
+      <b-collapse visible :id="album.title">
+        <b-card-group columns>
+          <b-card
+            v-for="img in sortedImgs(filtedImgs(album.imgs))"
+            :key="img.title"
+            :img-src="img.url"
+            :img-alt="img.title"
           >
-            <b-dropdown-item>Rename</b-dropdown-item>
-            <b-dropdown-item variant="danger">Delete</b-dropdown-item>
-          </b-dropdown>
-          <b-button v-else>Download</b-button>
-        </b-card>
-      </b-card-group>
+            <b-card-title>{{ img.title }}</b-card-title>
+            <b-card-sub-title class="mb-2">Uploaded {{ img.time | timeOffset }} ago.</b-card-sub-title>
+            <b-dropdown
+              split
+              text="Download"
+              v-if="$root.$data.user.username==$route.params.username"
+            >
+              <b-dropdown-item>Rename</b-dropdown-item>
+              <b-dropdown-item variant="danger">Delete</b-dropdown-item>
+            </b-dropdown>
+            <b-button v-else>Download</b-button>
+          </b-card>
+        </b-card-group>
+      </b-collapse>
     </div>
   </div>
 </template>
