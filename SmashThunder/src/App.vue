@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <Header></Header>
-    <!-- Main content -->
+    <!-- Main content, the top margin is to leave space for nav bar -->
     <b-container style="margin-top:80px">
       <router-view></router-view>
     </b-container>

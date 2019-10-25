@@ -1,14 +1,15 @@
 <template>
-  <div class="fixed-top" style="top:56px">
+  <div class="fixed-top">
     <b-collapse id="signInForm" v-if="!$root.$data.user.loggedIn">
       <div class="border-bottom" style="background-color:#fff">
-        <b-container style="padding-top:24px;">
+        <b-container style="padding-top:80px;">
           <!-- Sign in form -->
           <b-jumbotron
             header="Welcome!"
             lead="SmashThunder is a very awsome blog management system."
           >
             <b-form @submit.prevent="submitClicked">
+              <!-- Form mode -->
               <b-form-radio-group
                 buttons
                 size="sm"
@@ -18,7 +19,9 @@
                 v-on:change="()=>{this.$root.$emit('bv::toggle::collapse', 'password2')}"
               ></b-form-radio-group>
               <hr />
-              <b-alert variant="danger" ref="formAlert">{{ formErr }}</b-alert>
+              <!-- Form err msg -->
+              <b-alert variant="danger" show v-if="formErr">{{ formErr }}</b-alert>
+              <!-- Inputs -->
               <b-form-group label="Username" label-for="signInUsername">
                 <b-form-input
                   id="signInUsername"
@@ -37,6 +40,7 @@
                   required
                 />
               </b-form-group>
+              <!-- Collapsable password2 -->
               <b-collapse id="password2">
                 <b-form-group label="Repeat Password" label-for="signInPassword2">
                   <b-form-input
@@ -47,6 +51,7 @@
                   />
                 </b-form-group>
               </b-collapse>
+              <!-- Submit btn -->
               <b-button type="submit" variant="primary">
                 <b-spinner label="loading" small v-if="submitting" type="grow"></b-spinner>
                 <span class="sr-only">Loading...</span> Submit
@@ -79,9 +84,11 @@ export default {
     };
   },
   methods: {
+    /**
+     * `msg` default to 'Internal Error in Server!'
+     */
     showFormErr: function(msg) {
-      this.formErr = msg;
-      this.$refs.formAlert.localShow = true;
+      this.formErr = msg || "Internal Error in Server!";
       this.submitting = false;
     },
     resetForm: function() {
@@ -100,16 +107,21 @@ export default {
       return true;
     },
     logout: function() {
-      axios.post("/auth/logout").then(() => {
-        this.$root.$data.user.loggedIn = false;
-      });
+      axios.post("/auth/logout").then(
+        () => {
+          this.$root.$data.user.loggedIn = false;
+        },
+        () => {
+          this.showFormErr();
+        }
+      );
     },
     submitClicked: function() {
       this.submitting = true;
-      this.$refs.formAlert.localShow = false;
+      this.formErr = "";
+      if (!this.checkUsername()) return;
       if (this.formMode == "sign-in") {
         // sign in
-        if (!this.checkUsername()) return;
         axios
           .post("/auth/login", {
             username: this.$root.$data.user.username,
@@ -124,13 +136,10 @@ export default {
             }
           })
           .catch(() => {
-            this.showFormErr("Internal Error in Server!");
+            this.showFormErr();
           });
       } else if (this.formMode == "sign-up") {
         // sign up
-        if (!this.checkUsername()) {
-          return;
-        }
         if (this.password != this.password2) {
           this.showFormErr("Different password!");
           return;
@@ -149,7 +158,7 @@ export default {
             }
           })
           .catch(() => {
-            this.showFormErr("Internal Error in Server!");
+            this.showFormErr();
           });
       }
     }

@@ -2,8 +2,10 @@
   <div>
     <!-- modalForm -->
     <b-modal ref="modalForm" title="Upload new image" hide-footer>
+      <!-- Form err msg -->
       <b-alert variant="danger" show v-if="modalForm.err">{{ modalForm.err }}</b-alert>
       <b-form>
+        <!-- Choose a album or create a new album-->
         <b-form-group label="Album" label-for="albumTitle">
           <b-form-select
             id="albumTitle"
@@ -23,6 +25,7 @@
             placeholder="New album name"
           ></b-form-input>
         </b-form-group>
+        <!-- Choose files -->
         <b-form-group label="Files" label-for="files">
           <b-form-file
             id="files"
@@ -30,6 +33,7 @@
             multiple
             placeholder="Choose files or drop them here..."
             drop-placeholder="Drop files here..."
+            style="overflow:hidden"
           ></b-form-file>
         </b-form-group>
         <b-button variant="primary" block @click="submit">
@@ -53,7 +57,7 @@
           class="mb-1 ml-3"
           variant="primary"
           @click="showModal(album.title)"
-          v-if="editable()"
+          v-if="editable"
         >
           <b-dropdown-item href="#">Rename</b-dropdown-item>
           <b-dropdown-item href="#" variant="danger">Delete</b-dropdown-item>
@@ -80,7 +84,7 @@
             <b-dropdown
               split
               text="Download"
-              v-if="editable()"
+              v-if="editable"
               @click="downloadImg(img.url, img.title)"
             >
               <b-dropdown-item>Rename</b-dropdown-item>
@@ -171,15 +175,10 @@ export default {
         return b.time - a.time;
       });
     },
-    editable() {
-      return (
-        this.$root.$data.user.loggedIn &&
-        this.$root.$data.user.username == this.$route.params.username
-      );
-    },
     submit() {
       this.modalForm.err = "";
       this.submitting = true;
+      // construct data
       var data = new FormData();
       data.append(
         "albumTitle",
@@ -237,6 +236,12 @@ export default {
       return this.albums.slice().sort((a, b) => {
         return a.title.localeCompare(b.title);
       });
+    },
+    editable() {
+      return (
+        this.$root.$data.user.loggedIn &&
+        this.$root.$data.user.username == this.$route.params.username
+      );
     }
   }
 };
