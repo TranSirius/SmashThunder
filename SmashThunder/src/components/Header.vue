@@ -1,5 +1,7 @@
 <template>
   <div>
+    <!-- SignForm must be ahead of Navbar! Otherwise the z-index will be wrong! -->
+    <SignForm ref="form"></SignForm>
     <b-navbar toggleable="lg" fixed="top" type="dark" variant="dark">
       <!-- Brand -->
       <img src="/icon.png" height="40" />
@@ -36,10 +38,6 @@
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
-    <div style="margin-top:80px"></div>
-    <b-container>
-      <SignForm ref="form"></SignForm>
-    </b-container>
   </div>
 </template>
 
