@@ -53,7 +53,7 @@
           class="mb-1 ml-3"
           variant="primary"
           @click="showModal(album.title)"
-          v-if="$root.$data.user.username==$route.params.username"
+          v-if="validateUser()"
         >
           <b-dropdown-item href="#">Rename</b-dropdown-item>
           <b-dropdown-item href="#" variant="danger">Delete</b-dropdown-item>
@@ -80,7 +80,7 @@
             <b-dropdown
               split
               text="Download"
-              v-if="$root.$data.user.username==$route.params.username"
+              v-if="validateUser()"
               @click="downloadImg(img.url, img.title)"
             >
               <b-dropdown-item>Rename</b-dropdown-item>
@@ -154,6 +154,12 @@ export default {
           },
           () => {}
         );
+    },
+    validateUser() {
+      return (
+        this.$root.$data.loggedIn &&
+        this.$root.$data.user.username == this.$route.params.username
+      );
     },
     downloadImg(url, title) {
       var t = document.createElement("a");
