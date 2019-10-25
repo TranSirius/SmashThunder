@@ -12,7 +12,7 @@
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto mt-1 mb-auto">
           <!-- Search bar -->
-          <b-nav-form class="form-inline ml-auto mr-2">
+          <b-nav-form class="form-inline ml-auto">
             <b-input-group>
               <b-form-input size="sm" placeholder="User or post" />
               <b-input-group-append>
@@ -23,11 +23,10 @@
         </b-navbar-nav>
         <b-navbar-nav v-if="$root.$data.user.loggedIn">
           <!-- if logged in -->
-          <!-- <b-nav-item :to="user.username">{{ user.username }}</b-nav-item> -->
           <b-nav-item-dropdown :text="$root.$data.user.username" right class="text-right">
-            <b-dropdown-item :to="'/'+$root.$data.user.username">Home</b-dropdown-item>
-            <b-dropdown-item :to="'/'+$root.$data.user.username + '/album'">Album</b-dropdown-item>
-            <b-dropdown-item :to="'/'+$root.$data.user.username + '/posts'">Posts</b-dropdown-item>
+            <b-dropdown-item class="text-right" :to="'/'+$root.$data.user.username">Home</b-dropdown-item>
+            <b-dropdown-item class="text-right" :to="'/'+$root.$data.user.username + '/album'">Album</b-dropdown-item>
+            <b-dropdown-item class="text-right" :to="'/'+$root.$data.user.username + '/posts'">Posts</b-dropdown-item>
           </b-nav-item-dropdown>
           <b-nav-item class="text-right" to="#">New</b-nav-item>
           <b-nav-item class="text-right" to="#" @click="()=>{this.$refs.form.logout()}">Sign out</b-nav-item>
