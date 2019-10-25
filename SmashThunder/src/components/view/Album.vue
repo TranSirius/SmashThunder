@@ -53,7 +53,7 @@
           class="mb-1 ml-3"
           variant="primary"
           @click="showModal(album.title)"
-          v-if="validateUser()"
+          v-if="editable()"
         >
           <b-dropdown-item href="#">Rename</b-dropdown-item>
           <b-dropdown-item href="#" variant="danger">Delete</b-dropdown-item>
@@ -80,7 +80,7 @@
             <b-dropdown
               split
               text="Download"
-              v-if="validateUser()"
+              v-if="editable()"
               @click="downloadImg(img.url, img.title)"
             >
               <b-dropdown-item>Rename</b-dropdown-item>
@@ -155,12 +155,6 @@ export default {
           () => {}
         );
     },
-    validateUser() {
-      return (
-        this.$root.$data.loggedIn &&
-        this.$root.$data.user.username == this.$route.params.username
-      );
-    },
     downloadImg(url, title) {
       var t = document.createElement("a");
       t.setAttribute("href", url);
@@ -176,6 +170,12 @@ export default {
       return imgs.sort((a, b) => {
         return b.time - a.time;
       });
+    },
+    editable() {
+      return (
+        this.$root.$data.user.loggedIn &&
+        this.$root.$data.user.username == this.$route.params.username
+      );
     },
     submit() {
       this.modalForm.err = "";
