@@ -81,11 +81,12 @@
               split
               text="Download"
               v-if="$root.$data.user.username==$route.params.username"
+              @click="downloadImg(img.url, img.title)"
             >
               <b-dropdown-item>Rename</b-dropdown-item>
               <b-dropdown-item variant="danger">Delete</b-dropdown-item>
             </b-dropdown>
-            <b-button v-else>Download</b-button>
+            <b-button v-else @click="downloadImg(img.url, img.title)">Download</b-button>
           </b-card>
         </b-card-group>
         <h4 v-else>No image in this album.</h4>
@@ -153,6 +154,12 @@ export default {
           },
           () => {}
         );
+    },
+    downloadImg(url, title) {
+      var t = document.createElement("a");
+      t.setAttribute("href", url);
+      t.setAttribute("download", title);
+      t.click();
     },
     filtedImgs(imgs) {
       return imgs.filter(i => {
