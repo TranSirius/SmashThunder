@@ -68,7 +68,7 @@
       <hr />
       <!-- Imgs -->
       <b-collapse v-model="album.show">
-        <b-card-group columns>
+        <b-card-group columns v-if="filtedImgs(album.imgs).length">
           <b-card
             v-for="img in sortedImgs(filtedImgs(album.imgs))"
             :key="img.title"
@@ -88,6 +88,7 @@
             <b-button v-else>Download</b-button>
           </b-card>
         </b-card-group>
+        <h4 v-else>No image in this album.</h4>
       </b-collapse>
     </div>
   </div>
