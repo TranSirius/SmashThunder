@@ -21,7 +21,8 @@ from werkzeug import http_date
 
 from flask import url_for
 from flask import Markup
-from flask import g, current_app
+from flask import g
+from flask import current_app as app
 
 from flask.cli import with_appcontext 
 
@@ -29,7 +30,7 @@ import click
 import os
 import shutil
 
-engine = create_engine(current_app.config['DATABASE_ENGINE'], encoding='utf-8')
+engine = create_engine(app.config['DATABASE_ENGINE'], encoding='utf-8')
 session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 db_session = scoped_session(session)
 
@@ -44,7 +45,7 @@ def dropDatabaseCommand():
     """Clear the existing data."""
     Model.metadata.drop_all(bind=engine)
     try:
-        shutil.rmtree('/share/data')
+        shutil.rmtree(app.config['USER_DATA'] + 'data')
     except:
         pass
     click.echo('drop the database.')

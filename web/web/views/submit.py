@@ -27,7 +27,7 @@ def uploadPic():
     query_res = db_session.query(User).filter(User.ID == g.user_id).first()
     
     user_name = query_res.user_name
-    pic_dir = app.config['USER_DATA'] + user_name + '/img/'
+    pic_dir = app.config['USER_DATA'] + 'data/' + user_name + '/img/'
 
     img_list = request.files.getlist('files')
     time = request.form.get('time')
@@ -40,15 +40,18 @@ def uploadPic():
 
     for img in img_list:
         new_img = Photo(album_ID = album.ID, photo_title = img.filename, create_time = time)
-        db_session.add(new_img)
+        # db_session.add(new_img)
+        db_session.merge(new_img)
+        img.save(app.config['USER_DATA'] + 'data/' + user_name + '/img/' + album_title + '/' + img.filename)
 
+    db_session.commit()
     ret['status'] = 'ok'
-    try:
-        db_session.commit()
-        for img in img_list:
-            img.save(app.config['USER_DATA'] + user_name + '/img/' + album_title + '/' + img.filename)
-    except sqlalchemy.exc.IntegrityError:
-        ret['status'] = 'You cannot upload the same photos'
+    # try:
+    #     db_session.commit()
+    #     for img in img_list:
+    #         img.save(app.config['USER_DATA'] + user_name + '/img/' + album_title + '/' + img.filename)
+    # except sqlalchemy.exc.IntegrityError:
+    #     ret['status'] = 'You cannot upload the same photos'
     return ret
     
 
