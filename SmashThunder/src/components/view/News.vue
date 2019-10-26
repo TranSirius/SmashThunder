@@ -24,6 +24,13 @@ export default {
       friendsActivities: []
     };
   },
+  watch: {
+    "$root.$data.user.loggedIn": function(val) {
+      if (val) {
+        this.getFriendsActivities();
+      }
+    }
+  },
   methods: {
     getNews() {
       axios.post("/get/news", { target: "news" }).then(
