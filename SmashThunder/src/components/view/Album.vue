@@ -258,6 +258,10 @@ export default {
         );
     },
     checkDuplicateImg() {
+      var toBeUploaded = [];
+      for (let i = 0; i < this.modalForm.files.length; ++i) {
+        toBeUploaded.push(this.modalForm.files[i].name);
+      }
       // find the album
       for (let i = 0; i < this.albums.length; ++i) {
         if (this.albums[i].title == this.modalForm.albumTitle) {
@@ -265,10 +269,6 @@ export default {
           var exist = [];
           for (let j = 0; j < this.albums[i].imgs.length; ++j) {
             exist.push(this.albums[i].imgs[j].title);
-          }
-          var toBeUploaded = [];
-          for (let j = 0; j < this.modalForm.files.length; ++j) {
-            toBeUploaded.push(this.modalForm.files[j].name);
           }
           // duplicate with old imgs
           if (exist.filter(s => toBeUploaded.includes(s)).length > 0) {
@@ -286,10 +286,6 @@ export default {
         }
       }
       // new album
-      var toBeUploaded = [];
-      for (let j = 0; j < this.modalForm.files.length; ++j) {
-        toBeUploaded.push(this.modalForm.files[j].name);
-      }
       if (toBeUploaded.slice().filter(s => toBeUploaded.includes(s)).length > 0)
         this.duplicatedImg = true;
       this.duplicatedImg = false;
