@@ -6,7 +6,7 @@ This folder provides all components used by the top level component `App.vue`.
 
 All top level components of `router-view` are stored in the `view` folder.
 
-These components may need to implement navigation guards like `beforeRouteEnter` and `beforeRouteUpdate` to refresh their data. They may also need to watch `$root.user.loggedIn` to refresh the page when the login state is changed.
+These components may need to implement navigation guards like `beforeRouteEnter` and `beforeRouteUpdate` to refresh their data. They may also need to watch `$root.$date.user.loggedIn` to refresh the page when the login state is changed.
 
 ## utils folder
 
