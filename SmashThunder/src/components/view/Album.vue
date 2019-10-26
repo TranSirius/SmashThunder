@@ -26,7 +26,11 @@
           ></b-form-input>
         </b-form-group>
         <!-- Choose files -->
-        <b-form-group label="Files" label-for="files">
+        <b-form-group
+          label="Files"
+          label-for="files"
+          :description="modalForm.duplicatedImg?'Duplicate image detected!':''"
+        >
           <b-form-file
             id="files"
             v-model="modalForm.files"
@@ -34,6 +38,7 @@
             placeholder="Choose files or drop them here..."
             drop-placeholder="Drop files here..."
             style="overflow:hidden"
+            @input="checkDuplicateImg"
           ></b-form-file>
         </b-form-group>
         <b-button variant="primary" block @click="submit">
@@ -112,7 +117,8 @@ export default {
         files: [],
         options: [],
         newAlbumTitle: "",
-        err: ""
+        err: "",
+        duplicatedImg: false
       },
       submitting: false,
       newAlbumHint: "-- create a new album --",
@@ -241,6 +247,39 @@ export default {
           },
           () => {}
         );
+    },
+    checkDuplicateImg() {
+      // find the album
+      for (let i = 0; i < this.albums.length; ++i) {
+        if (this.albums[i].title == this.modalForm.albumTitle) {
+          // get all img title
+          var exist = [];
+          for (let j = 0; j < this.albums[i].imgs.length; ++j) {
+            exist.push(this.albums[i].imgs[j].title);
+          }
+          var toBeUploaded = [];
+          for (let j = 0; j < this.modalForm.files.length; ++j) {
+            toBeUploaded.push(this.modalForm.files[j].name);
+          }
+          // duplicate with old imgs
+          if (exist.filter(s => toBeUploaded.includes(s)).length > 0) {
+            this.modalForm.duplicatedImg = true;
+            return;
+          }
+          // new imgs duplicate
+          if (
+            toBeUploaded.slice().filter(s => toBeUploaded.includes(s)).length >
+            0
+          )
+            this.modalForm.duplicatedImg = true;
+          this.modalForm.duplicatedImg = false;
+          return;
+        }
+      }
+      // new album
+      if (toBeUploaded.slice().filter(s => toBeUploaded.includes(s)).length > 0)
+        this.duplicatedImg = true;
+      this.duplicatedImg = false;
     }
   },
   beforeRouteUpdate(to, from, next) {
