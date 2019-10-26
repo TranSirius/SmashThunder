@@ -65,7 +65,7 @@
           v-if="editable"
         >
           <b-dropdown-item @click="showRenameForm(album.title)">Rename</b-dropdown-item>
-          <b-dropdown-item href="#" variant="danger">Delete</b-dropdown-item>
+          <b-dropdown-item @click="del(album.title)" variant="danger">Delete</b-dropdown-item>
         </b-dropdown>
         <b-button
           class="mb-1 ml-3"
@@ -93,7 +93,7 @@
               @click="downloadImg(img.url, img.title)"
             >
               <b-dropdown-item @click="showRenameForm(img.title, album.title)">Rename</b-dropdown-item>
-              <b-dropdown-item variant="danger">Delete</b-dropdown-item>
+              <b-dropdown-item @click="del(album.title, img.title)" variant="danger">Delete</b-dropdown-item>
             </b-dropdown>
             <b-button v-else @click="downloadImg(img.url, img.title)">Download</b-button>
           </b-card>
@@ -286,6 +286,10 @@ export default {
         }
       }
       // new album
+      var toBeUploaded = [];
+      for (let j = 0; j < this.modalForm.files.length; ++j) {
+        toBeUploaded.push(this.modalForm.files[j].name);
+      }
       if (toBeUploaded.slice().filter(s => toBeUploaded.includes(s)).length > 0)
         this.duplicatedImg = true;
       this.duplicatedImg = false;
@@ -365,6 +369,56 @@ export default {
             }
           );
       }
+    },
+    del(albumTitle, imgTitle) {
+      var route;
+      var data;
+      if (imgTitle) {
+        route = "/edit/img/delete";
+        data = {
+          albumTitle,
+          imgTitle
+        };
+      } else {
+        route = "/edit/album/delete";
+        data = {
+          albumTitle
+        };
+      }
+      axios
+        .post(route, data)
+        .then(res => {
+          if (res.data.status == "ok") {
+            if (imgTitle) {
+              // delete img
+              for (let i = 0; i < this.albums.length; ++i) {
+                if (this.albums[i].title == albumTitle) {
+                  this.albums[i].imgs = this.albums[i].imgs.filter(s => {
+                    return s.title != imgTitle;
+                  });
+                  return;
+                }
+              }
+            } else {
+              // delete album
+              this.albums = this.albums.filter(s => {
+                return s.title != albumTitle;
+              });
+              if (!this.albums.length) this.updatePage();
+            }
+          } else {
+            this.$bvToast.toast(res.data.status, {
+              title: "Delete failed",
+              autoHideDelay: 5000
+            });
+          }
+        })
+        .catch(() => {
+          this.$bvToast.toast("Internal Error in Server!", {
+            title: "Delete failed",
+            autoHideDelay: 5000
+          });
+        });
     }
   },
   beforeRouteUpdate(to, from, next) {
