@@ -219,7 +219,7 @@ export default {
         .then(
           res => {
             if (res.data.status == "ok") {
-              this.albums = this.albums.slice(0, 0); // albums.clear()
+              this.albums = []
               for (let i = 0; i < res.data.albums.length; ++i) {
                 res.data.albums[i].show = true;
                 this.albums.push(res.data.albums[i]);
