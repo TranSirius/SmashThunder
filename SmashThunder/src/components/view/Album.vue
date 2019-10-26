@@ -85,7 +85,6 @@
             :img-alt="img.title"
           >
             <b-card-title>{{ img.title }}</b-card-title>
-            <b-form-input v-model="img.title" placeholder="Please input the image title"></b-form-input>
             <b-card-sub-title class="mb-2">Uploaded {{ img.time | timeOffset }} ago.</b-card-sub-title>
             <b-dropdown
               split
