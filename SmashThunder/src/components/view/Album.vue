@@ -210,25 +210,33 @@ export default {
           this.modalForm.err = "Internal Error in Server!";
           this.submitting = false;
         });
-    }
-  },
-  beforeRouteEnter: (from, to, next) => {
-    next(v => {
+    },
+    updatePage() {
       axios
         .post("/get/album", {
-          username: v.$route.params.username
+          username: this.$route.params.username
         })
         .then(
           res => {
             if (res.data.status == "ok") {
+              this.albums = this.albums.slice(0, 0); // albums.clear()
               for (let i = 0; i < res.data.albums.length; ++i) {
                 res.data.albums[i].show = true;
-                v.albums.push(res.data.albums[i]);
+                this.albums.push(res.data.albums[i]);
               }
             }
           },
           () => {}
         );
+    }
+  },
+  beforeRouteUpdate(to, from, next) {
+    next();
+    this.updatePage();
+  },
+  beforeRouteEnter(to, from, next) {
+    next(v => {
+      v.updatePage();
     });
   },
   computed: {
