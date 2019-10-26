@@ -178,6 +178,19 @@ export default {
     submit() {
       this.modalForm.err = "";
       this.submitting = true;
+      // test new album title validity
+      if (this.modalForm.albumTitle == this.newAlbumHint) {
+        if (this.modalForm.newAlbumTitle == this.newAlbumHint) {
+          this.modalForm.err = "Invalid album title!";
+          return;
+        }
+        for (let i = 0; i < this.albums.length; ++i) {
+          if (this.albums[i].title == this.modalForm.newAlbumTitle) {
+            this.modalForm.err = "Duplicated album title!";
+            return;
+          }
+        }
+      }
       // construct data
       var data = new FormData();
       data.append(
@@ -219,7 +232,7 @@ export default {
         .then(
           res => {
             if (res.data.status == "ok") {
-              this.albums = []
+              this.albums = [];
               for (let i = 0; i < res.data.albums.length; ++i) {
                 res.data.albums[i].show = true;
                 this.albums.push(res.data.albums[i]);
