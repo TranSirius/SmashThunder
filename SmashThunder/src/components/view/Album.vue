@@ -64,7 +64,7 @@
           @click="showModal(album.title)"
           v-if="editable"
         >
-          <b-dropdown-item href="#">Rename</b-dropdown-item>
+          <b-dropdown-item @click="showRenameForm(album.title)">Rename</b-dropdown-item>
           <b-dropdown-item href="#" variant="danger">Delete</b-dropdown-item>
         </b-dropdown>
         <b-button
@@ -85,6 +85,7 @@
             :img-alt="img.title"
           >
             <b-card-title>{{ img.title }}</b-card-title>
+            <b-form-input v-model="img.title" placeholder="Please input the image title"></b-form-input>
             <b-card-sub-title class="mb-2">Uploaded {{ img.time | timeOffset }} ago.</b-card-sub-title>
             <b-dropdown
               split
@@ -92,7 +93,7 @@
               v-if="editable"
               @click="downloadImg(img.url, img.title)"
             >
-              <b-dropdown-item>Rename</b-dropdown-item>
+              <b-dropdown-item @click="showRenameForm(img.title, album.title)">Rename</b-dropdown-item>
               <b-dropdown-item variant="danger">Delete</b-dropdown-item>
             </b-dropdown>
             <b-button v-else @click="downloadImg(img.url, img.title)">Download</b-button>
@@ -101,6 +102,10 @@
         <h4 v-else>No image in this album.</h4>
       </b-collapse>
     </div>
+    <!-- rename form -->
+    <b-modal ref="renameForm" title="Please enter the new name" centered @ok="rename">
+      <b-form-input v-model="renameForm.newName" placeholder="New name"></b-form-input>
+    </b-modal>
   </div>
 </template>
 
@@ -122,7 +127,12 @@ export default {
       },
       submitting: false,
       newAlbumHint: "-- create a new album --",
-      imgFilter: ""
+      imgFilter: "",
+      renameForm: {
+        newName: "",
+        oldName: "",
+        albumTitle: ""
+      }
     };
   },
   methods: {
@@ -280,6 +290,82 @@ export default {
       if (toBeUploaded.slice().filter(s => toBeUploaded.includes(s)).length > 0)
         this.duplicatedImg = true;
       this.duplicatedImg = false;
+    },
+    showRenameForm(oldName, albumTitle) {
+      this.renameForm.oldName = this.renameForm.newName = oldName;
+      this.renameForm.albumTitle = albumTitle;
+      this.$refs.renameForm.show();
+    },
+    rename() {
+      if (this.renameForm.oldName == this.renameForm.newName) return;
+      // rename album
+      if (!this.renameForm.albumTitle) {
+        axios
+          .post("/edit/album/rename", {
+            albumTitle: this.renameForm.oldName,
+            newTitle: this.renameForm.newName
+          })
+          .then(
+            res => {
+              if (res.data.status != "ok") {
+                this.$bvToast.toast(res.data.status, {
+                  title: "Rename failed",
+                  autoHideDelay: 5000
+                });
+              } else {
+                for (let i = 0; i < this.albums.length; ++i) {
+                  if (this.albums[i].title == this.renameForm.oldName) {
+                    this.albums[i].title = this.renameForm.newName;
+                    return;
+                  }
+                }
+              }
+            },
+            () => {
+              this.$bvToast.toast("Internal Error in Server!", {
+                title: "Rename failed",
+                autoHideDelay: 5000
+              });
+            }
+          );
+      } else {
+        // rename img
+        axios
+          .post("/edit/img/rename", {
+            albumTitle: this.renameForm.albumTitle,
+            imgTitle: this.renameForm.oldName,
+            newTitle: this.renameForm.newName
+          })
+          .then(
+            res => {
+              if (res.data.status == "ok") {
+                for (let i = 0; i < this.albums.length; ++i) {
+                  if (this.albums[i].title == this.renameForm.albumTitle) {
+                    for (let j = 0; j < this.albums[i].imgs.length; ++j) {
+                      if (
+                        this.albums[i].imgs[j].title == this.renameForm.oldName
+                      ) {
+                        this.albums[i].imgs[j].title = this.renameForm.newName;
+                        return;
+                      }
+                    }
+                  }
+                }
+              } else {
+                this.$bvToast.toast(res.data.status, {
+                  title: "Rename failed",
+                  autoHideDelay: 5000
+                });
+              }
+            },
+            () => {
+              this.$bvToast.toast("Internal Error in Server!", {
+                title: "Rename failed",
+                autoHideDelay: 5000
+              });
+            }
+          );
+      }
     }
   },
   beforeRouteUpdate(to, from, next) {
