@@ -1,11 +1,10 @@
 export default {
 	methods: {
-		/**
-		 * `msg` defaults to `'Internal Server Error!'`
-		 */
-		toastErr(title, msg) {
-			this.$bvToast.toast(msg || 'Internal Server Error!', {
+		toastErr(title = 'Error!', msg = 'Internal Server Error!', variant = 'danger', toaster = 'top-right') {
+			this.$bvToast.toast(msg, {
 				title,
+				variant: variant,
+				toaster: 'b-toastr-' + toaster,
 				autoHideDelay: 5000
 			});
 		}
