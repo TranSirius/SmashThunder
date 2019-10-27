@@ -112,12 +112,24 @@
 import axios from "axios";
 import timeFilter from "../mixin/timeFilter";
 import strCheck from "../mixin/strCheck";
+import errHandler from "../mixin/errHandler";
 
 export default {
   name: "Album",
-  mixins: [timeFilter, strCheck],
+  mixins: [timeFilter, strCheck, errHandler],
   data() {
     return {
+      /**
+       * "albums": [{
+       * "title": "str",
+       * "createTime": "Unix Time Stamp(int)",
+       * "imgs": [{
+       *  "url": "str",
+       *  "title": "str",
+       *     "time": "Unix Time Stamp(int)"
+       *   }]
+       * }]
+       */
       albums: [],
       modalForm: {
         albumTitle: "",
@@ -323,10 +335,7 @@ export default {
       if (!this.renameForm.albumTitle) {
         // check album name validity
         if (!this.checkFileName(this.renameForm.newName)) {
-          this.$bvToast.toast("Invalid album title!", {
-            title: "Rename failed",
-            autoHideDelay: 5000
-          });
+          this.toastErr("Rename failed", "Invalid album title");
           return;
         }
         axios
@@ -337,10 +346,7 @@ export default {
           .then(
             res => {
               if (res.data.status != "ok") {
-                this.$bvToast.toast(res.data.status, {
-                  title: "Rename failed",
-                  autoHideDelay: 5000
-                });
+                this.toastErr("Rename failed", res.data.status);
               } else {
                 for (let i = 0; i < this.albums.length; ++i) {
                   if (this.albums[i].title == this.renameForm.oldName) {
@@ -351,20 +357,14 @@ export default {
               }
             },
             () => {
-              this.$bvToast.toast("Internal Error in Server!", {
-                title: "Rename failed",
-                autoHideDelay: 5000
-              });
+              this.toastErr("Rename failed");
             }
           );
       } else {
         // rename img
         // check image title validity
         if (!this.checkFileName(this.renameForm.newName)) {
-          this.$bvToast.toast("Invalid image title!", {
-            title: "Rename failed",
-            autoHideDelay: 5000
-          });
+          this.toastErr("Rename failed", "Invalid image title");
           return;
         }
         axios
@@ -389,17 +389,11 @@ export default {
                   }
                 }
               } else {
-                this.$bvToast.toast(res.data.status, {
-                  title: "Rename failed",
-                  autoHideDelay: 5000
-                });
+                this.toastErr("Rename failed", res.data.status);
               }
             },
             () => {
-              this.$bvToast.toast("Internal Error in Server!", {
-                title: "Rename failed",
-                autoHideDelay: 5000
-              });
+              this.toastErr("Rename failed");
             }
           );
       }
@@ -441,17 +435,11 @@ export default {
               if (!this.albums.length) this.updatePage();
             }
           } else {
-            this.$bvToast.toast(res.data.status, {
-              title: "Delete failed",
-              autoHideDelay: 5000
-            });
+            this.toastErr("Delete failed", res.data.status);
           }
         })
         .catch(() => {
-          this.$bvToast.toast("Internal Error in Server!", {
-            title: "Delete failed",
-            autoHideDelay: 5000
-          });
+          this.toastErr("Rename failed");
         });
     }
   },
