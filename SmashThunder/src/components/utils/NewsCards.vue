@@ -20,8 +20,11 @@
 </template>
 
 <script>
+import timeFilter from "../mixin/timeFilter"
+
 export default {
   name: "NewsCards",
+  mixins: [timeFilter],
   props: {
     title: String,
     data: Array

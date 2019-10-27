@@ -14,6 +14,10 @@ All components used by `Header.vue` and other `route-view` components are stored
 
 These components may NOT implement navigation guards. Their data is passed by the view components.
 
+## mixin folder
+
+All functions/components that will be mixed-in will be stored in this folder.
+
 ## Header.vue
 
 The header component provides the navbar and sign in/up form.

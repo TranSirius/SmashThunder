@@ -110,9 +110,11 @@
 
 <script>
 import axios from "axios";
+import timeFilter from "../mixin/timeFilter"
 
 export default {
   name: "Album",
+  mixins: [timeFilter],
   data() {
     return {
       albums: [],
