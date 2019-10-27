@@ -19,8 +19,6 @@
                 v-on:change="()=>{this.$root.$emit('bv::toggle::collapse', 'password2')}"
               ></b-form-radio-group>
               <hr />
-              <!-- Form err msg -->
-              <b-alert variant="danger" show v-if="formErr">{{ formErr }}</b-alert>
               <!-- Inputs -->
               <b-form-group label="Username" label-for="signInUsername">
                 <b-form-input
@@ -28,7 +26,6 @@
                   v-model="$root.$data.user.username"
                   placeholder="Enter username"
                   type="text"
-                  required
                 />
               </b-form-group>
               <b-form-group label="Password" label-for="signInPassword">
@@ -37,7 +34,6 @@
                   id="signInPassword"
                   placeholder="Password"
                   v-model="password"
-                  required
                 />
               </b-form-group>
               <!-- Collapsable password2 -->
@@ -67,35 +63,29 @@
 <script>
 import axios from "axios";
 import sha256 from "js-sha256";
+import errHandler from "../mixin/errHandler";
 
 export default {
   name: "SignForm",
+  mixins: [errHandler],
   data() {
     return {
-      formErr: "",
       password: "",
       password2: "",
       submitting: false,
-      formMode: "sign-in", // can be 'sign-in' and 'sign-up'
-      signInFormOptions: [
-        { text: "Sign In", value: "sign-in" },
-        { text: "Sign Up", value: "sign-up" }
-      ]
+      formMode: "Sign In", // can be 'Sign In' and 'Sign Up'
+      signInFormOptions: ["Sign In", "Sign Up"]
     };
   },
   methods: {
-    /**
-     * `msg` default to 'Internal Error in Server!'
-     */
     showFormErr: function(msg) {
-      this.formErr = msg || "Internal Error in Server!";
+      this.toastErr(this.formMode + " failed", msg);
       this.submitting = false;
     },
     resetForm: function() {
       this.password = this.password2 = "";
-      this.formErr = "";
       this.submitting = false;
-      this.formMode = "sign-in";
+      this.formMode = "Sign In";
     },
     checkUsername: function() {
       var t = this.$root.$data.user.username.match(/[A-Za-z0-9_]{7,}/);
@@ -108,60 +98,35 @@ export default {
       return true;
     },
     logout: function() {
-      axios.post("/auth/logout").then(
-        () => {
+      axios
+        .post("/auth/logout")
+        .then(() => {
           this.$root.$data.user.loggedIn = false;
-        },
-        () => {
+        })
+        .catch(() => {
           this.showFormErr();
-        }
-      );
+        });
     },
     submitClicked: function() {
       this.submitting = true;
-      this.formErr = "";
       if (!this.checkUsername()) return;
-      if (this.formMode == "sign-in") {
-        // sign in
-        axios
-          .post("/auth/login", {
-            username: this.$root.$data.user.username,
-            password: sha256(this.password)
-          })
-          .then(res => {
-            if (res.data.status == "ok") {
-              this.$root.$data.user.loggedIn = true;
-              this.resetForm();
-            } else {
-              this.showFormErr(res.data.status);
-            }
-          })
-          .catch(() => {
-            this.showFormErr();
-          });
-      } else if (this.formMode == "sign-up") {
-        // sign up
-        if (this.password != this.password2) {
-          this.showFormErr("Different password!");
-          return;
-        }
-        axios
-          .post("/auth/register", {
-            username: this.$root.$data.user.username,
-            password: sha256(this.password)
-          })
-          .then(res => {
-            if (res.data.status == "ok") {
-              this.$root.$data.user.loggedIn = true;
-              this.resetForm();
-            } else {
-              this.showFormErr(res.data.status);
-            }
-          })
-          .catch(() => {
-            this.showFormErr();
-          });
-      }
+      var route = this.formMode == "Sign In" ? "/auth/login" : "/auth/register";
+      axios
+        .post(route, {
+          username: this.$root.$data.user.username,
+          password: sha256(this.password)
+        })
+        .then(res => {
+          if (res.data.status == "ok") {
+            this.$root.$data.user.loggedIn = true;
+            this.resetForm();
+          } else {
+            this.showFormErr(res.data.status);
+          }
+        })
+        .catch(() => {
+          this.showFormErr();
+        });
     }
   },
   mounted: function() {
