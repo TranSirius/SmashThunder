@@ -3,8 +3,8 @@ export default {
 		toastErr(title = 'Error!', msg = 'Internal Server Error!', variant = 'danger', toaster = 'top-right') {
 			this.$bvToast.toast(msg, {
 				title,
-				variant: variant,
-				toaster: 'b-toastr-' + toaster,
+				variant,
+				toaster: 'b-toaster-' + toaster,
 				autoHideDelay: 5000
 			});
 		}
