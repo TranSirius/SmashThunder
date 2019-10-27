@@ -3,8 +3,7 @@
     <!-- modalForm -->
     <b-modal ref="modalForm" title="Upload new image" hide-footer>
       <!-- Form err msg -->
-      <b-alert variant="danger" show v-if="modalForm.err">{{ modalForm.err }}</b-alert>
-      <b-form>
+      <b-form @submit.prevent="submit">
         <!-- Choose a album or create a new album-->
         <b-form-group label="Album" label-for="albumTitle">
           <b-form-select
@@ -26,11 +25,7 @@
           ></b-form-input>
         </b-form-group>
         <!-- Choose files -->
-        <b-form-group
-          label="Files"
-          label-for="files"
-          :description="modalForm.duplicatedImg?'Duplicate image detected!':''"
-        >
+        <b-form-group label="Files" label-for="files">
           <b-form-file
             id="files"
             v-model="modalForm.files"
@@ -41,7 +36,7 @@
             @input="checkDuplicateImg"
           ></b-form-file>
         </b-form-group>
-        <b-button variant="primary" block @click="submit">
+        <b-button variant="primary" block type="submit">
           <b-spinner label="loading" small v-if="submitting" type="grow"></b-spinner>
           <span class="sr-only">Loading...</span> Upload
         </b-button>
@@ -102,8 +97,13 @@
       </b-collapse>
     </div>
     <!-- rename form -->
-    <b-modal ref="renameForm" title="Please enter the new name" centered @ok="rename">
-      <b-form-input v-model="renameForm.newName" placeholder="New name"></b-form-input>
+    <b-modal ref="renameForm" title="Please enter the new name" centered hide-footer>
+      <b-form @submit.prevent="rename();$refs.renameForm.hide()">
+        <b-form-group>
+          <b-form-input v-model="renameForm.newName" placeholder="New name"></b-form-input>
+        </b-form-group>
+        <b-button variant="primary" type="submit" block>OK</b-button>
+      </b-form>
     </b-modal>
   </div>
 </template>
@@ -122,6 +122,7 @@ export default {
       /**
        * "albums": [{
        * "title": "str",
+       * "show": "bool",
        * "createTime": "Unix Time Stamp(int)",
        * "imgs": [{
        *  "url": "str",
@@ -135,12 +136,14 @@ export default {
         albumTitle: "",
         files: [],
         options: [],
-        newAlbumTitle: "",
-        err: "",
-        duplicatedImg: false
+        newAlbumTitle: ""
       },
       submitting: false,
       newAlbumHint: "-- create a new album --",
+      invalidFileNameHint:
+        "Album/Image title can not contain !*'();:@&=+$,/?#[]",
+      duplicatedImgHint:
+        "Duplicate image title in same album. Old image will be replaced.",
       imgFilter: "",
       renameForm: {
         newName: "",
@@ -186,7 +189,9 @@ export default {
               this.albums.push(res.data.albums[0]);
             }
           },
-          () => {}
+          () => {
+            this.toastErr("Refresh album failed");
+          }
         );
     },
     downloadImg(url, title) {
@@ -205,47 +210,47 @@ export default {
         return b.time - a.time;
       });
     },
+    /**
+     * `s` can be `undefined`
+     */
+    showSubmitErr(s) {
+      this.submitting = false;
+      this.toastErr("Submit failed", s);
+    },
     submit() {
-      this.modalForm.err = "";
       this.submitting = true;
-      // test new album title validity
-      if (
-        !this.checkFileName(
-          this.modalForm.newAlbumTitle || this.modalForm.albumTitle
-        )
-      ) {
-        this.submitting = false;
-        this.modalForm.err = "Invalid album title";
+      // check album title validity
+      var title = this.modalForm.newAlbumTitle || this.modalForm.albumTitle;
+      if (!this.checkFileName(title)) {
+        this.showSubmitErr(this.invalidFileNameHint);
         return;
       }
+      // test new album title validity
       if (this.modalForm.albumTitle == this.newAlbumHint) {
         if (this.modalForm.newAlbumTitle == this.newAlbumHint) {
-          this.modalForm.err = "Invalid album title!";
-          this.submitting = false;
+          this.showSubmitErr(this.invalidFileNameHint);
           return;
         }
-        for (let i = 0; i < this.albums.length; ++i) {
-          if (this.albums[i].title == this.modalForm.newAlbumTitle) {
-            this.modalForm.err = "Duplicated album title!";
-            this.submitting = false;
-            return;
-          }
+        if (
+          this.albums.filter(s => {
+            return s.title == title;
+          }).length
+        ) {
+          this.showSubmitErr("Duplicated album title!");
+          return;
         }
       }
       // check img name validity
       for (let i = 0; i < this.modalForm.files.length; ++i) {
         if (!this.checkFileName(this.modalForm.files[i].name)) {
-          this.modalForm.err = "Invalid image title!";
-          this.submitting = false;
+          this.showSubmitErr(this.invalidFileNameHint);
           return;
         }
       }
       // construct data
       var data = new FormData();
-      data.append(
-        "albumTitle",
-        this.modalForm.newAlbumTitle || this.modalForm.albumTitle
-      );
+      data.append("albumTitle", title);
+      // TODO: remove `time` in data
       data.append("time", Date.now());
       for (var i = 0; i < this.modalForm.files.length; i++) {
         let file = this.modalForm.files[i];
@@ -259,20 +264,19 @@ export default {
       })
         .then(res => {
           if (res.data.status == "ok") {
-            this.refresh(
-              this.modalForm.newAlbumTitle || this.modalForm.albumTitle
-            );
+            this.refresh(title);
             this.$refs.modalForm.hide();
           } else {
-            this.modalForm.err = res.data.status;
+            this.showSubmitErr(res.data.status);
           }
-          this.submitting = false;
         })
         .catch(() => {
-          this.modalForm.err = "Internal Error in Server!";
-          this.submitting = false;
+          this.showSubmitErr();
         });
     },
+    /**
+     * This function is used by route guards. Reload this whole page, refresh all albums.
+     */
     updatePage() {
       axios
         .post("/get/album", {
@@ -291,112 +295,104 @@ export default {
           () => {}
         );
     },
+    showDupImgErr() {
+      this.toastErr("Warning", this.duplicatedImgHint, "warning");
+    },
+    /**
+     * This funcion will be called when user has selected images to be uploaded.
+     */
     checkDuplicateImg() {
       var toBeUploaded = [];
-      for (let i = 0; i < this.modalForm.files.length; ++i) {
-        toBeUploaded.push(this.modalForm.files[i].name);
-      }
+      this.modalForm.files.map(file => toBeUploaded.push(file.name));
       // find the album
       for (let i = 0; i < this.albums.length; ++i) {
         if (this.albums[i].title == this.modalForm.albumTitle) {
           // get all img title
           var exist = [];
-          for (let j = 0; j < this.albums[i].imgs.length; ++j) {
-            exist.push(this.albums[i].imgs[j].title);
-          }
+          this.albums[i].imgs.map(img => exist.push(img.title));
           // duplicate with old imgs
           if (exist.filter(s => toBeUploaded.includes(s)).length > 0) {
-            this.modalForm.duplicatedImg = true;
+            this.showDupImgErr();
             return;
           }
           // new imgs duplicate
-          if (
-            toBeUploaded.slice().filter(s => toBeUploaded.includes(s)).length >
-            0
-          )
-            this.modalForm.duplicatedImg = true;
-          this.modalForm.duplicatedImg = false;
+          if (toBeUploaded.filter(s => toBeUploaded.includes(s)).length > 0)
+            this.showDupImgErr();
           return;
         }
       }
       // new album
-      if (toBeUploaded.slice().filter(s => toBeUploaded.includes(s)).length > 0)
-        this.duplicatedImg = true;
-      this.duplicatedImg = false;
+      if (toBeUploaded.filter(s => toBeUploaded.includes(s)).length > 0)
+        this.showDupImgErr();
     },
     showRenameForm(oldName, albumTitle) {
       this.renameForm.oldName = this.renameForm.newName = oldName;
       this.renameForm.albumTitle = albumTitle;
       this.$refs.renameForm.show();
     },
+    /**
+     * `s` can be `undefined`
+     */
+    showRenameErr(s) {
+      this.toastErr("Rename failed", s);
+    },
+    showDelErr(s){
+      this.toastErr("Delete failed", s);
+    },
     rename() {
       if (this.renameForm.oldName == this.renameForm.newName) return;
-      // rename album
-      if (!this.renameForm.albumTitle) {
-        // check album name validity
-        if (!this.checkFileName(this.renameForm.newName)) {
-          this.toastErr("Rename failed", "Invalid album title");
-          return;
-        }
-        axios
-          .post("/edit/album/rename", {
+      // check file name validity
+      if (!this.checkFileName(this.renameForm.newName)) {
+        this.showRenameErr(this.invalidFileNameHint);
+        return;
+      }
+      // construct req params
+      var renameAlbum = !this.renameForm.albumTitle;
+      var route = renameAlbum ? "/edit/album/rename" : "/edit/img/rename";
+      var data = renameAlbum
+        ? {
             albumTitle: this.renameForm.oldName,
             newTitle: this.renameForm.newName
-          })
-          .then(
-            res => {
-              if (res.data.status != "ok") {
-                this.toastErr("Rename failed", res.data.status);
-              } else {
-                for (let i = 0; i < this.albums.length; ++i) {
-                  if (this.albums[i].title == this.renameForm.oldName) {
-                    this.albums[i].title = this.renameForm.newName;
-                    return;
-                  }
-                }
-              }
-            },
-            () => {
-              this.toastErr("Rename failed");
-            }
-          );
-      } else {
-        // rename img
-        // check image title validity
-        if (!this.checkFileName(this.renameForm.newName)) {
-          this.toastErr("Rename failed", "Invalid image title");
-          return;
-        }
-        axios
-          .post("/edit/img/rename", {
+          }
+        : {
             albumTitle: this.renameForm.albumTitle,
             imgTitle: this.renameForm.oldName,
             newTitle: this.renameForm.newName
-          })
-          .then(
-            res => {
-              if (res.data.status == "ok") {
-                for (let i = 0; i < this.albums.length; ++i) {
-                  if (this.albums[i].title == this.renameForm.albumTitle) {
-                    for (let j = 0; j < this.albums[i].imgs.length; ++j) {
-                      if (
-                        this.albums[i].imgs[j].title == this.renameForm.oldName
-                      ) {
-                        this.albums[i].imgs[j].title = this.renameForm.newName;
-                        return;
-                      }
+          };
+      // send req
+      axios.post(route, data).then(
+        res => {
+          if (res.data.status == "ok") {
+            if (renameAlbum) {
+              for (let i = 0; i < this.albums.length; ++i) {
+                if (this.albums[i].title == this.renameForm.oldName) {
+                  this.albums[i].title = this.renameForm.newName;
+                  return;
+                }
+              }
+            } else {
+              // rename img
+              for (let i = 0; i < this.albums.length; ++i) {
+                if (this.albums[i].title == this.renameForm.albumTitle) {
+                  for (let j = 0; j < this.albums[i].imgs.length; ++j) {
+                    if (
+                      this.albums[i].imgs[j].title == this.renameForm.oldName
+                    ) {
+                      this.albums[i].imgs[j].title = this.renameForm.newName;
+                      return;
                     }
                   }
                 }
-              } else {
-                this.toastErr("Rename failed", res.data.status);
               }
-            },
-            () => {
-              this.toastErr("Rename failed");
             }
-          );
-      }
+          } else {
+            this.showRenameErr(res.data.status);
+          }
+        },
+        () => {
+          this.showRenameErr();
+        }
+      );
     },
     del(albumTitle, imgTitle) {
       var route;
@@ -435,11 +431,11 @@ export default {
               if (!this.albums.length) this.updatePage();
             }
           } else {
-            this.toastErr("Delete failed", res.data.status);
+            this.showDelErr(res.data.status);
           }
         })
         .catch(() => {
-          this.toastErr("Rename failed");
+          this.showDelErr()
         });
     }
   },
