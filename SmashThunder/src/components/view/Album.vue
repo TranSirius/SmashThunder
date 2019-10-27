@@ -110,11 +110,12 @@
 
 <script>
 import axios from "axios";
-import timeFilter from "../mixin/timeFilter"
+import timeFilter from "../mixin/timeFilter";
+import strCheck from "../mixin/strCheck";
 
 export default {
   name: "Album",
-  mixins: [timeFilter],
+  mixins: [timeFilter, strCheck],
   data() {
     return {
       albums: [],
@@ -196,16 +197,35 @@ export default {
       this.modalForm.err = "";
       this.submitting = true;
       // test new album title validity
+      if (
+        !this.checkFileName(
+          this.modalForm.newAlbumTitle || this.modalForm.albumTitle
+        )
+      ) {
+        this.submitting = false;
+        this.modalForm.err = "Invalid album title";
+        return;
+      }
       if (this.modalForm.albumTitle == this.newAlbumHint) {
         if (this.modalForm.newAlbumTitle == this.newAlbumHint) {
           this.modalForm.err = "Invalid album title!";
+          this.submitting = false;
           return;
         }
         for (let i = 0; i < this.albums.length; ++i) {
           if (this.albums[i].title == this.modalForm.newAlbumTitle) {
             this.modalForm.err = "Duplicated album title!";
+            this.submitting = false;
             return;
           }
+        }
+      }
+      // check img name validity
+      for (let i = 0; i < this.modalForm.files.length; ++i) {
+        if (!this.checkFileName(this.modalForm.files[i].name)) {
+          this.modalForm.err = "Invalid image title!";
+          this.submitting = false;
+          return;
         }
       }
       // construct data
@@ -301,6 +321,14 @@ export default {
       if (this.renameForm.oldName == this.renameForm.newName) return;
       // rename album
       if (!this.renameForm.albumTitle) {
+        // check album name validity
+        if (!this.checkFileName(this.renameForm.newName)) {
+          this.$bvToast.toast("Invalid album title!", {
+            title: "Rename failed",
+            autoHideDelay: 5000
+          });
+          return;
+        }
         axios
           .post("/edit/album/rename", {
             albumTitle: this.renameForm.oldName,
@@ -331,6 +359,14 @@ export default {
           );
       } else {
         // rename img
+        // check image title validity
+        if (!this.checkFileName(this.renameForm.newName)) {
+          this.$bvToast.toast("Invalid image title!", {
+            title: "Rename failed",
+            autoHideDelay: 5000
+          });
+          return;
+        }
         axios
           .post("/edit/img/rename", {
             albumTitle: this.renameForm.albumTitle,
