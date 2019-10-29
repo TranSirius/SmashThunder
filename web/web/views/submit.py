@@ -15,6 +15,8 @@ from web.db.datamodels import User, Album, Photo
 from web.views.auth import loginRequest
 
 import os
+import time
+import datetime
 
 mod = Blueprint('submit', __name__, url_prefix = '/submit')
 
@@ -30,7 +32,8 @@ def uploadPic():
     pic_dir = app.config['USER_DATA'] + 'data/' + user_name + '/img/'
 
     img_list = request.files.getlist('files')
-    time = request.form.get('time')
+    dtime = datetime.datetime.now()
+    time = time.mktime(dtime.timetuple()) * 1000
     album_title = request.form.get('albumTitle')
 
     album = db_session.query(Album).filter(Album.user_ID == g.user_id).filter(Album.album_title == album_title).first()
@@ -46,12 +49,6 @@ def uploadPic():
 
     db_session.commit()
     ret['status'] = 'ok'
-    # try:
-    #     db_session.commit()
-    #     for img in img_list:
-    #         img.save(app.config['USER_DATA'] + user_name + '/img/' + album_title + '/' + img.filename)
-    # except sqlalchemy.exc.IntegrityError:
-    #     ret['status'] = 'You cannot upload the same photos'
     return ret
     
 

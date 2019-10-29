@@ -114,7 +114,7 @@ class Portfolio(Model):
     ID = Column('ID', Integer, primary_key = True, autoincrement = True)
     user_ID = Column('UserID', Integer, ForeignKey('User.ID', ondelete = 'CASCADE', onupdate = 'CASCADE'))
     portfolio_title = Column('PortfolioTitle', String(500), nullable = False)
-    create_time = 
+#    create_time = 
 
 class Post(Model):
     __tablename__ = 'Post'

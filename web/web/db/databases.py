@@ -30,7 +30,7 @@ import click
 import os
 import shutil
 
-engine = create_engine(app.config['DATABASE_ENGINE'], encoding='utf-8')
+engine = create_engine(app.config['DATABASE_ENGINE'], encoding = 'utf-8', pool_size = 150, pool_recycle = 1800)
 session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 db_session = scoped_session(session)
 

@@ -68,9 +68,9 @@ def albumDelete():
     except:
         pass
     db_session.query(Album).filter(Album.user_ID == user_id).filter(Album.album_title == album_title).delete()
+    db_session.commit()
 
     last_album = db_session.query(Album).filter(Album.user_ID == user_id).first()
-    db_session.commit()
 
     if last_album is None:
         Album.generateAlbum(user_name, 'My Photo')
