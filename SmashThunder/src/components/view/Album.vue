@@ -113,10 +113,11 @@ import axios from "axios";
 import timeFilter from "../mixin/timeFilter";
 import strCheck from "../mixin/strCheck";
 import errHandler from "../mixin/errHandler";
+import arrayCheck from "../mixin/arrayCheck";
 
 export default {
   name: "Album",
-  mixins: [timeFilter, strCheck, errHandler],
+  mixins: [timeFilter, strCheck, errHandler, arrayCheck],
   data() {
     return {
       /**
@@ -303,13 +304,13 @@ export default {
      * This funcion will be called when user has selected images to be uploaded.
      */
     checkDuplicateImg() {
-      var toBeUploaded = [];
+      var toBeUploaded = []; // files name
       this.modalForm.files.map(file => toBeUploaded.push(file.name));
       // find the album
       for (let i = 0; i < this.albums.length; ++i) {
         if (this.albums[i].title == this.modalForm.albumTitle) {
           // get all img title
-          var exist = [];
+          var exist = []; // file names
           this.albums[i].imgs.map(img => exist.push(img.title));
           // duplicate with old imgs
           if (exist.filter(s => toBeUploaded.includes(s)).length > 0) {
@@ -317,7 +318,7 @@ export default {
             return;
           }
           // new imgs duplicate
-          if (toBeUploaded.filter(s => toBeUploaded.includes(s)).length > 0)
+          if (!this.checkUniqueness(toBeUploaded))
             this.showDupImgErr();
           return;
         }
