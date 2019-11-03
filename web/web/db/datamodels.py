@@ -5,6 +5,7 @@ from sqlalchemy import String
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
 from sqlalchemy import event
+from sqlalchemy.exc import DataError
 from werkzeug.security import generate_password_hash
 
 from web.db.databases import Model
@@ -24,6 +25,7 @@ class User(Model):
     user_type = Column('UserType', String(50), nullable = False, default = 'user')
     user_name = Column('UserName', String(200), unique = True, nullable = True)
     pass_word = Column('PassWord', String(100), nullable = False)
+    create_time = Column('CreateTime', BigInteger, nullable = False, default = 0)
 
     def __str__(self):
         return '%s(ID=%r, UserType=%r, UserName=%r, PassWord=%r)' % (
@@ -36,8 +38,10 @@ class User(Model):
 
     @classmethod
     def generateUser(cls, username, password):
+        dtime = datetime.datetime.now()
+        unix_time = time.mktime(dtime.timetuple()) * 1000
         password = generate_password_hash(password)
-        new_user = User(user_name = username, pass_word = password)
+        new_user = User(user_name = username, pass_word = password, create_time = unix_time)
         db_session = databases.db_session()
         db_session.add(new_user)
         db_session.commit()
@@ -95,6 +99,7 @@ class Album(Model):
 class Photo(Model):
     __tablename__ = 'Photo'
 
+    ID = Column('ID', Integer, unique = True, autoincrement = True)
     album_ID = Column('AlbumID', Integer, ForeignKey('Album.ID', ondelete = 'CASCADE', onupdate = 'CASCADE'), primary_key = True)
     photo_title = Column('PhotoTitle', String(200), nullable = False, primary_key = True)
     create_time = Column('CreateTime', BigInteger, nullable = False)
@@ -108,17 +113,18 @@ class Photo(Model):
             self.create_time
         )
 
-class Portfolio(Model):
+class Folder(Model):
     __tablename__ = 'Portfolio'
 
     ID = Column('ID', Integer, primary_key = True, autoincrement = True)
     user_ID = Column('UserID', Integer, ForeignKey('User.ID', ondelete = 'CASCADE', onupdate = 'CASCADE'))
     portfolio_title = Column('PortfolioTitle', String(500), nullable = False)
-#    create_time = 
+    create_time = Column('CreateTime', BigInteger, nullable = False)
 
 class Post(Model):
     __tablename__ = 'Post'
 
     ID = Column('AlbumID', Integer, ForeignKey('Album.ID', ondelete = 'CASCADE', onupdate = 'CASCADE'), primary_key = True)
-    photo_title = Column('PhotoTitle', String(200), nullable = True, primary_key = True)
+    post_title = Column('PhotoTitle', String(200), nullable = True, primary_key = True)
     create_time = Column('CreateTime', BigInteger, nullable = False)
+    document_format = Column('Format', String(10), nullable = False)

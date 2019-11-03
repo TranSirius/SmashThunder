@@ -11,10 +11,13 @@ from flask import current_app as app
 from web.db import datamodels
 from web.db import databases
 
+import sqlalchemy
+
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 
 import os
+import shutil
 import time
 import datetime
 import functools
@@ -50,17 +53,17 @@ def register():
 
     query_res = db_session.query(datamodels.User).filter_by(user_name = username).first()
     if query_res is None:
-        datamodels.User.generateUser(username = username, password = password)
         try:
-            session.clear()
-        except:
-            pass
+            datamodels.User.generateUser(username = username, password = password)
+        except sqlalchemy.exc.DataError:
+            ret['status'] = 'Data Format Error'
+            return ret
+        session.clear()
 
         session['ID'] = g.user_id
         session.permanent = True
 
         ret['status'] = 'ok'
-        db_session.commit()
         return ret
     else:
         ret['status'] = "User already exists"

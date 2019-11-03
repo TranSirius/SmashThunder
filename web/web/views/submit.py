@@ -33,7 +33,7 @@ def uploadPic():
 
     img_list = request.files.getlist('files')
     dtime = datetime.datetime.now()
-    time = time.mktime(dtime.timetuple()) * 1000
+    unix_time = time.mktime(dtime.timetuple()) * 1000
     album_title = request.form.get('albumTitle')
 
     album = db_session.query(Album).filter(Album.user_ID == g.user_id).filter(Album.album_title == album_title).first()
@@ -42,7 +42,7 @@ def uploadPic():
         album = db_session.query(Album).filter(Album.user_ID == g.user_id).filter(Album.album_title == album_title).first()
 
     for img in img_list:
-        new_img = Photo(album_ID = album.ID, photo_title = img.filename, create_time = time)
+        new_img = Photo(album_ID = album.ID, photo_title = img.filename, create_time = unix_time)
         # db_session.add(new_img)
         db_session.merge(new_img)
         img.save(app.config['USER_DATA'] + 'data/' + user_name + '/img/' + album_title + '/' + img.filename)

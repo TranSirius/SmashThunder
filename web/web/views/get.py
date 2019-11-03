@@ -7,6 +7,7 @@ from flask import request
 
 from web.db import databases
 from web.db.datamodels import User, Album, Photo
+from web.logic.geter import GetPhotos
 
 mod = Blueprint('get', __name__, url_prefix = '/get')
 
@@ -22,35 +23,19 @@ def album():
         return ret
         
     request_user_id = request_user.ID
+    request_user_name = request_user.user_name
     target_album = None
     if 'target' in request.json:
         target_album = request.json['target']
 
-    if target_album is None:
-        album_list = db_session.query(Album).join(User).filter(User.ID == request_user_id).all()
+    geter = GetPhotos()
+    try:
+        ret_album = geter(user_name = request_user_name, album_name = target_album)
+        ret['albums'] = ret_album
+    except:
+        ret['status'] = "Something wrong"
     else:
-        album_list = db_session.query(Album).join(User).filter(User.ID == request_user_id, Album.album_title == target_album).all()
-
-    ret_album = []
-    for album in album_list:
-        album_title = album.album_title
-        create_time = album.create_time
-        photos = db_session.query(Photo).join(Album).join(User).filter(User.user_name == user_name).filter(Album.album_title == album_title)
-        photo_list = []
-        for photo in photos:
-            single_photo = dict()
-            single_photo['url'] = '/data/' + user_name + '/img/' + album_title + '/' + photo.photo_title
-            single_photo['title'] = photo.photo_title
-            single_photo['time'] = photo.create_time
-            photo_list.append(single_photo)
-        single_album = dict()
-        single_album['title'] = album_title
-        single_album['createTime'] = create_time
-        single_album['imgs'] = photo_list
-        ret_album.append(single_album)
-
-    ret['albums'] = ret_album
-    ret['status'] = 'ok'
-    return ret
+        ret['status'] = 'ok'
+        return ret
 
 
