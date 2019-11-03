@@ -88,10 +88,10 @@ export default {
       this.formMode = "Sign In";
     },
     checkUsername: function() {
-      var t = this.$root.$data.user.username.match(/[A-Za-z0-9_]{7,}/);
+      var t = this.$root.$data.user.username.match(/[A-Za-z0-9_]{7,50}/);
       if (t == null || t[0] != this.$root.$data.user.username) {
         this.showFormErr(
-          "Username must consists of `A-Z`, `a-z`, `0-9` and `_`, and must be longer than 6!"
+          "Username must consists of `A-Z`, `a-z`, `0-9` and `_`, and must be longer than 6 and shorter than 50!"
         );
         return false;
       }

@@ -226,7 +226,11 @@ export default {
         this.showSubmitErr(this.invalidFileNameHint);
         return;
       }
-      // test new album title validity
+      if (title.length > 50) {
+        this.showSubmitErr("Album title should be less than 50 characters");
+        return;
+      }
+      // test if new album title is duplicated
       if (this.modalForm.albumTitle == this.newAlbumHint) {
         if (this.modalForm.newAlbumTitle == this.newAlbumHint) {
           this.showSubmitErr(this.invalidFileNameHint);
@@ -245,6 +249,10 @@ export default {
       for (let i = 0; i < this.modalForm.files.length; ++i) {
         if (!this.checkFileName(this.modalForm.files[i].name)) {
           this.showSubmitErr(this.invalidFileNameHint);
+          return;
+        }
+        if (this.modalForm.files[i].name.length > 200) {
+          this.showSubmitErr("Photo title should be less than 200 characters.");
           return;
         }
       }
@@ -318,8 +326,7 @@ export default {
             return;
           }
           // new imgs duplicate
-          if (!this.checkUniqueness(toBeUploaded))
-            this.showDupImgErr();
+          if (!this.checkUniqueness(toBeUploaded)) this.showDupImgErr();
           return;
         }
       }
@@ -348,8 +355,22 @@ export default {
         this.showRenameErr(this.invalidFileNameHint);
         return;
       }
-      // construct req params
       var renameAlbum = !this.renameForm.albumTitle;
+      // check title length
+      if (renameAlbum) {
+        if (this.renameForm.newName.length > 50) {
+          this.showRenameErr(
+            "Album title should be shorter than 50 characters."
+          );
+          return;
+        }
+      } else {
+        if (this.renameForm.newName.length > 200) {
+          this.showRenameErr("Image title should be shorter than 200.");
+          return;
+        }
+      }
+      // construct req params
       var route = renameAlbum ? "/edit/album/rename" : "/edit/img/rename";
       var data = renameAlbum
         ? {
