@@ -15,19 +15,22 @@
       </b-form-group>-->
       <b-form-row>
         <b-col>
-          <b-form-group label="Post Content" label-for="textarea">
+          <b-form-group class="h-100" label="Post Content" label-for="textarea">
             <b-form-textarea
               id="textarea"
               v-model="form.text"
               placeholder="Enter something..."
               no-resize
               rows="20"
+              style="height:500px"
             ></b-form-textarea>
           </b-form-group>
         </b-col>
         <b-col>
           <b-form-group label="Realtime Render">
-            <div v-html="resultHTML"></div>
+            <b-card style="height:500px" no-body>
+              <b-card-body v-html="resultHTML" style="overflow:scroll"></b-card-body>
+            </b-card>
           </b-form-group>
         </b-col>
       </b-form-row>
