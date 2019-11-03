@@ -266,6 +266,7 @@ export default {
           if (res.data.status == "ok") {
             this.refresh(title);
             this.$refs.modalForm.hide();
+            this.submitting = false;
           } else {
             this.showSubmitErr(res.data.status);
           }
@@ -336,7 +337,7 @@ export default {
     showRenameErr(s) {
       this.toastErr("Rename failed", s);
     },
-    showDelErr(s){
+    showDelErr(s) {
       this.toastErr("Delete failed", s);
     },
     rename() {
@@ -435,7 +436,7 @@ export default {
           }
         })
         .catch(() => {
-          this.showDelErr()
+          this.showDelErr();
         });
     }
   },
