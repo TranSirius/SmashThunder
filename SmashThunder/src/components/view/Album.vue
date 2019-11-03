@@ -330,8 +330,8 @@ export default {
           return;
         }
       }
-      // new album
-      if (toBeUploaded.filter(s => toBeUploaded.includes(s)).length > 0)
+      // new album, just check new imgs duplicate
+      if (!this.checkUniqueness(toBeUploaded))
         this.showDupImgErr();
     },
     showRenameForm(oldName, albumTitle) {
