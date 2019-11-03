@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-    <Header :user="$root.$data.user"></Header>
-    <!-- Main content -->
-    <b-container>
+    <Header></Header>
+    <!-- Main content, the top margin is to leave space for nav bar -->
+    <b-container style="margin-top:80px">
       <router-view></router-view>
     </b-container>
   </div>
@@ -14,7 +14,7 @@ import Header from "./components/Header.vue";
 export default {
   name: "app",
   components: {
-    Header,
+    Header
   }
 };
 </script>
