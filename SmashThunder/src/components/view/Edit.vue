@@ -2,17 +2,24 @@
   <div>
     <b-form @submit="submit" style="height:500px">
       <b-form-row>
-        <b-form-group label="Post title" label-for="postTitle">
-          <b-form-input
-            id="postTitle"
-            v-model="form.title"
-            placeholder="Please input the post title"
-          ></b-form-input>
-        </b-form-group>
+        <b-col>
+          <b-form-group label="Post title" label-for="postTitle">
+            <b-form-input
+              id="postTitle"
+              v-model="form.title"
+              placeholder="Please input the post title"
+            ></b-form-input>
+          </b-form-group>
+        </b-col>
+        <b-col>
+          <b-form-group label="File format:" label-for="fileFormat">
+            <b-form-select id="fileFormat" v-model="form.format" required placeholder="Enter name">
+              <option value="md">Markdown(md)</option>
+              <option value="tex">LaTeX(tex)</option>
+            </b-form-select>
+          </b-form-group>
+        </b-col>
       </b-form-row>
-      <!-- <b-form-group id="input-group-2" label="Your Name:" label-for="input-2">
-        <b-form-input id="input-2" v-model="form.name" required placeholder="Enter name"></b-form-input>
-      </b-form-group>-->
       <b-form-row>
         <b-col>
           <b-form-group class="h-100" label="Post Content" label-for="textarea">
@@ -51,7 +58,8 @@ export default {
     return {
       form: {
         text: "# Markdown Here",
-        title: ""
+        title: "",
+        format: "md"
       }
     };
   },
