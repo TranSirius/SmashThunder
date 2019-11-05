@@ -7,7 +7,7 @@
 - `/:username` - User homepage
 - `/:username/album` - User's image management page
 - `/:username/posts` - User's posts management page
-- `/:username/posts/:post` - User's post
+- `/:username/posts/:folder/:post` - User's post
 - `/:username/edit` - New post or edit existing post
 - `/admin` - Admin homepage
 
