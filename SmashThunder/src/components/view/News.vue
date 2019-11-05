@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import NewsCards from "./NewsCards.vue";
+import NewsCards from "../utils/NewsCards.vue";
 import axios from "axios";
 
 export default {
@@ -24,16 +24,29 @@ export default {
       friendsActivities: []
     };
   },
+  watch: {
+    "$root.$data.user.loggedIn": function(val) {
+      if (val) {
+        this.getFriendsActivities();
+      }
+    }
+  },
   methods: {
     getNews() {
-      axios.post("/get/news", { target: "news" }).then(res => {
-        if (res.data.status == "ok") this.news = res.data.posts;
-      });
+      axios.post("/get/news", { target: "news" }).then(
+        res => {
+          if (res.data.status == "ok") this.news = res.data.posts;
+        },
+        () => {}
+      );
     },
     getFriendsActivities() {
-      axios.post("/get/news", { target: "friendsActivities" }).then(res => {
-        if (res.data.status == "ok") this.friendsActivities = res.data.posts;
-      });
+      axios.post("/get/news", { target: "friendsActivities" }).then(
+        res => {
+          if (res.data.status == "ok") this.friendsActivities = res.data.posts;
+        },
+        () => {}
+      );
     }
   },
   beforeRouteEnter: (from, to, next) => {
