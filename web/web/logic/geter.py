@@ -28,3 +28,6 @@ class GetPhotos():
             single_album['imgs'] = photo_list
             ret_album.append(single_album)
         return ret_album
+
+class GetPosts():
+    pass
