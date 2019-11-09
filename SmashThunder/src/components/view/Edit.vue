@@ -49,7 +49,8 @@
         <b-col>
           <b-form-group label="Realtime Render">
             <b-card style="height:500px" no-body>
-              <b-card-body v-html="resultHTML" style="overflow:scroll"></b-card-body>
+              <b-embed v-if="form.format=='lex'"></b-embed>
+              <b-card-body v-if="form.format=='md'" v-html="resultHTML" style="overflow:scroll"></b-card-body>
             </b-card>
           </b-form-group>
         </b-col>
@@ -65,8 +66,10 @@ import showdown from "showdown";
 import axios from "axios";
 import errHandler from "../mixin/errHandler";
 import NewableSelect from "../utils/NewableSelect";
+import { parse, HtmlGenerator } from "latex.js";
 
 var converter = new showdown.Converter();
+let generator = new HtmlGenerator({ hyphenate: false });
 
 export default {
   name: "Edit",
@@ -109,7 +112,16 @@ export default {
   },
   computed: {
     resultHTML() {
-      return converter.makeHtml(this.form.text);
+      if (this.form.format == "md") return converter.makeHtml(this.form.text);
+      else {
+        generator.reset();
+        try {
+          return parse(this.form.text, { generator: generator }).htmlDocument()
+            .outerHTML;
+        } catch (e) {
+          return e.message;
+        }
+      }
     },
     folderOptions() {
       var result = [];
