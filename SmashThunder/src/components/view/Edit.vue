@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- edit post form -->
-    <b-form @submit="submit" style="height:500px">
+    <b-form @submit.prevent="submit" style="height:500px">
       <b-form-row>
         <b-col cols="6">
           <b-form-group label="Post title" label-for="postTitle">
@@ -88,7 +88,32 @@ export default {
     };
   },
   methods: {
-    submit() {},
+    submit() {
+      axios
+        .post("/submit/post", {
+          title: this.form.title,
+          folder: this.form.folder,
+          format: this.form.format,
+          content: this.form.text
+        })
+        .then(res => {
+          if (res.data.status == "ok") {
+            this.$router.push(
+              "/" +
+                this.$root.$data.user.username +
+                "/posts/" +
+                this.form.folder +
+                "/" +
+                this.form.title
+            );
+          } else {
+            this.toastErr("Create post error", res.data.status);
+          }
+        })
+        .catch(() => {
+          this.toastErr("Create post error");
+        });
+    },
     showGetFoldersErr(s) {
       this.toastErr("Error when getting folders", s);
     },
