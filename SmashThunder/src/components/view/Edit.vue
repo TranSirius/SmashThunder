@@ -66,6 +66,7 @@ import showdown from "showdown";
 import axios from "axios";
 import errHandler from "../mixin/errHandler";
 import NewableSelect from "../utils/NewableSelect";
+import strCheck from "../mixin/strCheck";
 import { parse, HtmlGenerator } from "latex.js";
 
 var converter = new showdown.Converter();
@@ -73,7 +74,7 @@ let generator = new HtmlGenerator({ hyphenate: false });
 
 export default {
   name: "Edit",
-  mixins: [errHandler],
+  mixins: [errHandler, strCheck],
   components: { NewableSelect },
   data() {
     return {
@@ -89,6 +90,34 @@ export default {
   },
   methods: {
     submit() {
+      if (!this.checkFileName(this.form.title)) {
+        this.toastErr(
+          "Submit failed",
+          "Post title can not contain special chars."
+        );
+        return;
+      }
+      if (this.form.title.length > 500) {
+        this.toastErr(
+          "Submit failed",
+          "Post title can not be longer than 500 characters."
+        );
+        return;
+      }
+      if (this.form.folder.length > 200) {
+        this.toastErr(
+          "Submit failed",
+          "Folder title can not be longer than 200 characters"
+        );
+        return;
+      }
+      if (!this.checkFileName(this.form.folder)) {
+        this.toastErr(
+          "Submit failed",
+          "Folder title can not contain special chars"
+        );
+        return;
+      }
       axios
         .post("/submit/post", {
           title: this.form.title,
