@@ -152,7 +152,7 @@ export default {
         .then(res => {
           if (res.data.status == "ok") {
             if (res.data.folders.length) {
-              this.form.folder = res.data.folders[0];
+              this.form.folder = res.data.folders[0].title;
               this.form.folders = res.data.folders;
             } else {
               this.form.folder = this.form.newFolderHint;
