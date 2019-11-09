@@ -1,5 +1,11 @@
 # SmashThunder
 
+## Set up
+
+- Run `npm install` to install.
+- Run `npm run serve` to start server.
+- Run `npm run build` to build.
+
 ## Front route
 
 - `/` - News
