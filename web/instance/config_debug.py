@@ -7,5 +7,6 @@ PORT = 3000
 ELASTIC_SEARCH_INDEX = {
     "USER": "testuser",
     "PHOTO": "testphoto",
-    "POST": "testpost"
+    "POST": "testpost",
+    "COMMENT": "testcomment"
 }

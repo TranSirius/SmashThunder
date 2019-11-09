@@ -8,6 +8,9 @@ from flask import request
 from web.db import databases
 from web.db.datamodels import User, Album, Photo
 from web.logic.geter import GetPhotos
+from web.logic.geter import GetFolder
+from web.logic.geter import GetPost
+from web.views.auth import loginRequest
 
 mod = Blueprint('get', __name__, url_prefix = '/get')
 
@@ -38,4 +41,33 @@ def album():
         ret['status'] = 'ok'
         return ret
 
+@mod.route('/post', methods = ['POST'])
+def getPost():
+    ret = dict()
+    try:
+        user_name = request.json['username']
+        folder_name = request.json['folder']
+        post_name = request.json['postTitle']
+    except:
+        ret['status'] = 'Requesting Format Error!'
+        return ret
 
+    geter = GetPost()
+    post = geter(user_name, folder_name, post_name)
+    if post is None:
+        ret['status'] = 'Post Not Exist!'
+    else:
+        ret['post'] = post
+        return ret
+
+
+
+@mod.route('/post/folders', methods = ['POST'])
+@loginRequest
+def postFolders():
+    user_id = g.user_id
+    ret = dict()
+    geter = GetFolder()
+    ret['folders'] = geter(user_id)
+    ret['status'] = 'ok'
+    return ret

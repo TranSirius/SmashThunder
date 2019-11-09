@@ -47,3 +47,15 @@ class Post(Document):
         settings = {
             "number_of_shards": 0,
         }
+
+class Comment(Document):
+    content = Text(
+        analyzer = "ik_max_word",
+        search_analyzer = "ik_max_word"
+    )
+
+    class Index:
+        name = app.config['ELASTIC_SEARCH_INDEX']['COMMENT']
+        settings = {
+            "number_of_shards": 0,
+        }

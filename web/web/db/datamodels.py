@@ -141,7 +141,7 @@ class Post(Model):
 
     ID = Column('ID', String(20), nullable = False, unique = True)
     folder_ID = Column('FolderID', Integer, ForeignKey('Folder.ID', ondelete = 'CASCADE', onupdate = 'CASCADE'), primary_key = True)
-    post_title = Column('PostTitle', String(200), nullable = True, primary_key = True)
+    post_title = Column('PostTitle', String(200), primary_key = True)
 
     create_time = Column('CreateTime', BigInteger, nullable = False)
     document_format = Column('Format', String(10), nullable = False)
@@ -156,3 +156,26 @@ class Post(Model):
             self.create_time,
             self.document_format
         )
+
+class MainPage(Model):
+    __tablename__ = 'MainPage'
+
+    user_id = Column('UserID', Integer, ForeignKey('User.ID', ondelete = 'CASCADE', onupdate = 'CASCADE'), primary_key = True)
+    post_id = Column('PostID', String(20), ForeignKey('Post.ID', ondelete = 'CASCADE', onupdate = 'CASCADE'))
+
+    def __str__(self):
+        return '%s(UserID=%r, PostID=%r)' % (
+            self.__class__.__name__,
+            self.user_id,
+            self.post_id,
+        ) 
+
+class Comment(Model):
+    __tablename__ = 'Comment'
+
+    ID = Column('ID', String(20), nullable = False, primary_key = True)
+    user_id = Column('UserID', Integer, ForeignKey('User.ID', ondelete = 'CASCADE', onupdate = 'CASCADE'))
+    post_id = Column('PostID', String(20), ForeignKey('Post.ID', ondelete = 'CASCADE', onupdate = 'CASCADE'))
+    content = Column('Content', String(500), nullable = False)
+    create_time = Column('CreateTime', BigInteger, nullable = False)
+

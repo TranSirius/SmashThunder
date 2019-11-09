@@ -11,6 +11,8 @@ from web.db.datamodels import User, Album, Photo
 
 import shutil
 import os
+import time
+import datetime
 
 mod = Blueprint('edit', __name__, url_prefix = '/edit')
 
@@ -73,7 +75,9 @@ def albumDelete():
     last_album = db_session.query(Album).filter(Album.user_ID == user_id).first()
 
     if last_album is None:
-        Album.generateAlbum(user_name, 'My Photo')
+        dtime = datetime.datetime.now()
+        unix_time = time.mktime(dtime.timetuple()) * 1000
+        Album.generateAlbum(user_name, 'My Photo', create_time = unix_time)
 
     ret['status'] = 'ok'
     return ret
