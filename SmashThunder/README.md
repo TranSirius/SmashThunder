@@ -1,5 +1,11 @@
 # SmashThunder
 
+## Set up
+
+- Run `npm install` to install.
+- Run `npm run serve` to start server.
+- Run `npm run build` to build.
+
 ## Front route
 
 - `/` - News
@@ -7,8 +13,8 @@
 - `/:username` - User homepage
 - `/:username/album` - User's image management page
 - `/:username/posts` - User's posts management page
-- `/:username/posts/:post` - User's post
-- `/edit` - New post or edit existing post
+- `/:username/posts/:folder/:post` - User's post
+- `/:username/edit` - New post or edit existing post
 - `/admin` - Admin homepage
 
 ## Data format

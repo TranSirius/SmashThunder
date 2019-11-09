@@ -97,14 +97,13 @@
       </b-collapse>
     </div>
     <!-- rename form -->
-    <b-modal ref="renameForm" title="Please enter the new name" centered hide-footer>
-      <b-form @submit.prevent="rename();$refs.renameForm.hide()">
-        <b-form-group>
-          <b-form-input v-model="renameForm.newName" placeholder="New name"></b-form-input>
-        </b-form-group>
-        <b-button variant="primary" type="submit" block>OK</b-button>
-      </b-form>
-    </b-modal>
+    <ModalInput
+      ref="renameForm"
+      title="Please enter the new name"
+      :ok="rename"
+      v-model="renameForm.newName"
+      placeholder="New name"
+    ></ModalInput>
   </div>
 </template>
 
@@ -113,10 +112,13 @@ import axios from "axios";
 import timeFilter from "../mixin/timeFilter";
 import strCheck from "../mixin/strCheck";
 import errHandler from "../mixin/errHandler";
+import arrayCheck from "../mixin/arrayCheck";
+import ModalInput from "../utils/ModalInput";
 
 export default {
   name: "Album",
-  mixins: [timeFilter, strCheck, errHandler],
+  mixins: [timeFilter, strCheck, errHandler, arrayCheck],
+  components: { ModalInput },
   data() {
     return {
       /**
@@ -225,7 +227,11 @@ export default {
         this.showSubmitErr(this.invalidFileNameHint);
         return;
       }
-      // test new album title validity
+      if (title.length > 50) {
+        this.showSubmitErr("Album title should be less than 50 characters");
+        return;
+      }
+      // test if new album title is duplicated
       if (this.modalForm.albumTitle == this.newAlbumHint) {
         if (this.modalForm.newAlbumTitle == this.newAlbumHint) {
           this.showSubmitErr(this.invalidFileNameHint);
@@ -244,6 +250,10 @@ export default {
       for (let i = 0; i < this.modalForm.files.length; ++i) {
         if (!this.checkFileName(this.modalForm.files[i].name)) {
           this.showSubmitErr(this.invalidFileNameHint);
+          return;
+        }
+        if (this.modalForm.files[i].name.length > 200) {
+          this.showSubmitErr("Photo title should be less than 200 characters.");
           return;
         }
       }
@@ -266,6 +276,7 @@ export default {
           if (res.data.status == "ok") {
             this.refresh(title);
             this.$refs.modalForm.hide();
+            this.submitting = false;
           } else {
             this.showSubmitErr(res.data.status);
           }
@@ -302,13 +313,13 @@ export default {
      * This funcion will be called when user has selected images to be uploaded.
      */
     checkDuplicateImg() {
-      var toBeUploaded = [];
+      var toBeUploaded = []; // files name
       this.modalForm.files.map(file => toBeUploaded.push(file.name));
       // find the album
       for (let i = 0; i < this.albums.length; ++i) {
         if (this.albums[i].title == this.modalForm.albumTitle) {
           // get all img title
-          var exist = [];
+          var exist = []; // file names
           this.albums[i].imgs.map(img => exist.push(img.title));
           // duplicate with old imgs
           if (exist.filter(s => toBeUploaded.includes(s)).length > 0) {
@@ -316,14 +327,12 @@ export default {
             return;
           }
           // new imgs duplicate
-          if (toBeUploaded.filter(s => toBeUploaded.includes(s)).length > 0)
-            this.showDupImgErr();
+          if (!this.checkUniqueness(toBeUploaded)) this.showDupImgErr();
           return;
         }
       }
-      // new album
-      if (toBeUploaded.filter(s => toBeUploaded.includes(s)).length > 0)
-        this.showDupImgErr();
+      // new album, just check new imgs duplicate
+      if (!this.checkUniqueness(toBeUploaded)) this.showDupImgErr();
     },
     showRenameForm(oldName, albumTitle) {
       this.renameForm.oldName = this.renameForm.newName = oldName;
@@ -336,18 +345,33 @@ export default {
     showRenameErr(s) {
       this.toastErr("Rename failed", s);
     },
-    showDelErr(s){
+    showDelErr(s) {
       this.toastErr("Delete failed", s);
     },
     rename() {
+      this.$refs.renameForm.hide();
       if (this.renameForm.oldName == this.renameForm.newName) return;
       // check file name validity
       if (!this.checkFileName(this.renameForm.newName)) {
         this.showRenameErr(this.invalidFileNameHint);
         return;
       }
-      // construct req params
       var renameAlbum = !this.renameForm.albumTitle;
+      // check title length
+      if (renameAlbum) {
+        if (this.renameForm.newName.length > 50) {
+          this.showRenameErr(
+            "Album title should be shorter than 50 characters."
+          );
+          return;
+        }
+      } else {
+        if (this.renameForm.newName.length > 200) {
+          this.showRenameErr("Image title should be shorter than 200.");
+          return;
+        }
+      }
+      // construct req params
       var route = renameAlbum ? "/edit/album/rename" : "/edit/img/rename";
       var data = renameAlbum
         ? {
@@ -435,7 +459,7 @@ export default {
           }
         })
         .catch(() => {
-          this.showDelErr()
+          this.showDelErr();
         });
     }
   },

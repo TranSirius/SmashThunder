@@ -28,7 +28,7 @@
             <b-dropdown-item class="text-right" :to="'/'+$root.$data.user.username + '/album'">Album</b-dropdown-item>
             <b-dropdown-item class="text-right" :to="'/'+$root.$data.user.username + '/posts'">Posts</b-dropdown-item>
           </b-nav-item-dropdown>
-          <b-nav-item class="text-right" to="#">New</b-nav-item>
+          <b-nav-item class="text-right" :to="'/'+$root.$data.user.username+'/edit'">New</b-nav-item>
           <b-nav-item class="text-right" to="#" @click="()=>{this.$refs.form.logout()}">Sign out</b-nav-item>
         </b-navbar-nav>
         <!-- not logged in -->
