@@ -11,7 +11,7 @@
       :title="modalTitle"
       :ok="ok"
       :value="newValue"
-      @input="newValue=$event;$emit('input', computedOptions[0])"
+      @input="submitNewValue($event)"
       :placeholder="modalPlaceholder"
     ></ModalInput>
   </div>
@@ -38,6 +38,12 @@ export default {
     };
   },
   methods: {
+    submitNewValue(v) {
+      this.newValue = v;
+      if (typeof this.computedOptions[0] == String)
+        this.$emit("input", this.computedOptions[0]);
+      else this.$emit("input", this.computedOptions[0].value);
+    },
     ok() {
       // check duplicated option
       for (let i = 0; i < this.options.length; i++) {
@@ -64,7 +70,7 @@ export default {
     computedOptions() {
       var result = [];
       if (this.newValue) {
-        result.push(this.newValue + "(new)");
+        result.push({ value: this.newValue, text: this.newValue + "(new)" });
       }
       result.push(this.hint);
       for (let i = 0; i < this.options.length; i++)
