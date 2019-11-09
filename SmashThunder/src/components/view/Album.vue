@@ -97,14 +97,13 @@
       </b-collapse>
     </div>
     <!-- rename form -->
-    <b-modal ref="renameForm" title="Please enter the new name" centered hide-footer>
-      <b-form @submit.prevent="rename();$refs.renameForm.hide()">
-        <b-form-group>
-          <b-form-input v-model="renameForm.newName" placeholder="New name"></b-form-input>
-        </b-form-group>
-        <b-button variant="primary" type="submit" block>OK</b-button>
-      </b-form>
-    </b-modal>
+    <ModalInput
+      ref="renameForm"
+      title="Please enter the new name"
+      :ok="rename"
+      v-model="renameForm.newName"
+      placeholder="New name"
+    ></ModalInput>
   </div>
 </template>
 
@@ -114,10 +113,12 @@ import timeFilter from "../mixin/timeFilter";
 import strCheck from "../mixin/strCheck";
 import errHandler from "../mixin/errHandler";
 import arrayCheck from "../mixin/arrayCheck";
+import ModalInput from "../utils/ModalInput";
 
 export default {
   name: "Album",
   mixins: [timeFilter, strCheck, errHandler, arrayCheck],
+  components: { ModalInput },
   data() {
     return {
       /**
@@ -331,8 +332,7 @@ export default {
         }
       }
       // new album, just check new imgs duplicate
-      if (!this.checkUniqueness(toBeUploaded))
-        this.showDupImgErr();
+      if (!this.checkUniqueness(toBeUploaded)) this.showDupImgErr();
     },
     showRenameForm(oldName, albumTitle) {
       this.renameForm.oldName = this.renameForm.newName = oldName;
@@ -349,6 +349,7 @@ export default {
       this.toastErr("Delete failed", s);
     },
     rename() {
+      this.$refs.renameForm.hide();
       if (this.renameForm.oldName == this.renameForm.newName) return;
       // check file name validity
       if (!this.checkFileName(this.renameForm.newName)) {

@@ -51,15 +51,13 @@
       <b-button type="reset" variant="danger">Reset</b-button>
     </b-form>
     <!-- new folder form -->
-    <!-- TODO: optimize this modal form to a component -->
-    <b-modal ref="newFolderForm" title="Please enter the new folder's name" centered hide-footer>
-      <b-form @submit.prevent="newFolder">
-        <b-form-group>
-          <b-form-input v-model="form.newFolder" placeholder="New folder name"></b-form-input>
-        </b-form-group>
-        <b-button variant="primary" type="submit" block>OK</b-button>
-      </b-form>
-    </b-modal>
+    <ModalInput
+      ref="newFolderForm"
+      title="Please enter the new folder's name"
+      :ok="newFolder"
+      v-model="form.newFolder"
+      placeholder="New folder name"
+    ></ModalInput>
   </div>
 </template>
 
@@ -67,12 +65,14 @@
 import showdown from "showdown";
 import axios from "axios";
 import errHandler from "../mixin/errHandler";
+import ModalInput from "../utils/ModalInput";
 
 var converter = new showdown.Converter();
 
 export default {
   name: "Edit",
   mixins: [errHandler],
+  components: { ModalInput },
   data() {
     return {
       form: {
