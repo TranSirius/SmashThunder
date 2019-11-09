@@ -22,7 +22,14 @@
         </b-col>
         <b-col cols="3">
           <b-form-group label="Folder" label-for="postFolder">
-            <b-form-select id="postFolder" v-model="form.folder" :options="folderOptions" required></b-form-select>
+            <NewableSelect
+              id="postFolder"
+              v-model="form.folder"
+              :options="folderOptions"
+              :hint="form.newFolderHint"
+              modalTitle="Please enter the new folder's name"
+              modalPlaceholder="New folder name"
+            ></NewableSelect>
           </b-form-group>
         </b-col>
       </b-form-row>
@@ -50,14 +57,6 @@
       <b-button type="submit" variant="primary">Submit</b-button>
       <b-button type="reset" variant="danger">Reset</b-button>
     </b-form>
-    <!-- new folder form -->
-    <ModalInput
-      ref="newFolderForm"
-      title="Please enter the new folder's name"
-      :ok="newFolder"
-      v-model="form.newFolder"
-      placeholder="New folder name"
-    ></ModalInput>
   </div>
 </template>
 
@@ -65,14 +64,14 @@
 import showdown from "showdown";
 import axios from "axios";
 import errHandler from "../mixin/errHandler";
-import ModalInput from "../utils/ModalInput";
+import NewableSelect from "../utils/NewableSelect";
 
 var converter = new showdown.Converter();
 
 export default {
   name: "Edit",
   mixins: [errHandler],
-  components: { ModalInput },
+  components: { NewableSelect },
   data() {
     return {
       form: {
@@ -81,30 +80,12 @@ export default {
         format: "md",
         folder: "",
         folders: [],
-        newFolder: "",
         newFolderHint: "-- create a new folder --"
       }
     };
   },
   methods: {
     submit() {},
-    newFolder() {
-      // test duplication
-      for (let i = 0; i < this.folderOptions.length; i++)
-        if (this.folderOptions[i] == this.newFolder) {
-          this.toastErr("Error!", "Duplicate folder name!");
-          return;
-        }
-      // test validation
-      if (this.form.newFolder == this.form.newFolderHint) {
-        this.toastErr("Error!", "Invalid folder name!");
-        return;
-      }
-      // ok
-      this.form.folders.push({ title: this.form.newFolder, posts: [] });
-      this.form.folder = this.form.newFolder;
-      this.$refs.newFolderForm.hide();
-    },
     showGetFoldersErr(s) {
       this.toastErr("Error when getting folders", s);
     },
@@ -117,7 +98,7 @@ export default {
               this.form.folder = res.data.folders[0];
               this.form.folders = res.data.folders;
             } else {
-              this.$refs.newFolderForm.show();
+              this.form.folder = this.form.newFolderHint;
             }
           } else {
             this.showGetFoldersErr(res.data.status);
@@ -131,17 +112,9 @@ export default {
       return converter.makeHtml(this.form.text);
     },
     folderOptions() {
-      var result = [this.form.newFolderHint];
+      var result = [];
       this.form.folders.map(v => result.push(v.title));
       return result;
-    }
-  },
-  watch: {
-    "form.folder": function() {
-      if (this.form.folder == this.form.newFolderHint) {
-        this.form.newFolder = "";
-        this.$refs.newFolderForm.show();
-      }
     }
   },
   beforeRouteEnter(to, from, next) {
