@@ -14,6 +14,7 @@ import News from "./components/view/News.vue"
 import Album from "./components/view/Album.vue"
 import Edit from "./components/view/Edit.vue"
 import Posts from "./components/view/Posts.vue"
+import Post from "./components/view/Post.vue"
 
 const routes = [
   {
@@ -27,6 +28,9 @@ const routes = [
   },
   {
     path: '/:username/posts', component: Posts
+  },
+  {
+    path: '/:username/posts/:folder/:title', component: Post
   }
 ]
 
