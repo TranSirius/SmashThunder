@@ -70,7 +70,7 @@ export default {
     },
     enter() {
       axios
-        .post("/get/post/folders")
+        .post("/get/post/folderDetail")
         .then(res => {
           if (res.data.status == "ok") {
             this.folders = res.data.folders;
