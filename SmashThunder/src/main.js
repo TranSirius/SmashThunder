@@ -15,6 +15,7 @@ import Album from "./components/view/Album.vue"
 import Edit from "./components/view/Edit.vue"
 import Posts from "./components/view/Posts.vue"
 import Post from "./components/view/Post.vue"
+import Admin from "./components/view/Admin.vue"
 
 const routes = [
   {
@@ -31,6 +32,9 @@ const routes = [
   },
   {
     path: '/:username/posts/:folder/:title', component: Post
+  },
+  {
+    path: '/admin', component: Admin
   }
 ]
 
