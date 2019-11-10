@@ -1,6 +1,7 @@
 <template>
   <div>
     <div v-for="folder in folders" :key="folder.title">
+      <!-- Folder title and action buttons -->
       <h2>
         {{ folder.title }}
         <b-dropdown split text="Rename" class="mb-1 ml-3" variant="secondary" v-if="editable">
@@ -12,6 +13,7 @@
           :pressed.sync="folder.show"
         >{{ folder.show ? 'Hide' : 'Show' }}</b-button>
       </h2>
+      <!-- Posts table -->
       <b-table
         :items="folder.posts"
         :fields="table.fields"
