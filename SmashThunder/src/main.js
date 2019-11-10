@@ -13,6 +13,7 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import News from "./components/view/News.vue"
 import Album from "./components/view/Album.vue"
 import Edit from "./components/view/Edit.vue"
+import Posts from "./components/view/Posts.vue"
 
 const routes = [
   {
@@ -23,6 +24,9 @@ const routes = [
   },
   {
     path: '/:username/edit', component: Edit
+  },
+  {
+    path: '/:username/posts', component: Posts
   }
 ]
 
