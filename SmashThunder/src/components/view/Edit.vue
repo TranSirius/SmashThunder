@@ -55,8 +55,8 @@
           </b-form-group>
         </b-col>
       </b-form-row>
-      <b-button type="submit" variant="primary">Submit</b-button>
-      <b-button type="reset" variant="danger">Reset</b-button>
+      <b-button type="submit" variant="primary">Publish</b-button>
+      <b-button class="ml-2" type="button" variant="secondary" @click="submit(false)">Save As Draft</b-button>
     </b-form>
   </div>
 </template>
@@ -89,7 +89,7 @@ export default {
     };
   },
   methods: {
-    submit() {
+    submit(publish = true) {
       if (!this.checkFileName(this.form.title)) {
         this.toastErr(
           "Submit failed",
@@ -123,18 +123,28 @@ export default {
           title: this.form.title,
           folder: this.form.folder,
           format: this.form.format,
-          content: this.form.text
+          content: this.form.text,
+          published: publish
         })
         .then(res => {
           if (res.data.status == "ok") {
-            this.$router.push(
-              "/" +
-                this.$root.$data.user.username +
-                "/posts/" +
-                this.form.folder +
+            if (publish) {
+              // redirect page to the post
+              this.$router.push(
                 "/" +
-                this.form.title
-            );
+                  this.$root.$data.user.username +
+                  "/posts/" +
+                  this.form.folder +
+                  "/" +
+                  this.form.title
+              );
+            } else {
+              this.toastErr(
+                "Succeed",
+                "Your post has been saved successfully.",
+                "success"
+              );
+            }
           } else {
             this.toastErr("Create post error", res.data.status);
           }
