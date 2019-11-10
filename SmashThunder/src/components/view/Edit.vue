@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- edit post form -->
-    <b-form @submit.prevent="submit" style="height:500px">
+    <b-form @submit.prevent="submit(true)" style="height:500px">
       <b-form-row>
         <b-col cols="6">
           <b-form-group label="Post title" label-for="postTitle">
@@ -89,7 +89,7 @@ export default {
     };
   },
   methods: {
-    submit(publish = true) {
+    submit(publish) {
       if (!this.checkFileName(this.form.title)) {
         this.toastErr(
           "Submit failed",
