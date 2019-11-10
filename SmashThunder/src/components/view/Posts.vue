@@ -43,6 +43,8 @@ export default {
           { key: "createTime", label: "Created At", sortable: true },
           { key: "format", sortable: true },
           { key: "published", sortable: true },
+          { key: "stars", sortable: true },
+          { key: "comments", sortable: true },
           "actions"
         ]
       },
