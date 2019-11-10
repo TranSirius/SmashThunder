@@ -2,6 +2,7 @@ from sqlalchemy import Column
 from sqlalchemy import Integer
 from sqlalchemy import BigInteger
 from sqlalchemy import String
+from sqlalchemy import Boolean
 from sqlalchemy import Text
 from sqlalchemy import DateTime
 from sqlalchemy import ForeignKey
@@ -146,6 +147,8 @@ class Post(Model):
     create_time = Column('CreateTime', BigInteger, nullable = False)
     document_format = Column('Format', String(10), nullable = False)
     post_content = Column('Content', Text)
+    is_published = Column('IsPublish', Boolean, default = False, nullable = False)
+    stars = Column('Stars', Integer, default = 0, nullable = False)
 
     def __str__(self):
         return '%s(ID=%r, FolderID=%r, PostTitle=%r, CreateTime=%r, Format=%r)' % (

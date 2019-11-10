@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flask import render_template
 from flask import jsonify
-from flask import session
+from flask import session as flask_session
 from flask import g
 from flask import redirect
 from flask import url_for
@@ -26,7 +26,7 @@ mod = Blueprint('auth', __name__, url_prefix = '/auth')
 
 @mod.before_app_request
 def loadLoggedUser():
-    user_id = session.get("ID")
+    user_id = flask_session.get("ID")
     g.user_id = user_id
 
 def loginRequest(view):
@@ -58,10 +58,10 @@ def register():
         except sqlalchemy.exc.DataError:
             ret['status'] = 'Data Format Error'
             return ret
-        session.clear()
+        flask_session.clear()
 
-        session['ID'] = g.user_id
-        session.permanent = True
+        flask_session['ID'] = g.user_id
+        flask_session.permanent = True
 
         ret['status'] = 'ok'
         return ret
@@ -73,7 +73,7 @@ def register():
 @mod.route('/login', methods = ['POST'])
 def login():
     ret = dict()
-    session.clear()
+    flask_session.clear()
 
     try:
         username = request.json['username']
@@ -92,8 +92,8 @@ def login():
         ret['status'] = 'Password error!'
         return ret
 
-    session['ID'] = user.ID
-    session.permanent = True
+    flask_session['ID'] = user.ID
+    flask_session.permanent = True
     
     ret['status'] = 'ok'
     return ret
@@ -101,7 +101,7 @@ def login():
 @mod.route('/autoLogin', methods = ['POST'])
 def autoLogin():
     ret = dict()
-    user_id = session.get('ID')
+    user_id = flask_session.get('ID')
     if user_id is None:
         ret['status'] = 'error'
         return ret
@@ -121,7 +121,7 @@ def autoLogin():
 def logout():
     ret = dict()
     try:
-        session.clear()
+        flask_session.clear()
     except:
         ret['status'] = 'You have logged out already'
         return ret

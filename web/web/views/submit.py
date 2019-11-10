@@ -77,6 +77,7 @@ def uploadPost():
         folder_title = request.json['folder']
         post_format = request.json['format']
         post_content = request.json['content']
+        is_published = request.json['published']
     except KeyError:
         ret['status'] = "KeyError!"
         return ret
@@ -92,11 +93,12 @@ def uploadPost():
     old_post = db_session_instance.query(Post).filter(Post.post_title == post_title).filter(Post.folder_ID == folder.ID).first()
     if old_post is None:
         post_id = "".join(str(uuid.uuid1()).split("-")[:-1])
-        new_post = Post(ID = post_id, folder_ID = folder.ID, post_title = post_title, create_time = unix_time, document_format = post_format, post_content = post_content)
+        new_post = Post(ID = post_id, folder_ID = folder.ID, post_title = post_title, create_time = unix_time, document_format = post_format, post_content = post_content, is_published = is_published)
         db_session_instance.add(new_post)
     else:
         old_post.post_content = post_content
         old_post.create_time = unix_time
+        old_post.is_published = is_published
         post_id = old_post.ID
     db_session_instance.commit()
 

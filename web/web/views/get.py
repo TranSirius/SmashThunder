@@ -8,8 +8,9 @@ from flask import request
 from web.db import databases
 from web.db.datamodels import User, Album, Photo
 from web.logic.geter import GetPhotos
-from web.logic.geter import GetFolder
+from web.logic.geter import GetFolderDetail
 from web.logic.geter import GetPost
+from web.logic.geter import GetFolder
 from web.views.auth import loginRequest
 
 mod = Blueprint('get', __name__, url_prefix = '/get')
@@ -62,6 +63,16 @@ def getPost():
 
 
 
+@mod.route('/post/foldersDetail', methods = ['POST'])
+@loginRequest
+def postFolderDetail():
+    user_id = g.user_id
+    ret = dict()
+    geter = GetFolderDetail()
+    ret['folders'] = geter(user_id)
+    ret['status'] = 'ok'
+    return ret
+
 @mod.route('/post/folders', methods = ['POST'])
 @loginRequest
 def postFolders():
@@ -71,3 +82,5 @@ def postFolders():
     ret['folders'] = geter(user_id)
     ret['status'] = 'ok'
     return ret
+
+# @mod.route()
