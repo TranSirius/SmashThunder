@@ -1,8 +1,17 @@
 <template>
   <div>
     <div v-for="folder in folders" :key="folder.title">
-      <h2>{{ folder.title }}</h2>
-      <hr />
+      <h2>
+        {{ folder.title }}
+        <b-dropdown split text="Rename" class="mb-1 ml-3" variant="secondary" v-if="editable">
+          <b-dropdown-item variant="danger">Delete</b-dropdown-item>
+        </b-dropdown>
+        <b-button
+          class="mb-1 ml-3"
+          variant="outline-info"
+          :pressed.sync="folder.show"
+        >{{ folder.show ? 'Hide' : 'Show' }}</b-button>
+      </h2>
       <b-table
         :items="folder.posts"
         :fields="table.fields"
@@ -68,6 +77,14 @@ export default {
         .catch(() => {
           this.toastErr("Get posts error");
         });
+    }
+  },
+  computed: {
+    editable() {
+      return (
+        this.$root.$data.user.loggedIn &&
+        this.$root.$data.user.username == this.$route.params.username
+      );
     }
   },
   beforeRouteEnter(to, from, next) {
