@@ -1,5 +1,8 @@
 export default {
 	filters: {
+		/**
+		 * `s` has to be a `Number`
+		 */
 		timeOffset(s) {
 			var now = new Date(Date.now());
 			var t = new Date(s);
@@ -23,6 +26,9 @@ export default {
 			// just now
 			else return "less than 1 minute";
 		},
+		/**
+		 * `s` has to be a `Number`
+		 */
 		peekDate(s) {
 			var t = new Date(s);
 			return t.toDateString();
