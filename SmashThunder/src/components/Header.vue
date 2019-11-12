@@ -5,7 +5,7 @@
     <b-navbar toggleable="lg" fixed="top" type="dark" variant="dark">
       <!-- Brand -->
       <img src="/icon.png" height="40" />
-      <b-navbar-brand to="/">SmashAAAAThunder</b-navbar-brand>
+      <b-navbar-brand to="/">SmashThunder</b-navbar-brand>
       <!-- Collapse btn -->
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <!-- Right aligned nav items -->
