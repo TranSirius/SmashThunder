@@ -16,7 +16,7 @@
           <b-form-group label="File format" label-for="fileFormat">
             <b-form-select id="fileFormat" v-model="form.format" required>
               <option value="md">Markdown(md)</option>
-              <option value="lex">LaTeX(lex)</option>
+              <option value="tex">LaTeX(tex)</option>
             </b-form-select>
           </b-form-group>
         </b-col>
@@ -48,9 +48,8 @@
         </b-col>
         <b-col>
           <b-form-group label="Realtime Render">
-            <b-card id = "card" style="height:500px" no-body>
-              <b-card-body id = "cardBody" v-if="form.format=='md' || form.format=='lex'" v-html="resultHTML" style="overflow:scroll">
-              </b-card-body>
+            <b-card style="height:500px" no-body>
+              <b-card-body v-html="resultHTML" style="overflow:scroll"></b-card-body>
             </b-card>
           </b-form-group>
         </b-col>
@@ -70,11 +69,9 @@ import { parse, HtmlGenerator } from "latex.js";
 
 var converter = new showdown.Converter();
 var generator = new HtmlGenerator({
-    hyphenate: true,
-    languagePatterns: 'en'
-})
-
-
+  hyphenate: true,
+  languagePatterns: "en"
+});
 
 export default {
   name: "Edit",
@@ -117,16 +114,14 @@ export default {
   },
   computed: {
     resultHTML() {
-      
-      if (this.form.format == "md"){
-        var inHtml = converter.makeHtml(this.form.text);
-        return inHtml;
-      } 
+      if (this.form.format == "md") return converter.makeHtml(this.form.text);
       else {
         try {
           generator.reset();
-          var doc = parse(this.form.text, { generator: generator }).htmlDocument();
-          doc.body.appendChild(generator.stylesAndScripts("https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/"));
+          var doc = parse(this.form.text, {
+            generator: generator
+          }).htmlDocument();
+          // doc.body.appendChild(generator.stylesAndScripts("https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/"));
           doc.body.appendChild(generator.domFragment());
           return doc.documentElement.outerHTML;
         } catch (e) {
