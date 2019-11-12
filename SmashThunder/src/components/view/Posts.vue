@@ -14,6 +14,7 @@
             :pressed.sync="folder.show"
           >{{ folder.show ? 'Hide' : 'Show' }}</b-button>
         </h2>
+        <h6>Created at {{ folder.createdTime | peekDate }}.</h6>
         <!-- Posts table -->
         <b-table
           :items="folder.posts"
@@ -31,8 +32,17 @@
           <template v-slot:cell(createTime)="data">{{ data.item.createTime | peekDate }}</template>
           <template v-slot:cell(published)="data">{{ data.item.published ? 'Yes' : 'No' }}</template>
           <template v-slot:cell(actions)="data">
-            <b-button size="sm" variant="primary">{{ data.item.published ? 'Withdraw' : 'Publish'}}</b-button>
-            <b-button size="sm" class="ml-2" variant="outline-danger">Delete</b-button>
+            <b-dropdown
+              split
+              :text="data.item.published ? 'Withdraw' : 'Publish'"
+              class="mb-1 ml-3"
+              variant="primary"
+              v-if="editable"
+              size="sm"
+            >
+              <b-dropdown-item variant="secondary">Rename</b-dropdown-item>
+              <b-dropdown-item variant="danger">Delete</b-dropdown-item>
+            </b-dropdown>
           </template>
         </b-table>
       </div>
