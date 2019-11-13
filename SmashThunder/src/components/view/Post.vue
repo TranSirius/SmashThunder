@@ -6,7 +6,7 @@
     </div>
     <!-- Comments -->
     <b-card title="Leave a comment" class="mb-2">
-      <b-form>
+      <b-form @submit.prevent="comment">
         <b-form-group :label="$root.$data.user.username+':'" label-for="yourComment">
           <b-form-textarea
             id="yourComment"
@@ -46,16 +46,36 @@ export default {
   components: { PostDisplay },
   data() {
     return {
-      post: {}
+      post: {},
+      text: ""
     };
   },
   methods: {
+    comment() {
+      var text = this.text;
+      axios
+        .post("/submit/comment", {
+          folder: this.$route.params.folder,
+          post: this.$route.params.title,
+          comment: text
+        })
+        .then(res => {
+          if (res.data.status == "ok") {
+            this.post.comments.push({
+              username: this.$route.params.username,
+              comment: text,
+              time: Date.now()
+            });
+          }
+          // TODO: err handler
+        });
+    },
     enter() {
       axios
         .post("/get/post", {
           username: this.$route.params.username,
           folder: this.$route.params.folder,
-          postTitle: this.$route.params.post
+          postTitle: this.$route.params.title
         })
         .then(res => {
           if (res.data.status == "ok") {
