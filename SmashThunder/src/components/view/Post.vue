@@ -2,16 +2,12 @@
   <div>
     <!-- Content -->
     <div>
-      <h1>Waiting for WYX to finish latex module.</h1>
-      {{ post.content }}
+      <PostDisplay :raw="post.content" :format="post.format"></PostDisplay>
     </div>
     <!-- Comments -->
     <b-card title="Leave a comment" class="mb-2">
       <b-form>
-        <b-form-group
-          :label="$root.$data.user.username+':'"
-          label-for="yourComment"
-        >
+        <b-form-group :label="$root.$data.user.username+':'" label-for="yourComment">
           <b-form-textarea
             id="yourComment"
             v-model="text"
@@ -23,7 +19,7 @@
         <b-button variant="primary" type="submit">Comment</b-button>
       </b-form>
     </b-card>
-    <b-card v-for="comment in comments" :key="comment.time" class="mb-2">
+    <b-card v-for="comment in post.comments" :key="comment.time" class="mb-2">
       <b-card-title>
         <b-link :to="'/'+comment.username">{{ comment.username }}</b-link>
       </b-card-title>
@@ -42,21 +38,35 @@
 </template>
 
 <script>
+import PostDisplay from "../utils/PostDisplay";
+import axios from "axios";
+
 export default {
   name: "Post",
+  components: { PostDisplay },
   data() {
     return {
-      post: {
-        content: "大佬真垃圾".repeat(1000)
-      },
-      comments: [
-        {
-          username: "someUser",
-          content: "大佬真垃圾".repeat(10),
-          time: 123123
-        }
-      ]
+      post: {}
     };
+  },
+  methods: {
+    enter() {
+      axios
+        .post("/get/post", {
+          username: this.$route.params.username,
+          folder: this.$route.params.folder,
+          postTitle: this.$route.params.post
+        })
+        .then(res => {
+          if (res.data.status == "ok") {
+            this.post = res.data;
+          }
+          // TODO: add err handler
+        });
+    }
+  },
+  beforeRouteEnter(to, from, next) {
+    next(v => v.enter());
   }
 };
 </script>
