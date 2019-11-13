@@ -49,7 +49,9 @@
         <b-col>
           <b-form-group label="Realtime Render">
             <b-card style="height:500px" no-body>
-              <b-card-body v-html="resultHTML" style="overflow:scroll"></b-card-body>
+              <b-card-body style="overflow:scroll">
+                <PostDisplay :raw="form.text" :format="form.format"></PostDisplay>
+              </b-card-body>
             </b-card>
           </b-form-group>
         </b-col>
@@ -61,23 +63,16 @@
 </template>
 
 <script>
-import showdown from "showdown";
 import axios from "axios";
 import errHandler from "../mixin/errHandler";
 import NewableSelect from "../utils/NewableSelect";
 import strCheck from "../mixin/strCheck";
-import { parse, HtmlGenerator } from "latex.js";
-
-var converter = new showdown.Converter();
-var generator = new HtmlGenerator({
-  hyphenate: true,
-  languagePatterns: "en"
-});
+import PostDisplay from "../utils/PostDisplay";
 
 export default {
   name: "Edit",
   mixins: [errHandler, strCheck],
-  components: { NewableSelect },
+  components: { NewableSelect, PostDisplay },
   data() {
     return {
       form: {
@@ -177,22 +172,6 @@ export default {
     }
   },
   computed: {
-    resultHTML() {
-      if (this.form.format == "md") return converter.makeHtml(this.form.text);
-      else {
-        try {
-          generator.reset();
-          var doc = parse(this.form.text, {
-            generator: generator
-          }).htmlDocument();
-          // doc.body.appendChild(generator.stylesAndScripts("https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/"));
-          doc.body.appendChild(generator.domFragment());
-          return doc.documentElement.outerHTML;
-        } catch (e) {
-          return e.message;
-        }
-      }
-    },
     folderOptions() {
       var result = [];
       this.form.folders.map(v => result.push(v.title));
