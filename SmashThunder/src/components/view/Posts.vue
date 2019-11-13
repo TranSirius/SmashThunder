@@ -5,8 +5,14 @@
         <!-- Folder title and action buttons -->
         <h2>
           {{ folder.title }}
-          <b-dropdown split text="Rename" class="mb-1 ml-3" variant="secondary" v-if="editable"
-          @click="showRenameForm(folder.title)">
+          <b-dropdown
+            split
+            text="Rename"
+            class="mb-1 ml-3"
+            variant="secondary"
+            v-if="editable"
+            @click="showRenameForm(folder.title)"
+          >
             <b-dropdown-item variant="danger" @click="deletePostOrFolder(folder.title)">Delete</b-dropdown-item>
           </b-dropdown>
           <b-button
@@ -17,36 +23,46 @@
         </h2>
         <h6>Created at {{ folder.createdTime | peekDate }}.</h6>
         <!-- Posts table -->
-        <b-table
-          :items="folder.posts"
-          :fields="table.fields"
-          hover
-          striped
-          sticky-header
-          sort-icon-left
-          :tbodyTrClass="rowStyle"
-        >
-          <template v-slot:cell(title)="data">
-            <b-link :to="'/'+$route.params.username+'/posts/'+data.item.title">{{ data.item.title }}</b-link>
-          </template>
-          <template v-slot:cell(format)="data">{{ data.item.format=='md'?'Markdown':'Latex' }}</template>
-          <template v-slot:cell(createTime)="data">{{ data.item.createTime | peekDate }}</template>
-          <template v-slot:cell(published)="data">{{ data.item.published ? 'Yes' : 'No' }}</template>
-          <template v-slot:cell(actions)="data">
-            <b-dropdown
-              split
-              :text="data.item.published ? 'Withdraw' : 'Publish'"
-              class="mb-1 ml-3"
-              variant="primary"
-              v-if="editable"
-              size="sm"
-              @click="publishPost(folder.title, data.item.title,data.item.published)"
-            >
-              <b-dropdown-item variant="secondary" @click="showRenameForm(data.item.title,folder.title)">Rename</b-dropdown-item>
-              <b-dropdown-item variant="danger" @click="deletePostOrFolder(folder.title, data.item.title)">Delete</b-dropdown-item>
-            </b-dropdown>
-          </template>
-        </b-table>
+        <b-collapse v-model="folder.show">
+          <b-table
+            :items="folder.posts"
+            :fields="table.fields"
+            hover
+            striped
+            sticky-header
+            sort-icon-left
+            :tbodyTrClass="rowStyle"
+          >
+            <template v-slot:cell(title)="data">
+              <b-link
+                :to="'/'+$route.params.username+'/posts/'+data.item.title"
+              >{{ data.item.title }}</b-link>
+            </template>
+            <template v-slot:cell(format)="data">{{ data.item.format=='md'?'Markdown':'Latex' }}</template>
+            <template v-slot:cell(createTime)="data">{{ data.item.createTime | peekDate }}</template>
+            <template v-slot:cell(published)="data">{{ data.item.published ? 'Yes' : 'No' }}</template>
+            <template v-slot:cell(actions)="data">
+              <b-dropdown
+                split
+                :text="data.item.published ? 'Withdraw' : 'Publish'"
+                class="mb-1 ml-3"
+                variant="primary"
+                v-if="editable"
+                size="sm"
+                @click="publishPost(folder.title, data.item.title,data.item.published)"
+              >
+                <b-dropdown-item
+                  variant="secondary"
+                  @click="showRenameForm(data.item.title,folder.title)"
+                >Rename</b-dropdown-item>
+                <b-dropdown-item
+                  variant="danger"
+                  @click="deletePostOrFolder(folder.title, data.item.title)"
+                >Delete</b-dropdown-item>
+              </b-dropdown>
+            </template>
+          </b-table>
+        </b-collapse>
       </div>
     </div>
     <h2 v-else>No folders here.</h2>
@@ -64,11 +80,15 @@
 <script>
 import errHandler from "../mixin/errHandler";
 import timeFilter from "../mixin/timeFilter";
+import strCheck from "../mixin/strCheck";
+import arrayCheck from "../mixin/arrayCheck";
 import axios from "axios";
+import ModalInput from "../utils/ModalInput";
 
 export default {
   name: "Posts",
-  mixins: [errHandler, timeFilter],
+  mixins: [timeFilter, strCheck, errHandler, arrayCheck],
+  components: { ModalInput },
   data() {
     return {
       table: {
@@ -119,7 +139,7 @@ export default {
     showDelErr(s) {
       this.toastErr("Delete failed", s);
     },
-    showPublishErr(s){
+    showPublishErr(s) {
       this.toastErr("Publish failed", s);
     },
     rename() {
@@ -130,7 +150,7 @@ export default {
         this.showRenameErr(this.invalidFileNameHint);
         return;
       }
-      var renameFolder = !this.renameForm.postTitle;
+      var renameFolder = !this.renameForm.folderTitle;
       // check title length
       if (renameFolder) {
         if (this.renameForm.newName.length > 50) {
@@ -172,11 +192,11 @@ export default {
               // rename post
               for (let i = 0; i < this.folders.length; ++i) {
                 if (this.folders[i].title == this.renameForm.folderTitle) {
-                  for (let j = 0; j < this.folders[i].item.length; ++j) {
+                  for (let j = 0; j < this.folders[i].posts.length; ++j) {
                     if (
-                      this.folders[i].item[j].title == this.renameForm.oldName
+                      this.folders[i].posts[j].title == this.renameForm.oldName
                     ) {
-                      this.folders[i].item[j].title = this.renameForm.newName;
+                      this.folders[i].posts[j].title = this.renameForm.newName;
                       return;
                     }
                   }
@@ -198,13 +218,13 @@ export default {
       if (postTitle) {
         route = "/edit/post/delete";
         data = {
-          folder : folderTitle,
-          title : postTitle
+          folder: folderTitle,
+          title: postTitle
         };
       } else {
         route = "/edit/folder/delete";
         data = {
-          title : folderTitle
+          title: folderTitle
         };
       }
       axios
@@ -215,7 +235,7 @@ export default {
               // delete post
               for (let i = 0; i < this.folders.length; ++i) {
                 if (this.folders[i].title == folderTitle) {
-                  this.folders[i].item = this.folders[i].item.filter(s => {
+                  this.folders[i].posts = this.folders[i].posts.filter(s => {
                     return s.title != postTitle;
                   });
                   return;
@@ -236,30 +256,27 @@ export default {
           this.showDelErr();
         });
     },
-    publishPost(folderTitle, postTitle,isPublished)
-    {
-        var route = "/edit/post/publish";
-        var data = {
-            folder : folderTitle,
-            title : postTitle,
-            publish : !isPublished
-        }
-        axios
+    publishPost(folderTitle, postTitle, isPublished) {
+      var route = "/edit/post/publish";
+      var data = {
+        folder: folderTitle,
+        title: postTitle,
+        publish: !isPublished
+      };
+      axios
         .post(route, data)
         .then(res => {
           if (res.data.status == "ok") {
             for (let i = 0; i < this.folders.length; ++i) {
-                if (this.folders[i].title == folderTitle) {
-                  for (let j = 0; j < this.folders[i].item.length; ++j) {
-                    if (
-                      this.folders[i].item[j].title == postTitle
-                    ) {
-                      this.folders[i].item[j].published = !isPublished;
-                      return;
-                    }
+              if (this.folders[i].title == folderTitle) {
+                for (let j = 0; j < this.folders[i].posts.length; ++j) {
+                  if (this.folders[i].posts[j].title == postTitle) {
+                    this.folders[i].posts[j].published = !isPublished;
+                    return;
                   }
                 }
               }
+            }
           } else {
             this.showPublishErr(res.data.status);
           }
