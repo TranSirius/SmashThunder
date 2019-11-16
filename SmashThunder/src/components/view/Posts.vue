@@ -246,7 +246,7 @@ export default {
               this.folders = this.folders.filter(s => {
                 return s.title != folderTitle;
               });
-              if (!this.folders.length) this.updatePage();
+              // if (!this.folders.length) this.updatePage();
             }
           } else {
             this.showDelErr(res.data.status);
