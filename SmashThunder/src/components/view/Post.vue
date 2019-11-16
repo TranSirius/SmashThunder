@@ -23,7 +23,7 @@
       <b-card-title>
         <b-link :to="'/'+comment.username">{{ comment.username }}</b-link>
       </b-card-title>
-      <b-card-sub-title class="mb-2">Comment at {{ comment.time }}</b-card-sub-title>
+      <b-card-sub-title class="mb-2">Comment at {{ comment.time | timeOffset }}</b-card-sub-title>
       <b-card-text>{{ comment.content }}</b-card-text>
     </b-card>
     <!-- Action buttons -->
@@ -40,10 +40,11 @@
 <script>
 import PostDisplay from "../utils/PostDisplay";
 import netapi from "../mixin/netapi";
+import timeFilter from "../mixin/timeFilter";
 
 export default {
   name: "Post",
-  mixins: [netapi],
+  mixins: [netapi, timeFilter],
   components: { PostDisplay },
   data() {
     return {
