@@ -1,6 +1,7 @@
 <template>
-  <div>
-    <div v-html="resultHTML"></div>
+  <div class="w-100 h-100">
+    <b-card-body v-if="format=='md'" v-html="resultHTML" class="w-100 h-100" style="overflow:scroll"></b-card-body>
+    <iframe v-else :srcdoc="resultHTML" height="100%" width="100%" seamless frameborder="0"></iframe>
   </div>
 </template>
 

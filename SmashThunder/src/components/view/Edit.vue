@@ -49,9 +49,7 @@
         <b-col>
           <b-form-group label="Realtime Render">
             <b-card style="height:500px" no-body>
-              <b-card-body style="overflow:scroll">
-                <PostDisplay :raw="form.text" :format="form.format"></PostDisplay>
-              </b-card-body>
+              <PostDisplay :raw="form.text" :format="form.format"></PostDisplay>
             </b-card>
           </b-form-group>
         </b-col>
@@ -160,7 +158,9 @@ export default {
           }
           // to designated folder
           if (this.$route.query.folder) {
-            if (this.form.folders.filter(v => v.title == this.$route.query.folder))
+            if (
+              this.form.folders.filter(v => v.title == this.$route.query.folder)
+            )
               this.form.folder = this.$route.query.folder;
           }
         },
