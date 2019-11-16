@@ -10,7 +10,7 @@ import sqlalchemy
 
 from web.db import databases
 from web.db import datamodels
-from web.db.datamodels import User, Album, Photo, Post, Folder, Comment, MainPage
+from web.db.datamodels import User, Album, Photo, Post, Folder, Comment, MainPage, Star
 
 from web.index import doctype
 
@@ -146,7 +146,7 @@ def uploadComment():
     ret['status'] = 'ok'
     return ret
 
-@mod.route('mainpage', methods = ['POST'])
+@mod.route('/mainpage', methods = ['POST'])
 def submitMainPage():
     ret = dict()
     db_session_instance = databases.db_session()
@@ -167,5 +167,44 @@ def submitMainPage():
     db_session_instance.merge(mainpage)
     db_session_instance.commit()
 
+    ret['status'] = 'ok'
+    return ret
+
+@mod.route('/star', methods = ['POST'])
+def submitStar():
+    ret = dict()
+    db_session_instance = databases.db_session()
+
+    try:
+        user = request.json['username']
+        folder = request.json['folder']
+        title = request.json['title']
+    except KeyError:
+        ret['status'] = "KeyError!"
+        return ret
+
+    post = db_session_instance\
+        .query(Post).join(Folder).join(User)\
+        .filter(User.user_name == user).filter(Folder.folder_title == folder).filter(Post.post_title == title)\
+        .first()
+
+    if post is None:
+        ret['status'] = 'Post Not Exist'
+        return ret
+
+    star = db_session_instance\
+        .query(Star)\
+        .filter(Star.user_id == g.user_id).filter(Star.post_id == post.ID)\
+        .first()
+    if star is None:
+        star = Star(user_id = g.user_id, post_id = post.ID)
+        db_session_instance.add(star)
+    else:
+        db_session_instance\
+        .query(Star)\
+        .filter(Star.user_id == g.user_id).filter(Star.post_id == post.ID)\
+        .delete()
+
+    db_session_instance.commit()
     ret['status'] = 'ok'
     return ret

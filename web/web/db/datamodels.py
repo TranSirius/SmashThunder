@@ -182,3 +182,8 @@ class Comment(Model):
     content = Column('Content', String(500), nullable = False)
     create_time = Column('CreateTime', BigInteger, nullable = False)
 
+class Star(Model):
+    __tablename__ = 'Star'
+
+    user_id = Column('UserID', Integer, ForeignKey('User.ID', ondelete = 'CASCADE', onupdate = 'CASCADE'), primary_key = True)
+    post_id = Column('PostID', String(20), ForeignKey('Post.ID', ondelete = 'CASCADE', onupdate = 'CASCADE'), primary_key = True)

@@ -60,12 +60,17 @@ class GetFolderDetail():
                 .all()
             for post, comment_num in posts:
                 post_dict = dict()
+                star_num = db_session_instance\
+                    .query(func.count(Star)).outerjoin(Post)\
+                    .filter(Star.post_id == post.ID)\
+                    .group_by(Star.post_id)\
+                    .first()
                 post_dict['title'] = post.post_title
                 post_dict['createTime'] = post.create_time
                 post_dict['format'] = post.document_format
                 post_dict['id'] = post.ID   
                 post_dict['published'] = post.is_published
-                post_dict['stars'] = post.stars
+                post_dict['stars'] = star_num
                 post_dict['comments'] = comment_num
                 folder_dict['posts'].append(post_dict)
             return_posts.append(folder_dict)
@@ -112,12 +117,17 @@ class GetPost():
             return None
 
         else:
+            star_num = db_session_instance\
+                .query(func.count(Star)).outerjoin(Post)\
+                .filter(Star.post_id == post.ID)\
+                .group_by(Star.post_id)\
+                .first()
             return_post['title'] = post.post_title
             return_post['createTime'] = post.create_time
             return_post['content'] = post.post_content
             return_post['format'] = post.document_format
             return_post['postID'] = post.ID
-            return_post['stars'] = post.stars
+            return_post['stars'] = star_num
             return_post['published'] = post.is_published
 
             comments = db_session_instance\

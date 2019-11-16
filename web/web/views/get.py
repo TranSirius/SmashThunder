@@ -103,7 +103,7 @@ def getMainPage():
         ret['status'] = 'ok'
         ret['exist'] = False
         return ret
-
+    ret['exist'] = True
     geter = GetPost()
     post = db_session_instance\
         .query(Post)\
