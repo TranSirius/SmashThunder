@@ -17,8 +17,10 @@ export default {
 					this.toastErr(errTitle, res.data.status);
 					errFunc && errFunc()
 				}
-			}).catch(() => {
+			}).catch((err) => {
 				this.toastErr(errTitle)
+				// TODO: remove console.log
+				this.console.log(err)
 				errFunc && errFunc()
 			})
 		}
