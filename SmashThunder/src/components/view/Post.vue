@@ -24,7 +24,7 @@
         <b-link :to="'/'+comment.username">{{ comment.username }}</b-link>
       </b-card-title>
       <b-card-sub-title class="mb-2">Comment at {{ comment.time | timeOffset }}</b-card-sub-title>
-      <b-card-text>{{ comment.content }}</b-card-text>
+      <b-card-text>{{ comment.comment }}</b-card-text>
     </b-card>
     <!-- Action buttons -->
     <b-button-group vertical id="actionBtns">
@@ -68,7 +68,7 @@ export default {
           this.text = "";
           this.post.comments.push({
             username: this.$route.params.username,
-            content: text,
+            comment: text,
             time: Date.now()
           });
         }
