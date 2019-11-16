@@ -78,16 +78,15 @@
 </template>
 
 <script>
-import errHandler from "../mixin/errHandler";
+import netapi from "../mixin/netapi";
 import timeFilter from "../mixin/timeFilter";
 import strCheck from "../mixin/strCheck";
 import arrayCheck from "../mixin/arrayCheck";
-import axios from "axios";
 import ModalInput from "../utils/ModalInput";
 
 export default {
   name: "Posts",
-  mixins: [timeFilter, strCheck, errHandler, arrayCheck],
+  mixins: [timeFilter, strCheck, netapi, arrayCheck],
   components: { ModalInput },
   data() {
     return {
@@ -117,30 +116,18 @@ export default {
       }
     },
     enter() {
-      axios
-        .post("/get/post/foldersDetail")
-        .then(res => {
-          if (res.data.status == "ok") {
-            this.folders = res.data.folders;
-          } else this.toastErr("Get posts error", res.data.status);
-        })
-        .catch(() => {
-          this.toastErr("Get posts error");
-        });
+      this.apiPost(
+        { route: "/get/post/foldersDetail" },
+        data => {
+          this.folders = data.folders;
+        },
+        "Get posts error"
+      );
     },
     showRenameForm(oldName, folderTitle) {
       this.renameForm.oldName = this.renameForm.newName = oldName;
       this.renameForm.folderTitle = folderTitle;
       this.$refs.renameForm.show();
-    },
-    showRenameErr(s) {
-      this.toastErr("Rename failed", s);
-    },
-    showDelErr(s) {
-      this.toastErr("Delete failed", s);
-    },
-    showPublishErr(s) {
-      this.toastErr("Publish failed", s);
     },
     rename() {
       this.$refs.renameForm.hide();
@@ -178,38 +165,33 @@ export default {
             newTitle: this.renameForm.newName
           };
       // send req
-      axios.post(route, data).then(
-        res => {
-          if (res.data.status == "ok") {
-            if (renameFolder) {
-              for (let i = 0; i < this.folders.length; ++i) {
-                if (this.folders[i].title == this.renameForm.oldName) {
-                  this.folders[i].title = this.renameForm.newName;
-                  return;
-                }
+      this.apiPost(
+        { route, data },
+        () => {
+          if (renameFolder) {
+            for (let i = 0; i < this.folders.length; ++i) {
+              if (this.folders[i].title == this.renameForm.oldName) {
+                this.folders[i].title = this.renameForm.newName;
+                return;
               }
-            } else {
-              // rename post
-              for (let i = 0; i < this.folders.length; ++i) {
-                if (this.folders[i].title == this.renameForm.folderTitle) {
-                  for (let j = 0; j < this.folders[i].posts.length; ++j) {
-                    if (
-                      this.folders[i].posts[j].title == this.renameForm.oldName
-                    ) {
-                      this.folders[i].posts[j].title = this.renameForm.newName;
-                      return;
-                    }
+            }
+          } else {
+            // rename post
+            for (let i = 0; i < this.folders.length; ++i) {
+              if (this.folders[i].title == this.renameForm.folderTitle) {
+                for (let j = 0; j < this.folders[i].posts.length; ++j) {
+                  if (
+                    this.folders[i].posts[j].title == this.renameForm.oldName
+                  ) {
+                    this.folders[i].posts[j].title = this.renameForm.newName;
+                    return;
                   }
                 }
               }
             }
-          } else {
-            this.showRenameErr(res.data.status);
           }
         },
-        () => {
-          this.showRenameErr();
-        }
+        "Rename failed"
       );
     },
     deletePostOrFolder(folderTitle, postTitle) {
@@ -227,34 +209,29 @@ export default {
           title: folderTitle
         };
       }
-      axios
-        .post(route, data)
-        .then(res => {
-          if (res.data.status == "ok") {
-            if (postTitle) {
-              // delete post
-              for (let i = 0; i < this.folders.length; ++i) {
-                if (this.folders[i].title == folderTitle) {
-                  this.folders[i].posts = this.folders[i].posts.filter(s => {
-                    return s.title != postTitle;
-                  });
-                  return;
-                }
+      this.apiPost(
+        { route, data },
+        () => {
+          if (postTitle) {
+            // delete post
+            for (let i = 0; i < this.folders.length; ++i) {
+              if (this.folders[i].title == folderTitle) {
+                this.folders[i].posts = this.folders[i].posts.filter(s => {
+                  return s.title != postTitle;
+                });
+                return;
               }
-            } else {
-              // delete folder
-              this.folders = this.folders.filter(s => {
-                return s.title != folderTitle;
-              });
-              // if (!this.folders.length) this.updatePage();
             }
           } else {
-            this.showDelErr(res.data.status);
+            // delete folder
+            this.folders = this.folders.filter(s => {
+              return s.title != folderTitle;
+            });
+            // if (!this.folders.length) this.updatePage();
           }
-        })
-        .catch(() => {
-          this.showDelErr();
-        });
+        },
+        "Delete failed"
+      );
     },
     publishPost(folderTitle, postTitle, isPublished) {
       var route = "/edit/post/publish";
@@ -263,27 +240,22 @@ export default {
         title: postTitle,
         publish: !isPublished
       };
-      axios
-        .post(route, data)
-        .then(res => {
-          if (res.data.status == "ok") {
-            for (let i = 0; i < this.folders.length; ++i) {
-              if (this.folders[i].title == folderTitle) {
-                for (let j = 0; j < this.folders[i].posts.length; ++j) {
-                  if (this.folders[i].posts[j].title == postTitle) {
-                    this.folders[i].posts[j].published = !isPublished;
-                    return;
-                  }
+      this.apiPost(
+        { route, data },
+        () => {
+          for (let i = 0; i < this.folders.length; ++i) {
+            if (this.folders[i].title == folderTitle) {
+              for (let j = 0; j < this.folders[i].posts.length; ++j) {
+                if (this.folders[i].posts[j].title == postTitle) {
+                  this.folders[i].posts[j].published = !isPublished;
+                  return;
                 }
               }
             }
-          } else {
-            this.showPublishErr(res.data.status);
           }
-        })
-        .catch(() => {
-          this.showPublishErr();
-        });
+        },
+        "Publish failed"
+      );
     }
   },
   computed: {
