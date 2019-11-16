@@ -108,10 +108,12 @@ export default {
       if (!this.checkUsername()) return;
       var route = this.formMode == "Sign In" ? "/auth/login" : "/auth/register";
       this.apiPost(
-        route,
         {
-          username: this.$root.$data.user.username,
-          password: sha256(this.password)
+          route,
+          data: {
+            username: this.$root.$data.user.username,
+            password: sha256(this.password)
+          }
         },
         () => {
           this.$root.$data.user.loggedIn = true;
