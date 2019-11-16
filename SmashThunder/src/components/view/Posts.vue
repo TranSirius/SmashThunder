@@ -35,7 +35,7 @@
           >
             <template v-slot:cell(title)="data">
               <b-link
-                :to="'/'+$route.params.username+'/posts/'+data.item.title"
+                :to="'/'+$route.params.username+'/posts/'+folder.title+'/'+data.item.title"
               >{{ data.item.title }}</b-link>
             </template>
             <template v-slot:cell(format)="data">{{ data.item.format=='md'?'Markdown':'Latex' }}</template>
