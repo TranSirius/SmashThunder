@@ -63,11 +63,11 @@
 <script>
 import axios from "axios";
 import sha256 from "js-sha256";
-import errHandler from "../mixin/errHandler";
+import netapi from "../mixin/netapi";
 
 export default {
   name: "SignForm",
-  mixins: [errHandler],
+  mixins: [netapi],
   data() {
     return {
       password: "",
@@ -78,10 +78,6 @@ export default {
     };
   },
   methods: {
-    showFormErr: function(msg) {
-      this.toastErr(this.formMode + " failed", msg);
-      this.submitting = false;
-    },
     resetForm: function() {
       this.password = this.password2 = "";
       this.submitting = false;
@@ -111,22 +107,21 @@ export default {
       this.submitting = true;
       if (!this.checkUsername()) return;
       var route = this.formMode == "Sign In" ? "/auth/login" : "/auth/register";
-      axios
-        .post(route, {
+      this.apiPost(
+        route,
+        {
           username: this.$root.$data.user.username,
           password: sha256(this.password)
-        })
-        .then(res => {
-          if (res.data.status == "ok") {
-            this.$root.$data.user.loggedIn = true;
-            this.resetForm();
-          } else {
-            this.showFormErr(res.data.status);
-          }
-        })
-        .catch(() => {
-          this.showFormErr();
-        });
+        },
+        () => {
+          this.$root.$data.user.loggedIn = true;
+          this.resetForm();
+        },
+        this.formMode + " failed",
+        () => {
+          this.submitting = false;
+        }
+      );
     }
   },
   mounted: function() {
