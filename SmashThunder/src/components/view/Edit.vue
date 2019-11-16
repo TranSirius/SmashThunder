@@ -63,15 +63,15 @@
 </template>
 
 <script>
-import axios from "axios";
 import errHandler from "../mixin/errHandler";
 import NewableSelect from "../utils/NewableSelect";
 import strCheck from "../mixin/strCheck";
 import PostDisplay from "../utils/PostDisplay";
+import netapi from "../mixin/netapi";
 
 export default {
   name: "Edit",
-  mixins: [errHandler, strCheck],
+  mixins: [errHandler, strCheck, netapi],
   components: { NewableSelect, PostDisplay },
   data() {
     return {
@@ -115,60 +115,52 @@ export default {
         );
         return;
       }
-      axios
-        .post("/submit/post", {
-          title: this.form.title,
-          folder: this.form.folder,
-          format: this.form.format,
-          content: this.form.text,
-          published: publish
-        })
-        .then(res => {
-          if (res.data.status == "ok") {
-            if (publish) {
-              // redirect page to the post
-              this.$router.push(
-                "/" +
-                  this.$root.$data.user.username +
-                  "/posts/" +
-                  this.form.folder +
-                  "/" +
-                  this.form.title
-              );
-            } else {
-              this.toastErr(
-                "Succeed",
-                "Your post has been saved successfully.",
-                "success"
-              );
-            }
-          } else {
-            this.toastErr("Create post error", res.data.status);
+      this.apiPost(
+        {
+          route: "/submit/post",
+          data: {
+            title: this.form.title,
+            folder: this.form.folder,
+            format: this.form.format,
+            content: this.form.text,
+            published: publish
           }
-        })
-        .catch(() => {
-          this.toastErr("Create post error");
-        });
-    },
-    showGetFoldersErr(s) {
-      this.toastErr("Error when getting folders", s);
+        },
+        () => {
+          if (publish) {
+            // redirect page to the post
+            this.$router.push(
+              "/" +
+                this.$root.$data.user.username +
+                "/posts/" +
+                this.form.folder +
+                "/" +
+                this.form.title
+            );
+          } else {
+            this.toastErr(
+              "Succeed",
+              "Your post has been saved successfully.",
+              "success"
+            );
+          }
+        },
+        "Create post error"
+      );
     },
     enter() {
-      axios
-        .post("/get/post/folders")
-        .then(res => {
-          if (res.data.status == "ok") {
-            if (res.data.folders.length) {
-              this.form.folder = res.data.folders[0].title;
-              this.form.folders = res.data.folders;
-            } else {
-              this.form.folder = this.form.newFolderHint;
-            }
+      this.apiPost(
+        { route: "/get/post/folders" },
+        data => {
+          if (data.folders.length) {
+            this.form.folder = data.folders[0].title;
+            this.form.folders = data.folders;
           } else {
-            this.showGetFoldersErr(res.data.status);
+            this.form.folder = this.form.newFolderHint;
           }
-        })
-        .catch(() => this.showGetFoldersErr());
+        },
+        "Error when getting folders"
+      );
     }
   },
   computed: {
