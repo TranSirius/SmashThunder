@@ -18,12 +18,13 @@
           <b-button
             class="mb-1 ml-3"
             variant="outline-info"
-            :pressed.sync="folder.show"
-          >{{ folder.show ? 'Hide' : 'Show' }}</b-button>
+            aria-controls="collapse-4"
+            :pressed.sync="visible"
+          >{{ visible ? 'Hide' : 'Show' }}</b-button>
         </h2>
         <h6>Created at {{ folder.createdTime | peekDate }}.</h6>
         <!-- Posts table -->
-        <b-collapse v-model="folder.show">
+        <b-collapse id="collapse-4" v-model="visible">
           <b-table
             :items="folder.posts"
             :fields="table.fields"
@@ -90,6 +91,7 @@ export default {
   components: { ModalInput },
   data() {
     return {
+      visible : true,
       table: {
         fields: [
           { key: "title", sortable: true },
