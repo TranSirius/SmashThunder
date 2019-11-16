@@ -7,7 +7,10 @@ import errHandler from './errHandler'
 export default {
 	methods: {
 		toastErr: errHandler.methods.toastErr,
-		apiPost(route, data, okFunc, errTitle, errFunc = null) {
+		/**
+		 * `data` can be undefined
+		 */
+		apiPost({ route, data }, okFunc, errTitle, errFunc = null) {
 			axios.post(route, data).then(res => {
 				if (res.data.status == 'ok') { okFunc(res.data) }
 				else {
