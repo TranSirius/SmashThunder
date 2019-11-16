@@ -39,10 +39,11 @@
 
 <script>
 import PostDisplay from "../utils/PostDisplay";
-import axios from "axios";
+import netapi from "../mixin/netapi";
 
 export default {
   name: "Post",
+  mixins: [netapi],
   components: { PostDisplay },
   data() {
     return {
@@ -53,36 +54,38 @@ export default {
   methods: {
     comment() {
       var text = this.text;
-      axios
-        .post("/submit/comment", {
-          folder: this.$route.params.folder,
-          post: this.$route.params.title,
-          comment: text
-        })
-        .then(res => {
-          if (res.data.status == "ok") {
-            this.post.comments.push({
-              username: this.$route.params.username,
-              comment: text,
-              time: Date.now()
-            });
+      this.apiPost(
+        {
+          route: "/submit/comment",
+          data: {
+            folder: this.$route.params.folder,
+            post: this.$route.params.title,
+            comment: text
           }
-          // TODO: err handler
-        });
+        },
+        () => {
+          this.post.comments.push({
+            username: this.$route.params.username,
+            comment: text,
+            time: Date.now()
+          });
+        }
+      );
     },
     enter() {
-      axios
-        .post("/get/post", {
-          username: this.$route.params.username,
-          folder: this.$route.params.folder,
-          postTitle: this.$route.params.title
-        })
-        .then(res => {
-          if (res.data.status == "ok") {
-            this.post = res.data.post;
+      this.apiPost(
+        {
+          route: "/get/post",
+          data: {
+            username: this.$route.params.username,
+            folder: this.$route.params.folder,
+            postTitle: this.$route.params.title
           }
-          // TODO: add err handler
-        });
+        },
+        data => {
+          this.post = data;
+        }
+      );
     }
   },
   beforeRouteEnter(to, from, next) {
