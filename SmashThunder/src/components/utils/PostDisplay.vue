@@ -51,7 +51,7 @@ export default {
           // The path of resource file is `/static`
           var doc = parse(this.raw, {
             generator: generator
-          }).htmlDocument(window.location.protocol+'//'+window.location.host+'/static');
+          }).htmlDocument(window.location.protocol+'//'+window.location.host+'/static/');
           return doc.documentElement.outerHTML;
         } catch (e) {
           return e.message;
