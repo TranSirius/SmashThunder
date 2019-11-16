@@ -158,6 +158,11 @@ export default {
           } else {
             this.form.folder = this.form.newFolderHint;
           }
+          // to designated folder
+          if (this.$route.query.folder) {
+            if (this.folders.filter(v => v.title == this.$route.query.folder))
+              this.folder = this.$route.query.folder;
+          }
         },
         "Error when getting folders"
       );

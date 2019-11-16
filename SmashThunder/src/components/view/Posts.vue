@@ -7,12 +7,13 @@
           {{ folder.title }}
           <b-dropdown
             split
-            text="Rename"
+            text="New Post"
             class="mb-1 ml-3"
-            variant="secondary"
+            variant="primary"
             v-if="editable"
-            @click="showRenameForm(folder.title)"
+            @click="$router.push('/'+$root.$data.user.username+'/edit?folder='+folder.title)"
           >
+            <b-dropdown-item variant="secondary" @click="showRenameForm(folder.title)">Rename</b-dropdown-item>
             <b-dropdown-item variant="danger" @click="deletePostOrFolder(folder.title)">Delete</b-dropdown-item>
           </b-dropdown>
           <b-button
