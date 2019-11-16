@@ -8,10 +8,10 @@ export default {
 	methods: {
 		toastErr: errHandler.methods.toastErr,
 		/**
-		 * `data`, `okFunc`, `errTitle` and `errFunc` can be undefined
+		 * `data`, `config`, `okFunc`, `errTitle` and `errFunc` can be undefined
 		 */
-		apiPost({ route, data }, okFunc, errTitle, errFunc) {
-			axios.post(route, data).then(res => {
+		apiPost({ route, data, config }, okFunc, errTitle, errFunc) {
+			axios.post(route, data, config).then(res => {
 				if (res.data.status == 'ok') { okFunc && okFunc(res.data) }
 				else {
 					this.toastErr(errTitle, res.data.status);
