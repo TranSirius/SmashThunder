@@ -48,7 +48,7 @@
         </b-col>
         <b-col>
           <b-form-group label="Realtime Render">
-            <b-card style="height:500px" no-body>
+            <b-card style="height:500px;overflow:scroll" no-body>
               <PostDisplay :raw="form.text" :format="form.format"></PostDisplay>
             </b-card>
           </b-form-group>
