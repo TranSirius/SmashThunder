@@ -5,17 +5,9 @@
       <PostDisplay :raw="post.content" :format="post.format"></PostDisplay>
     </div>
     <!-- Comments -->
-    <b-card title="Leave a comment" class="mb-2">
+    <b-card title="Leave a comment" :sub-title="$root.$data.user.username+':'" class="mb-2">
       <b-form @submit.prevent="comment">
-        <b-form-group :label="$root.$data.user.username+':'" label-for="yourComment">
-          <b-form-textarea
-            id="yourComment"
-            v-model="text"
-            placeholder="Enter something..."
-            rows="3"
-            max-rows="6"
-          ></b-form-textarea>
-        </b-form-group>
+        <b-form-textarea v-model="text" placeholder="Enter something..." rows="3" max-rows="6"></b-form-textarea>
         <b-button variant="primary" type="submit">Comment</b-button>
       </b-form>
     </b-card>
@@ -23,7 +15,7 @@
       <b-card-title>
         <b-link :to="'/'+comment.username">{{ comment.username }}</b-link>
       </b-card-title>
-      <b-card-sub-title class="mb-2">Comment at {{ comment.time | timeOffset }}</b-card-sub-title>
+      <b-card-sub-title class="mb-2">Comment at {{ comment.time | timeOffset }} ago.</b-card-sub-title>
       <b-card-text>{{ comment.comment }}</b-card-text>
     </b-card>
     <!-- Action buttons -->
