@@ -36,13 +36,15 @@ export default {
     getNews() {
       this.apiPost(
         { route: "/get/news", data: { target: "news" } },
-        data => (this.news = data.posts)
+        data => (this.news = data.posts),
+        "Can't load news!"
       );
     },
     getFriendsActivities() {
       this.apiPost(
         { route: "/get/news", data: { target: "friendsActivities" } },
-        data => (this.friendsActivities = data.posts)
+        data => (this.friendsActivities = data.posts),
+        "Can't load friends activities!"
       );
     }
   },
