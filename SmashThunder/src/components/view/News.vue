@@ -11,10 +11,11 @@
 
 <script>
 import NewsCards from "../utils/NewsCards.vue";
-import axios from "axios";
+import netapi from "../mixin/netapi";
 
 export default {
   name: "News",
+  mixins: [netapi],
   components: {
     NewsCards
   },
@@ -33,19 +34,15 @@ export default {
   },
   methods: {
     getNews() {
-      axios.post("/get/news", { target: "news" }).then(
-        res => {
-          if (res.data.status == "ok") this.news = res.data.posts;
-        },
-        () => {}
+      this.apiPost(
+        { route: "/get/news", data: { target: "news" } },
+        data => (this.news = data.posts)
       );
     },
     getFriendsActivities() {
-      axios.post("/get/news", { target: "friendsActivities" }).then(
-        res => {
-          if (res.data.status == "ok") this.friendsActivities = res.data.posts;
-        },
-        () => {}
+      this.apiPost(
+        { route: "/get/news", data: { target: "friendsActivities" } },
+        data => (this.friendsActivities = data.posts)
       );
     }
   },
