@@ -67,7 +67,6 @@ class GetFolderDetail():
                 post_dict['published'] = post.is_published
                 post_dict['stars'] = post.stars
                 post_dict['comments'] = comment_num
-
                 folder_dict['posts'].append(post_dict)
             return_posts.append(folder_dict)
         return return_posts
@@ -104,7 +103,7 @@ class GetPost():
         db_session_instance = db_session()
         return_post = dict()
 
-        post = db_session\
+        post = db_session_instance\
             .query(Post).join(Folder).join(User)\
             .filter(User.user_name == user_name).filter(Folder.folder_title == folder_name).filter(Post.post_title == post_title)\
             .first()
@@ -119,5 +118,19 @@ class GetPost():
             return_post['format'] = post.document_format
             return_post['postID'] = post.ID
             return_post['stars'] = post.stars
+            return_post['published'] = post.is_published
+
+            comments = db_session_instance\
+                .query(Comment, User.user_name).join(Post)\
+                .filter(Post.ID == post.ID).filter(User.ID == Comment.user_id)\
+                .all()
+            comment_list = []
+            for c, u in comments:
+                comment = dict()
+                comment['username'] = str(u)
+                comment['comment'] = c.content
+                comment['time'] = c.create_time
+                comment_list.append(comment)
+            return_post['comments'] = comment_list
 
             return return_post

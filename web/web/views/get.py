@@ -6,7 +6,7 @@ from flask import url_for
 from flask import request
 
 from web.db import databases
-from web.db.datamodels import User, Album, Photo
+from web.db.datamodels import User, Album, Photo, MainPage, Comment
 from web.logic.geter import GetPhotos
 from web.logic.geter import GetFolderDetail
 from web.logic.geter import GetPost
@@ -58,13 +58,13 @@ def getPost():
     if post is None:
         ret['status'] = 'Post Not Exist!'
     else:
-        ret['post'] = post
+        ret = post
+        ret['status'] = 'ok'
         return ret
 
 
 
 @mod.route('/post/foldersDetail', methods = ['POST'])
-@loginRequest
 def postFolderDetail():
     user_id = g.user_id
     ret = dict()
@@ -83,4 +83,55 @@ def postFolders():
     ret['status'] = 'ok'
     return ret
 
-# @mod.route()
+@mod.route('/mainpage', methods = ['POST'])
+def getMainPage():
+    ret = dict()
+    db_session_instance = databases.db_session()
+
+    try:
+        user_name = request.json['username']
+    except:
+        ret['status'] = 'Requesting Format Error!'
+        return ret
+
+    main_page = db_session_instance\
+        .query(MainPage).join(User)\
+        .filter(User.user_name == user_name)\
+        .first()
+
+    if main_page is None:
+        ret['status'] = 'ok'
+        ret['exist'] = False
+        return ret
+
+    geter = GetPost()
+    post = db_session_instance\
+        .query(Post)\
+        .filter(Post.ID == main_page.post_id)\
+        .first()
+    
+    return_post = dict()
+    return_post['title'] = post.post_title
+    return_post['createTime'] = post.create_time
+    return_post['content'] = post.post_content
+    return_post['format'] = post.document_format
+    return_post['postID'] = post.ID
+    return_post['stars'] = post.stars
+    return_post['published'] = post.is_published
+
+    comments = db_session_instance\
+        .query(Comment, User.user_name).join(Post)\
+        .filter(Post.ID == post.ID).filter(User.ID == Comment.user_id)\
+        .all()
+    comment_list = []
+    for c, u in comments:
+        comment = dict()
+        comment['username'] = str(u)
+        comment['comment'] = c.content
+        comment['time'] = c.create_time
+        comment_list.append(comment)
+    return_post['comments'] = comment_list
+
+    ret['post'] = return_post
+    ret['status'] = 'ok'
+    return ret

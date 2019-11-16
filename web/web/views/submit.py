@@ -10,7 +10,7 @@ import sqlalchemy
 
 from web.db import databases
 from web.db import datamodels
-from web.db.datamodels import User, Album, Photo, Post, Folder, Comment
+from web.db.datamodels import User, Album, Photo, Post, Folder, Comment, MainPage
 
 from web.index import doctype
 
@@ -110,7 +110,7 @@ def uploadPost():
 
 @mod.route('/comment', methods = ['POST'])
 @loginRequest
-def Comment():
+def uploadComment():
     ret = dict()
     db_session_instance = databases.db_session()
 
@@ -122,7 +122,10 @@ def Comment():
         ret['status'] = "KeyError!"
         return ret
 
-    post = db_session_instance.query(Folder).join(Post).filter(Folder.folder_title == folder_name).filter(Post.post_title == post_title).first()
+    post = db_session_instance\
+        .query(Post).join(Folder)\
+        .filter(Folder.folder_title == folder_name).filter(Post.post_title == post_title)\
+        .first()
     if post is None:
         ret['status'] = 'Post Not Exist!'
         return ret
@@ -139,6 +142,30 @@ def Comment():
     from web.index.esclient import es
     comment_index = doctype.Comment(meta={'id':post_id}, content = comment)
     comment_index.save(using=es)
+
+    ret['status'] = 'ok'
+    return ret
+
+@mod.route('mainpage', methods = ['POST'])
+def submitMainPage():
+    ret = dict()
+    db_session_instance = databases.db_session()
+
+    try:
+        folder = request.json['folder']
+        title = request.json['title']
+    except KeyError:
+        ret['status'] = "KeyError!"
+        return ret
+
+    post = db_session_instance\
+        .query(Post).join(Folder)\
+        .filter(Folder.user_ID == g.user_id).filter(Folder.folder_title == folder).filter(Post.post_title == post)\
+        .first()
+
+    mainpage = MainPage(user_id = g.user_id, post_id = post.ID)
+    db_session_instance.merge(mainpage)
+    db_session_instance.commit()
 
     ret['status'] = 'ok'
     return ret
