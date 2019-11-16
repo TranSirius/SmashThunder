@@ -7,7 +7,9 @@
     <!-- Comments -->
     <b-card title="Leave a comment" :sub-title="$root.$data.user.username+':'" class="mb-2">
       <b-form @submit.prevent="comment">
-        <b-form-textarea v-model="text" placeholder="Enter something..." rows="3" max-rows="6"></b-form-textarea>
+        <b-form-group>
+          <b-form-textarea v-model="text" placeholder="Enter something..." rows="3" max-rows="6"></b-form-textarea>
+        </b-form-group>
         <b-button variant="primary" type="submit">Comment</b-button>
       </b-form>
     </b-card>
