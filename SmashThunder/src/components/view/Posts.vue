@@ -90,7 +90,6 @@ export default {
   components: { ModalInput },
   data() {
     return {
-      
       table: {
         fields: [
           { key: "title", sortable: true },
