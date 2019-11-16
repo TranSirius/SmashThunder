@@ -18,13 +18,12 @@
           <b-button
             class="mb-1 ml-3"
             variant="outline-info"
-            aria-controls="collapse-4"
-            :pressed.sync="visible"
-          >{{ visible ? 'Hide' : 'Show' }}</b-button>
+            :pressed.sync="folder.show"
+          >{{ folder.show ? 'Hide' : 'Show' }}</b-button>
         </h2>
         <h6>Created at {{ folder.createdTime | peekDate }}.</h6>
         <!-- Posts table -->
-        <b-collapse id="collapse-4" v-model="visible">
+        <b-collapse v-model="folder.show">
           <b-table
             :items="folder.posts"
             :fields="table.fields"
@@ -91,7 +90,7 @@ export default {
   components: { ModalInput },
   data() {
     return {
-      visible : true,
+      
       table: {
         fields: [
           { key: "title", sortable: true },
@@ -121,7 +120,11 @@ export default {
       this.apiPost(
         { route: "/get/post/foldersDetail" },
         data => {
-          this.folders = data.folders;
+          this.folders = [];
+          for (let i = 0; i < data.folders.length; ++i) {
+            data.folders[i].show = true;
+            this.folders.push(data.folders[i]);
+          }
         },
         "Get posts error"
       );
