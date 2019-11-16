@@ -79,7 +79,7 @@ export default {
         })
         .then(res => {
           if (res.data.status == "ok") {
-            this.post = res.data;
+            this.post = res.data.post;
           }
           // TODO: add err handler
         });
