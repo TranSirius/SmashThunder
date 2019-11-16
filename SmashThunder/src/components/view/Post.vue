@@ -65,6 +65,7 @@ export default {
           }
         },
         () => {
+          this.text = "";
           this.post.comments.push({
             username: this.$route.params.username,
             content: text,
