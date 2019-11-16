@@ -120,7 +120,11 @@ export default {
       this.apiPost(
         { route: "/get/post/foldersDetail" },
         data => {
-          this.folders = data.folders;
+          this.folders = [];
+          for (let i = 0; i < data.folders.length; ++i) {
+            data.folders[i].show = true;
+            this.folders.push(data.folders[i]);
+          }
         },
         "Get posts error"
       );
