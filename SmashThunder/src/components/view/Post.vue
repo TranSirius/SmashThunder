@@ -66,7 +66,7 @@ export default {
         () => {
           this.post.comments.push({
             username: this.$route.params.username,
-            comment: text,
+            content: text,
             time: Date.now()
           });
         }
