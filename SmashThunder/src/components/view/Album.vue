@@ -108,16 +108,15 @@
 </template>
 
 <script>
-import axios from "axios";
 import timeFilter from "../mixin/timeFilter";
 import strCheck from "../mixin/strCheck";
-import errHandler from "../mixin/errHandler";
 import arrayCheck from "../mixin/arrayCheck";
 import ModalInput from "../utils/ModalInput";
+import netapi from "../mixin/netapi";
 
 export default {
   name: "Album",
-  mixins: [timeFilter, strCheck, errHandler, arrayCheck],
+  mixins: [timeFilter, strCheck, netapi, arrayCheck],
   components: { ModalInput },
   data() {
     return {
@@ -172,29 +171,27 @@ export default {
      * Reload the target album. If `albumTitle` not in `this.albums`, create it in `this.albums`
      */
     refresh(albumTitle) {
-      axios
-        .post("/get/album", {
-          username: this.$route.params.username,
-          target: albumTitle
-        })
-        .then(
-          res => {
-            if (res.data.status == "ok") {
-              for (let i = 0; i < this.albums.length; ++i) {
-                if (this.albums[i].title == albumTitle) {
-                  this.albums[i].imgs = res.data.albums[0].imgs;
-                  return;
-                }
-              }
-              // albumTitle not found, this is a new album
-              res.data.albums[0].show = true;
-              this.albums.push(res.data.albums[0]);
-            }
-          },
-          () => {
-            this.toastErr("Refresh album failed");
+      this.apiPost(
+        {
+          route: "/get/album",
+          data: {
+            username: this.$route.params.username,
+            target: albumTitle
           }
-        );
+        },
+        data => {
+          for (let i = 0; i < this.albums.length; ++i) {
+            if (this.albums[i].title == albumTitle) {
+              this.albums[i].imgs = data.albums[0].imgs;
+              return;
+            }
+          }
+          // albumTitle not found, this is a new album
+          data.albums[0].show = true;
+          this.albums.push(data.albums[0]);
+        },
+        "Refresh album failed"
+      );
     },
     downloadImg(url, title) {
       var t = document.createElement("a");
@@ -211,13 +208,6 @@ export default {
       return imgs.sort((a, b) => {
         return b.time - a.time;
       });
-    },
-    /**
-     * `s` can be `undefined`
-     */
-    showSubmitErr(s) {
-      this.submitting = false;
-      this.toastErr("Submit failed", s);
     },
     submit() {
       this.submitting = true;
@@ -266,45 +256,38 @@ export default {
         let file = this.modalForm.files[i];
         data.append("files", file);
       }
-      axios({
-        method: "post",
-        url: "/submit/img",
-        data: data,
-        config: { headers: { "Content-Type": "multipart/form-data" } }
-      })
-        .then(res => {
-          if (res.data.status == "ok") {
-            this.refresh(title);
-            this.$refs.modalForm.hide();
-            this.submitting = false;
-          } else {
-            this.showSubmitErr(res.data.status);
-          }
-        })
-        .catch(() => {
-          this.showSubmitErr();
-        });
+      this.apiPost(
+        {
+          route: "/submit/img",
+          data,
+          config: { headers: { "Content-Type": "multipart/form-data" } }
+        },
+        () => {
+          this.refresh(title);
+          this.$refs.modalForm.hide();
+          this.submitting = false;
+        },
+        "Submit failed",
+        () => (this.submitting = false)
+      );
     },
     /**
      * This function is used by route guards. Reload this whole page, refresh all albums.
      */
     updatePage() {
-      axios
-        .post("/get/album", {
-          username: this.$route.params.username
-        })
-        .then(
-          res => {
-            if (res.data.status == "ok") {
-              this.albums = [];
-              for (let i = 0; i < res.data.albums.length; ++i) {
-                res.data.albums[i].show = true;
-                this.albums.push(res.data.albums[i]);
-              }
-            }
-          },
-          () => {}
-        );
+      this.apiPost(
+        {
+          route: "/get/album",
+          data: { username: this.$route.params.username }
+        },
+        data => {
+          this.albums = [];
+          for (let i = 0; i < data.albums.length; ++i) {
+            data.albums[i].show = true;
+            this.albums.push(data.albums[i]);
+          }
+        }
+      );
     },
     showDupImgErr() {
       this.toastErr("Warning", this.duplicatedImgHint, "warning");
@@ -338,15 +321,6 @@ export default {
       this.renameForm.oldName = this.renameForm.newName = oldName;
       this.renameForm.albumTitle = albumTitle;
       this.$refs.renameForm.show();
-    },
-    /**
-     * `s` can be `undefined`
-     */
-    showRenameErr(s) {
-      this.toastErr("Rename failed", s);
-    },
-    showDelErr(s) {
-      this.toastErr("Delete failed", s);
     },
     rename() {
       this.$refs.renameForm.hide();
@@ -384,38 +358,31 @@ export default {
             newTitle: this.renameForm.newName
           };
       // send req
-      axios.post(route, data).then(
-        res => {
-          if (res.data.status == "ok") {
-            if (renameAlbum) {
-              for (let i = 0; i < this.albums.length; ++i) {
-                if (this.albums[i].title == this.renameForm.oldName) {
-                  this.albums[i].title = this.renameForm.newName;
-                  return;
-                }
+      this.apiPost(
+        { route, data },
+        () => {
+          if (renameAlbum) {
+            for (let i = 0; i < this.albums.length; ++i) {
+              if (this.albums[i].title == this.renameForm.oldName) {
+                this.albums[i].title = this.renameForm.newName;
+                return;
               }
-            } else {
-              // rename img
-              for (let i = 0; i < this.albums.length; ++i) {
-                if (this.albums[i].title == this.renameForm.albumTitle) {
-                  for (let j = 0; j < this.albums[i].imgs.length; ++j) {
-                    if (
-                      this.albums[i].imgs[j].title == this.renameForm.oldName
-                    ) {
-                      this.albums[i].imgs[j].title = this.renameForm.newName;
-                      return;
-                    }
+            }
+          } else {
+            // rename img
+            for (let i = 0; i < this.albums.length; ++i) {
+              if (this.albums[i].title == this.renameForm.albumTitle) {
+                for (let j = 0; j < this.albums[i].imgs.length; ++j) {
+                  if (this.albums[i].imgs[j].title == this.renameForm.oldName) {
+                    this.albums[i].imgs[j].title = this.renameForm.newName;
+                    return;
                   }
                 }
               }
             }
-          } else {
-            this.showRenameErr(res.data.status);
           }
         },
-        () => {
-          this.showRenameErr();
-        }
+        "Rename failed"
       );
     },
     del(albumTitle, imgTitle) {
@@ -433,34 +400,29 @@ export default {
           albumTitle
         };
       }
-      axios
-        .post(route, data)
-        .then(res => {
-          if (res.data.status == "ok") {
-            if (imgTitle) {
-              // delete img
-              for (let i = 0; i < this.albums.length; ++i) {
-                if (this.albums[i].title == albumTitle) {
-                  this.albums[i].imgs = this.albums[i].imgs.filter(s => {
-                    return s.title != imgTitle;
-                  });
-                  return;
-                }
+      this.apiPost(
+        { route, data },
+        () => {
+          if (imgTitle) {
+            // delete img
+            for (let i = 0; i < this.albums.length; ++i) {
+              if (this.albums[i].title == albumTitle) {
+                this.albums[i].imgs = this.albums[i].imgs.filter(s => {
+                  return s.title != imgTitle;
+                });
+                return;
               }
-            } else {
-              // delete album
-              this.albums = this.albums.filter(s => {
-                return s.title != albumTitle;
-              });
-              if (!this.albums.length) this.updatePage();
             }
           } else {
-            this.showDelErr(res.data.status);
+            // delete album
+            this.albums = this.albums.filter(s => {
+              return s.title != albumTitle;
+            });
+            if (!this.albums.length) this.updatePage();
           }
-        })
-        .catch(() => {
-          this.showDelErr();
-        });
+        },
+        "Delete failed"
+      );
     }
   },
   beforeRouteUpdate(to, from, next) {
