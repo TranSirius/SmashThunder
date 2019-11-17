@@ -61,7 +61,7 @@ class GetFolderDetail():
             for post, comment_num in posts:
                 post_dict = dict()
                 star_num = db_session_instance\
-                    .query(func.count(Star)).outerjoin(Post)\
+                    .query(func.count(Star.user_id)).outerjoin(Post)\
                     .filter(Star.post_id == post.ID)\
                     .group_by(Star.post_id)\
                     .first()
@@ -118,7 +118,7 @@ class GetPost():
 
         else:
             star_num = db_session_instance\
-                .query(func.count(Star)).outerjoin(Post)\
+                .query(func.count(Star.user_id)).outerjoin(Post)\
                 .filter(Star.post_id == post.ID)\
                 .group_by(Star.post_id)\
                 .first()
@@ -142,5 +142,5 @@ class GetPost():
                 comment['time'] = c.create_time
                 comment_list.append(comment)
             return_post['comments'] = comment_list
-
+ 
             return return_post
