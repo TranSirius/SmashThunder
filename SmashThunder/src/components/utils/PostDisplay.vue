@@ -1,9 +1,6 @@
 <template>
   <div class="w-100">
-    <b-card-body
-      v-if="format=='md'"
-      v-html="resultHTML"
-    ></b-card-body>
+    <b-card-body v-if="format=='md'" class="w-100" v-html="resultHTML"></b-card-body>
     <iframe
       v-else
       :srcdoc="resultHTML"
@@ -11,8 +8,11 @@
       seamless
       frameborder="0"
       scrolling="no"
-      @load="resizeHeight"
-      ref="iframe"
+      v-resize="{
+        /* For debug, enable `log` */
+        /* log: true, */
+        checkOrigin: false
+        /* TODO: set `checkOrigin` to false may be dangerous */}"
     ></iframe>
   </div>
 </template>
@@ -20,6 +20,7 @@
 <script>
 import { parse, HtmlGenerator } from "latex.js";
 import showdown from "showdown";
+import iFrameResize from "iframe-resizer/js/iframeResizer";
 
 var converter = new showdown.Converter();
 var generator = new HtmlGenerator({
@@ -33,13 +34,12 @@ export default {
     format: String,
     raw: String
   },
-  methods: {
-    /**
-     * Set iframe height to its document body's height. So the body can NOT has margin top/bottom
-     */
-    resizeHeight() {
-      this.$refs.iframe.style.height =
-        this.$refs.iframe.contentWindow.document.documentElement.scrollHeight + "px";
+  directives: {
+    // ref: https://github.com/davidjbradshaw/iframe-resizer/blob/master/docs/use_with/vue.md
+    resize: {
+      bind: function(el, { value = {} }) {
+        el.addEventListener("load", () => iFrameResize(value, el));
+      }
     }
   },
   computed: {
@@ -51,7 +51,17 @@ export default {
           // The path of resource file is `/static`
           var doc = parse(this.raw, {
             generator: generator
-          }).htmlDocument(window.location.protocol+'//'+window.location.host+'/static/');
+          }).htmlDocument(
+            window.location.protocol + "//" + window.location.host + "/static/"
+          );
+          // append iframe resizer script
+          // ref: https://stackoverflow.com/questions/9413737/how-to-append-script-script-in-javascript
+          var s = doc.createElement("script");
+          s.setAttribute(
+            "src",
+            "/static/js/iframeResizer.contentWindow.min.js"
+          );
+          doc.documentElement.appendChild(s);
           return doc.documentElement.outerHTML;
         } catch (e) {
           return e.message;
