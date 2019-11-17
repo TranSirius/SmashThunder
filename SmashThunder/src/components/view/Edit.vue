@@ -34,7 +34,7 @@
         </b-col>
       </b-form-row>
       <b-form-row>
-        <b-col>
+        <b-col cols="6">
           <b-form-group class="h-100" label="Post Content" label-for="textarea">
             <b-form-textarea
               id="textarea"
@@ -46,9 +46,9 @@
             ></b-form-textarea>
           </b-form-group>
         </b-col>
-        <b-col>
-          <b-form-group label="Realtime Render">
-            <b-card style="height:500px;overflow:scroll" no-body>
+        <b-col cols="6">
+          <b-form-group label="Realtime Renderer">
+            <b-card style="height:500px;overflow-y:scroll" no-body>
               <PostDisplay :raw="form.text" :format="form.format"></PostDisplay>
             </b-card>
           </b-form-group>
