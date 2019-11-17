@@ -52,6 +52,7 @@
                 size="sm"
                 @click="publishPost(folder.title, data.item.title,data.item.published)"
               >
+              <b-dropdown-item variant="info">Set as HOME</b-dropdown-item>
                 <b-dropdown-item
                   variant="secondary"
                   @click="showRenameForm(data.item.title,folder.title)"
