@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- edit post form -->
-    <b-form @submit.prevent="submit" style="height:500px">
+    <b-form @submit.prevent="submit(true)" style="height:500px">
       <b-form-row>
         <b-col cols="6">
           <b-form-group label="Post title" label-for="postTitle">
@@ -34,7 +34,7 @@
         </b-col>
       </b-form-row>
       <b-form-row>
-        <b-col>
+        <b-col cols="6">
           <b-form-group class="h-100" label="Post Content" label-for="textarea">
             <b-form-textarea
               id="textarea"
@@ -46,36 +46,31 @@
             ></b-form-textarea>
           </b-form-group>
         </b-col>
-        <b-col>
-          <b-form-group label="Realtime Render">
-            <b-card style="height:500px" no-body>
-              <b-embed v-if="form.format=='lex'"></b-embed>
-              <b-card-body v-if="form.format=='md'" v-html="resultHTML" style="overflow:scroll"></b-card-body>
+        <b-col cols="6">
+          <b-form-group label="Realtime Renderer">
+            <b-card style="height:500px;overflow-y:scroll" no-body>
+              <PostDisplay :raw="form.text" :format="form.format"></PostDisplay>
             </b-card>
           </b-form-group>
         </b-col>
       </b-form-row>
-      <b-button type="submit" variant="primary">Submit</b-button>
-      <b-button type="reset" variant="danger">Reset</b-button>
+      <b-button type="submit" variant="primary">Publish</b-button>
+      <b-button class="ml-2" type="button" variant="secondary" @click="submit(false)">Save As Draft</b-button>
     </b-form>
   </div>
 </template>
 
 <script>
-import showdown from "showdown";
-import axios from "axios";
 import errHandler from "../mixin/errHandler";
 import NewableSelect from "../utils/NewableSelect";
 import strCheck from "../mixin/strCheck";
-import { parse, HtmlGenerator } from "latex.js";
-
-var converter = new showdown.Converter();
-let generator = new HtmlGenerator({ hyphenate: false });
+import PostDisplay from "../utils/PostDisplay";
+import netapi from "../mixin/netapi";
 
 export default {
   name: "Edit",
-  mixins: [errHandler, strCheck],
-  components: { NewableSelect },
+  mixins: [errHandler, strCheck, netapi],
+  components: { NewableSelect, PostDisplay },
   data() {
     return {
       form: {
@@ -89,7 +84,7 @@ export default {
     };
   },
   methods: {
-    submit() {
+    submit(publish) {
       if (!this.checkFileName(this.form.title)) {
         this.toastErr(
           "Submit failed",
@@ -118,15 +113,20 @@ export default {
         );
         return;
       }
-      axios
-        .post("/submit/post", {
-          title: this.form.title,
-          folder: this.form.folder,
-          format: this.form.format,
-          content: this.form.text
-        })
-        .then(res => {
-          if (res.data.status == "ok") {
+      this.apiPost(
+        {
+          route: "/submit/post",
+          data: {
+            title: this.form.title,
+            folder: this.form.folder,
+            format: this.form.format,
+            content: this.form.text,
+            published: publish
+          }
+        },
+        () => {
+          if (publish) {
+            // redirect page to the post
             this.$router.push(
               "/" +
                 this.$root.$data.user.username +
@@ -136,47 +136,39 @@ export default {
                 this.form.title
             );
           } else {
-            this.toastErr("Create post error", res.data.status);
+            this.toastErr(
+              "Succeed",
+              "Your post has been saved successfully.",
+              "success"
+            );
           }
-        })
-        .catch(() => {
-          this.toastErr("Create post error");
-        });
-    },
-    showGetFoldersErr(s) {
-      this.toastErr("Error when getting folders", s);
+        },
+        "Create post error"
+      );
     },
     enter() {
-      axios
-        .post("/get/post/folders")
-        .then(res => {
-          if (res.data.status == "ok") {
-            if (res.data.folders.length) {
-              this.form.folder = res.data.folders[0].title;
-              this.form.folders = res.data.folders;
-            } else {
-              this.form.folder = this.form.newFolderHint;
-            }
+      this.apiPost(
+        { route: "/get/post/folders" },
+        data => {
+          if (data.folders.length) {
+            this.form.folder = data.folders[0].title;
+            this.form.folders = data.folders;
           } else {
-            this.showGetFoldersErr(res.data.status);
+            this.form.folder = this.form.newFolderHint;
           }
-        })
-        .catch(() => this.showGetFoldersErr());
+          // to designated folder
+          if (this.$route.query.folder) {
+            if (
+              this.form.folders.filter(v => v.title == this.$route.query.folder)
+            )
+              this.form.folder = this.$route.query.folder;
+          }
+        },
+        "Error when getting folders"
+      );
     }
   },
   computed: {
-    resultHTML() {
-      if (this.form.format == "md") return converter.makeHtml(this.form.text);
-      else {
-        generator.reset();
-        try {
-          return parse(this.form.text, { generator: generator }).htmlDocument()
-            .outerHTML;
-        } catch (e) {
-          return e.message;
-        }
-      }
-    },
     folderOptions() {
       var result = [];
       this.form.folders.map(v => result.push(v.title));
