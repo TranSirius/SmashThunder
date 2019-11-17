@@ -6,7 +6,12 @@ from flask import url_for
 from flask import request
 
 from web.db import databases
-from web.db.datamodels import User, Album, Photo
+from web.db.datamodels import User, Album, Photo, MainPage, Comment
+from web.logic.geter import GetPhotos
+from web.logic.geter import GetFolderDetail
+from web.logic.geter import GetPost
+from web.logic.geter import GetFolder
+from web.views.auth import loginRequest
 
 mod = Blueprint('get', __name__, url_prefix = '/get')
 
@@ -22,35 +27,111 @@ def album():
         return ret
         
     request_user_id = request_user.ID
+    request_user_name = request_user.user_name
     target_album = None
     if 'target' in request.json:
         target_album = request.json['target']
 
-    if target_album is None:
-        album_list = db_session.query(Album).join(User).filter(User.ID == request_user_id).all()
+    geter = GetPhotos()
+    try:
+        ret_album = geter(user_name = request_user_name, album_name = target_album)
+        ret['albums'] = ret_album
+    except:
+        ret['status'] = "Something wrong"
     else:
-        album_list = db_session.query(Album).join(User).filter(User.ID == request_user_id, Album.album_title == target_album).all()
+        ret['status'] = 'ok'
+        return ret
 
-    ret_album = []
-    for album in album_list:
-        album_title = album.album_title
-        create_time = album.create_time
-        photos = db_session.query(Photo).join(Album).join(User).filter(User.user_name == user_name).filter(Album.album_title == album_title)
-        photo_list = []
-        for photo in photos:
-            single_photo = dict()
-            single_photo['url'] = '/data/' + user_name + '/img/' + album_title + '/' + photo.photo_title
-            single_photo['title'] = photo.photo_title
-            single_photo['time'] = photo.create_time
-            photo_list.append(single_photo)
-        single_album = dict()
-        single_album['title'] = album_title
-        single_album['createTime'] = create_time
-        single_album['imgs'] = photo_list
-        ret_album.append(single_album)
+@mod.route('/post', methods = ['POST'])
+def getPost():
+    ret = dict()
+    try:
+        user_name = request.json['username']
+        folder_name = request.json['folder']
+        post_name = request.json['postTitle']
+    except:
+        ret['status'] = 'Requesting Format Error!'
+        return ret
 
-    ret['albums'] = ret_album
+    geter = GetPost()
+    post = geter(user_name, folder_name, post_name)
+    if post is None:
+        ret['status'] = 'Post Not Exist!'
+    else:
+        ret = post
+        ret['status'] = 'ok'
+        return ret
+
+
+
+@mod.route('/post/foldersDetail', methods = ['POST'])
+def postFolderDetail():
+    user_id = g.user_id
+    ret = dict()
+    geter = GetFolderDetail()
+    ret['folders'] = geter(user_id)
     ret['status'] = 'ok'
     return ret
 
+@mod.route('/post/folders', methods = ['POST'])
+@loginRequest
+def postFolders():
+    user_id = g.user_id
+    ret = dict()
+    geter = GetFolder()
+    ret['folders'] = geter(user_id)
+    ret['status'] = 'ok'
+    return ret
 
+@mod.route('/mainpage', methods = ['POST'])
+def getMainPage():
+    ret = dict()
+    db_session_instance = databases.db_session()
+
+    try:
+        user_name = request.json['username']
+    except:
+        ret['status'] = 'Requesting Format Error!'
+        return ret
+
+    main_page = db_session_instance\
+        .query(MainPage).join(User)\
+        .filter(User.user_name == user_name)\
+        .first()
+
+    if main_page is None:
+        ret['status'] = 'ok'
+        ret['exist'] = False
+        return ret
+    ret['exist'] = True
+    geter = GetPost()
+    post = db_session_instance\
+        .query(Post)\
+        .filter(Post.ID == main_page.post_id)\
+        .first()
+    
+    return_post = dict()
+    return_post['title'] = post.post_title
+    return_post['createTime'] = post.create_time
+    return_post['content'] = post.post_content
+    return_post['format'] = post.document_format
+    return_post['postID'] = post.ID
+    return_post['stars'] = post.stars
+    return_post['published'] = post.is_published
+
+    comments = db_session_instance\
+        .query(Comment, User.user_name).join(Post)\
+        .filter(Post.ID == post.ID).filter(User.ID == Comment.user_id)\
+        .all()
+    comment_list = []
+    for c, u in comments:
+        comment = dict()
+        comment['username'] = str(u)
+        comment['comment'] = c.content
+        comment['time'] = c.create_time
+        comment_list.append(comment)
+    return_post['comments'] = comment_list
+
+    ret['post'] = return_post
+    ret['status'] = 'ok'
+    return ret
