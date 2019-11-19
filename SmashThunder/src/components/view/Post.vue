@@ -23,7 +23,7 @@
     <!-- Action buttons -->
     <b-button-group vertical id="actionBtns">
       <b-button>Follow</b-button>
-      <b-button>Download</b-button>
+      <b-button @click="downloadPost">Download</b-button>
       <b-button>Edit</b-button>
       <b-button>Star</b-button>
       <b-button>Report</b-button>
@@ -35,10 +35,11 @@
 import PostDisplay from "../utils/PostDisplay";
 import netapi from "../mixin/netapi";
 import timeFilter from "../mixin/timeFilter";
+import downloadUtils from "../mixin/downloadUtils";
 
 export default {
   name: "Post",
-  mixins: [netapi, timeFilter],
+  mixins: [netapi, timeFilter, downloadUtils],
   components: { PostDisplay },
   data() {
     return {
@@ -47,6 +48,28 @@ export default {
     };
   },
   methods: {
+    downloadPost() {
+      let username = this.$route.params.username;
+      let folder = this.$route.params.folder;
+      let post = this.$route.params.title;
+      this.apiPost(
+        {
+          route: "/render",
+          data: {
+            username,
+            folder,
+            post,
+            format: "pdf"
+          }
+        },
+        data => {
+          this.download(
+            "/render/" + data.filename,
+            `${username}_${folder}_${post}`
+          );
+        }
+      );
+    },
     comment() {
       var text = this.text;
       this.apiPost(
