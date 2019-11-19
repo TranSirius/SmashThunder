@@ -52,7 +52,9 @@ export default {
       if (this.format == "md")
         return (
           converter.makeHtml(this.raw) +
-          '<link rel="stylesheet" href="/static/css/katex.css">'
+          '<link rel="stylesheet" href="/static/css/katex.css">' + // for markdown math
+          '<script src="/static/js/iframeResizer.contentWindow.min.js"></' +
+          "script>" // for iframe-resizer
         );
       else {
         try {
@@ -68,7 +70,7 @@ export default {
           var s = doc.createElement("script");
           s.setAttribute(
             "src",
-            "/static/js/iframeResizer.contentWindow.min.js"
+            "/static/js/iframeResizer.contentWindow.min.js" // for iframe resizer
           );
           doc.documentElement.appendChild(s);
           return doc.documentElement.outerHTML;
