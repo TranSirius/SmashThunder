@@ -1,16 +1,19 @@
 <template>
-  <iframe
-    :srcdoc="resultHTML"
-    width="100%"
-    seamless
-    frameborder="0"
-    scrolling="no"
-    v-resize="{
+  <!-- This div is necessary for scroll-y -->
+  <div>
+    <iframe
+      :srcdoc="resultHTML"
+      width="100%"
+      seamless
+      frameborder="0"
+      scrolling="no"
+      v-resize="{
       /* For debug, enable `log` */
       /* log: true, */
       checkOrigin: false
       /* TODO: set `checkOrigin` to false may be dangerous */}"
-  ></iframe>
+    ></iframe>
+  </div>
 </template>
 
 <script>
@@ -53,6 +56,7 @@ export default {
         return (
           converter.makeHtml(this.raw) +
           '<link rel="stylesheet" href="/static/css/katex.css">' + // for markdown math
+          "<style>body{margin:0;padding:20px}</style>" + // to make `body` has correct height
           '<script src="/static/js/iframeResizer.contentWindow.min.js"></' +
           "script>" // for iframe-resizer
         );
