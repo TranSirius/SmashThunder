@@ -144,3 +144,44 @@ class GetPost():
             return_post['comments'] = comment_list
  
             return return_post
+
+    def getByPostID(self, post_id):
+        db_session_instance = db_session()
+        return_post = dict()
+
+        post = db_session_instance\
+            .query(Post)\
+            .filter(Post.ID == post_id)\
+            .first()
+
+        if post is None:
+            return None
+
+        else:
+            star_num = db_session_instance\
+                .query(func.count(Star.user_id)).outerjoin(Post)\
+                .filter(Star.post_id == post.ID)\
+                .group_by(Star.post_id)\
+                .first()
+            return_post['title'] = post.post_title
+            return_post['createTime'] = post.create_time
+            return_post['content'] = post.post_content
+            return_post['format'] = post.document_format
+            return_post['postID'] = post.ID
+            return_post['stars'] = star_num
+            return_post['published'] = post.is_published
+
+            comments = db_session_instance\
+                .query(Comment, User.user_name).join(Post)\
+                .filter(Post.ID == post.ID).filter(User.ID == Comment.user_id)\
+                .all()
+            comment_list = []
+            for c, u in comments:
+                comment = dict()
+                comment['username'] = str(u)
+                comment['comment'] = c.content
+                comment['time'] = c.create_time
+                comment_list.append(comment)
+            return_post['comments'] = comment_list
+ 
+            return return_post

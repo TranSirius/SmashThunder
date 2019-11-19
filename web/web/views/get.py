@@ -105,32 +105,10 @@ def getMainPage():
         return ret
     ret['exist'] = True
     geter = GetPost()
-    post = db_session_instance\
-        .query(Post)\
-        .filter(Post.ID == main_page.post_id)\
-        .first()
-    
-    return_post = dict()
-    return_post['title'] = post.post_title
-    return_post['createTime'] = post.create_time
-    return_post['content'] = post.post_content
-    return_post['format'] = post.document_format
-    return_post['postID'] = post.ID
-    return_post['stars'] = post.stars
-    return_post['published'] = post.is_published
-
-    comments = db_session_instance\
-        .query(Comment, User.user_name).join(Post)\
-        .filter(Post.ID == post.ID).filter(User.ID == Comment.user_id)\
-        .all()
-    comment_list = []
-    for c, u in comments:
-        comment = dict()
-        comment['username'] = str(u)
-        comment['comment'] = c.content
-        comment['time'] = c.create_time
-        comment_list.append(comment)
-    return_post['comments'] = comment_list
+    return_post = geter.getByPostID(post_id = main_page.post_id)
+    if post is None:
+        ret['status'] = 'Main Page Not Exist! Data Consistency Error!'
+        return ret
 
     ret['post'] = return_post
     ret['status'] = 'ok'
