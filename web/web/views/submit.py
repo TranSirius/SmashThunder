@@ -108,6 +108,31 @@ def uploadPost():
     ret['status'] = 'ok'
     return ret
 
+@mod.route('/mainpage', methods = ['POST'])
+@loginRequest
+def submitMainPage():
+    ret = dict()
+    db_session_instance = databases.db_session()
+
+    try:
+        folder = request.json['folder']
+        title = request.json['title']
+    except KeyError:
+        ret['status'] = "KeyError!"
+        return ret
+
+    post = db_session_instance\
+        .query(Post).join(Folder)\
+        .filter(Folder.user_ID == g.user_id).filter(Folder.folder_title == folder).filter(Post.post_title == post)\
+        .first()
+
+    mainpage = MainPage(user_id = g.user_id, post_id = post.ID)
+    db_session_instance.merge(mainpage)
+    db_session_instance.commit()
+
+    ret['status'] = 'ok'
+    return ret
+
 @mod.route('/comment', methods = ['POST'])
 @loginRequest
 def uploadComment():
@@ -146,31 +171,9 @@ def uploadComment():
     ret['status'] = 'ok'
     return ret
 
-@mod.route('/mainpage', methods = ['POST'])
-def submitMainPage():
-    ret = dict()
-    db_session_instance = databases.db_session()
-
-    try:
-        folder = request.json['folder']
-        title = request.json['title']
-    except KeyError:
-        ret['status'] = "KeyError!"
-        return ret
-
-    post = db_session_instance\
-        .query(Post).join(Folder)\
-        .filter(Folder.user_ID == g.user_id).filter(Folder.folder_title == folder).filter(Post.post_title == post)\
-        .first()
-
-    mainpage = MainPage(user_id = g.user_id, post_id = post.ID)
-    db_session_instance.merge(mainpage)
-    db_session_instance.commit()
-
-    ret['status'] = 'ok'
-    return ret
 
 @mod.route('/star', methods = ['POST'])
+@loginRequest
 def submitStar():
     ret = dict()
     db_session_instance = databases.db_session()

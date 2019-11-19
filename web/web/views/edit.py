@@ -8,6 +8,7 @@ from flask import current_app as app
 
 from web.db import databases
 from web.db.datamodels import User, Album, Photo, Folder, Post
+from web.views.auth import loginRequest
 
 from web.index import doctype
 from elasticsearch_dsl import Search
@@ -20,6 +21,7 @@ import datetime
 mod = Blueprint('edit', __name__, url_prefix = '/edit')
 
 @mod.route('/album/rename', methods = ['POST'])
+@loginRequest
 def albumRename():
     ret = dict()
     user_id = g.user_id
@@ -52,6 +54,7 @@ def albumRename():
     return ret
 
 @mod.route('/album/delete', methods = ['POST'])
+@loginRequest
 def albumDelete():
     ret = dict()
     user_id = g.user_id
@@ -97,6 +100,7 @@ def albumDelete():
     return ret
 
 @mod.route('/img/rename', methods = ['POST'])
+@loginRequest
 def imgRename():
     ret = dict()
     user_id = g.user_id
@@ -143,6 +147,7 @@ def imgRename():
     return ret
 
 @mod.route('/img/delete', methods = ['POST'])
+@loginRequest
 def imgDelete():
     ret = dict()
     user_id = g.user_id
@@ -186,6 +191,7 @@ def imgDelete():
     return ret
 
 @mod.route('/folder/rename', methods = ['POST'])
+@loginRequest
 def folderRename():
     ret = dict()
     try:
@@ -221,6 +227,7 @@ def folderRename():
     return ret
 
 @mod.route('/folder/delete', methods = ['POST'])
+@loginRequest
 def folderDelete():
     ret = dict()
     db_session_instance = databases.db_session()
@@ -254,6 +261,7 @@ def folderDelete():
     return ret
 
 @mod.route('/post/publish', methods = ['POST'])
+@loginRequest
 def editPostPublish():
     ret = dict()
     try:
@@ -280,6 +288,7 @@ def editPostPublish():
     return ret
 
 @mod.route('/post/rename', methods = ['POST'])
+@loginRequest
 def editPostRename():
     ret = dict()
     db_session_instance = databases.db_session()
@@ -312,6 +321,7 @@ def editPostRename():
     return ret
 
 @mod.route('/post/delete', methods = ['POST'])
+@loginRequest
 def editPostDelete():
     ret = dict()
     db_session_instance = databases.db_session()
