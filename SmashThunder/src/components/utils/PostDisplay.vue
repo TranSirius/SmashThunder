@@ -53,11 +53,11 @@ export default {
   computed: {
     resultHTML() {
       if (this.format == "md") {
-        var result = "";
+        var result = `<head><base href="/data/${this.$route.params.username}/img/"></head>`;
         try {
-          result = converter.makeHtml(this.raw);
+          result += converter.makeHtml(this.raw);
         } catch (e) {
-          return e.message;
+          result = e.message;
         }
         result +=
           '<link rel="stylesheet" href="/static/css/katex.css">' + // for markdown math
