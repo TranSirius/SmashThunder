@@ -16,14 +16,13 @@ import Edit from "./components/view/Edit.vue"
 import Posts from "./components/view/Posts.vue"
 import Post from "./components/view/Post.vue"
 import Admin from "./components/view/Admin.vue"
-import Home from "./components/view/Home.vue"
 
 const routes = [
   {
     path: '/', component: News,
   },
   {
-    path: '/:username', component: Home
+    path: '/:username', component: Post
   },
   {
     path: '/:username/album', component: Album
