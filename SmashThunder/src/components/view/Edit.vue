@@ -190,17 +190,21 @@ export default {
           }
           // edit existing post
           if (this.$route.query.post) {
-            this.apiPost({
-              route: "/get/post",
-              data: {
-                username: this.$route.params.username,
-                folder: this.$route.query.folder,
-                postTitle: this.$route.query.post
+            this.apiPost(
+              {
+                route: "/get/post",
+                data: {
+                  username: this.$route.params.username,
+                  folder: this.$route.query.folder,
+                  postTitle: this.$route.query.post
+                }
+              },
+              data => {
+                this.form.text = data.content;
+                this.form.format = data.format;
+                this.form.title = this.$route.query.post;
               }
-            }, data=>{
-              this.form.text = data.content
-              this.form.format = data.format
-            });
+            );
           }
         },
         "Error when getting folders"
