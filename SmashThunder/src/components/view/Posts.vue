@@ -53,11 +53,10 @@
                 @click="publishPost(folder.title, data.item.title,data.item.published)"
               >
                 <b-dropdown-item variant="info">Set as HOME</b-dropdown-item>
-                <b-dropdown-item variant="secondary">
-                  <b-link
-                    :to="'/'+$root.$data.user.username+'/edit?folder='+folder.title+'&post='+data.item.title"
-                  >Edit</b-link>
-                </b-dropdown-item>
+                <b-dropdown-item
+                  variant="primary"
+                  @click="$router.push('/'+$root.$data.user.username+'/edit?folder='+folder.title+'&post='+data.item.title)"
+                >Edit</b-dropdown-item>
                 <b-dropdown-item
                   variant="secondary"
                   @click="showRenameForm(data.item.title,folder.title)"
