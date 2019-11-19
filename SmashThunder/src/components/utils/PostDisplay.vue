@@ -21,8 +21,16 @@
 import { parse, HtmlGenerator } from "latex.js";
 import showdown from "showdown";
 import iFrameResize from "iframe-resizer/js/iframeResizer";
+import math from "showdown-math";
 
-var converter = new showdown.Converter();
+var converter = new showdown.Converter({
+  strikethrough: true,
+  tables: true,
+  tasklists: true,
+  disableForced4SpacesIndentedSublists: true,
+  emoji: true,
+  extensions: [math]
+});
 var generator = new HtmlGenerator({
   hyphenate: true,
   languagePatterns: "en"
