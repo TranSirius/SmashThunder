@@ -39,10 +39,11 @@
             <b-form-textarea
               id="textarea"
               v-model="form.text"
-              placeholder="Enter something..."
+              placeholder="Enter something or drop a file..."
               no-resize
               rows="20"
               style="height:500px"
+              @drop.prevent="dropFile"
             ></b-form-textarea>
           </b-form-group>
         </b-col>
@@ -74,7 +75,7 @@ export default {
   data() {
     return {
       form: {
-        text: "# Markdown Here",
+        text: "",
         title: "",
         format: "md",
         folder: "",
@@ -84,6 +85,26 @@ export default {
     };
   },
   methods: {
+    // ref: https://www.raymondcamden.com/2019/08/08/drag-and-drop-file-upload-in-vuejs
+    // ref: https://developer.mozilla.org/zh-CN/docs/Web/API/HTML_Drag_and_Drop_API/File_drag_and_drop
+    dropFile(e) {
+      let droppedFiles = e.dataTransfer.files;
+      for (let i = 0; i < droppedFiles.length; ++i) {
+        if (this.form.text) this.toastErr('Can not drop file', 'Please delete post content first.')
+        this.form.title = droppedFiles[i].name
+          .split(".")
+          .slice(0, -1)
+          .join(".");
+        if (
+          droppedFiles[i].name.endsWith("html") ||
+          droppedFiles[i].name.endsWith("md")
+        )
+          this.form.format = "md";
+        else if (droppedFiles[i].name.endsWith("tex")) this.form.format = "tex";
+        droppedFiles[i].text().then(t => (this.form.text = t));
+        break; // only load one file
+      }
+    },
     submit(publish) {
       if (!this.checkFileName(this.form.title)) {
         this.toastErr(
