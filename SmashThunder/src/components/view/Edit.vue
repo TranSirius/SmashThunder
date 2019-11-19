@@ -90,7 +90,11 @@ export default {
     dropFile(e) {
       let droppedFiles = e.dataTransfer.files;
       for (let i = 0; i < droppedFiles.length; ++i) {
-        if (this.form.text) this.toastErr('Can not drop file', 'Please delete post content first.')
+        if (this.form.text)
+          this.toastErr(
+            "Can not drop file",
+            "Please delete post content first."
+          );
         this.form.title = droppedFiles[i].name
           .split(".")
           .slice(0, -1)
@@ -183,6 +187,20 @@ export default {
               this.form.folders.filter(v => v.title == this.$route.query.folder)
             )
               this.form.folder = this.$route.query.folder;
+          }
+          // edit existing post
+          if (this.$route.query.post) {
+            this.apiPost({
+              route: "/get/post",
+              data: {
+                username: this.$route.params.username,
+                folder: this.$route.query.folder,
+                postTitle: this.$route.query.post
+              }
+            }, data=>{
+              this.form.text = data.content
+              this.form.format = data.format
+            });
           }
         },
         "Error when getting folders"

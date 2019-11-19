@@ -22,7 +22,7 @@
             :pressed.sync="folder.show"
           >{{ folder.show ? 'Hide' : 'Show' }}</b-button>
         </h2>
-        <h6>Created at {{ folder.createdTime | peekDate }}.</h6>
+        <h6>Edited at {{ folder.createdTime | peekDate }}.</h6>
         <!-- Posts table -->
         <b-collapse v-model="folder.show">
           <b-table
@@ -52,7 +52,12 @@
                 size="sm"
                 @click="publishPost(folder.title, data.item.title,data.item.published)"
               >
-              <b-dropdown-item variant="info">Set as HOME</b-dropdown-item>
+                <b-dropdown-item variant="info">Set as HOME</b-dropdown-item>
+                <b-dropdown-item variant="secondary">
+                  <b-link
+                    :to="'/'+$root.$data.user.username+'/edit?folder='+folder.title+'&post='+data.item.title"
+                  >Edit</b-link>
+                </b-dropdown-item>
                 <b-dropdown-item
                   variant="secondary"
                   @click="showRenameForm(data.item.title,folder.title)"
