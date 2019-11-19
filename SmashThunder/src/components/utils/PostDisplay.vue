@@ -1,20 +1,16 @@
 <template>
-  <div class="w-100">
-    <b-card-body v-if="format=='md'" class="w-100" v-html="resultHTML"></b-card-body>
-    <iframe
-      v-else
-      :srcdoc="resultHTML"
-      width="100%"
-      seamless
-      frameborder="0"
-      scrolling="no"
-      v-resize="{
-        /* For debug, enable `log` */
-        /* log: true, */
-        checkOrigin: false
-        /* TODO: set `checkOrigin` to false may be dangerous */}"
-    ></iframe>
-  </div>
+  <iframe
+    :srcdoc="resultHTML"
+    width="100%"
+    seamless
+    frameborder="0"
+    scrolling="no"
+    v-resize="{
+      /* For debug, enable `log` */
+      /* log: true, */
+      checkOrigin: false
+      /* TODO: set `checkOrigin` to false may be dangerous */}"
+  ></iframe>
 </template>
 
 <script>
@@ -29,6 +25,7 @@ var converter = new showdown.Converter({
   tasklists: true,
   disableForced4SpacesIndentedSublists: true,
   emoji: true,
+  // completeHTMLDocument: true,
   extensions: [math]
 });
 var generator = new HtmlGenerator({
@@ -52,7 +49,11 @@ export default {
   },
   computed: {
     resultHTML() {
-      if (this.format == "md") return converter.makeHtml(this.raw);
+      if (this.format == "md")
+        return (
+          converter.makeHtml(this.raw) +
+          '<link rel="stylesheet" href="/static/css/katex.css">'
+        );
       else {
         try {
           generator.reset();
