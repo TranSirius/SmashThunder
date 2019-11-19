@@ -52,15 +52,20 @@ export default {
   },
   computed: {
     resultHTML() {
-      if (this.format == "md")
-        return (
-          converter.makeHtml(this.raw) +
+      if (this.format == "md") {
+        var result = "";
+        try {
+          result = converter.makeHtml(this.raw);
+        } catch (e) {
+          return e.message;
+        }
+        result +=
           '<link rel="stylesheet" href="/static/css/katex.css">' + // for markdown math
           "<style>body{margin:0;padding:20px}</style>" + // to make `body` has correct height
           '<script src="/static/js/iframeResizer.contentWindow.min.js"></' +
-          "script>" // for iframe-resizer
-        );
-      else {
+          "script>"; // for iframe-resizer
+        return result;
+      } else {
         try {
           generator.reset();
           // The path of resource file is `/static`
