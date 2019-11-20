@@ -2,7 +2,7 @@
   <div>
     <!-- Content -->
     <div>
-      <PostDisplay :raw="post.content" :format="post.format"></PostDisplay>
+      <PostDisplay v-if="post" :raw="post.content" :format="post.format"></PostDisplay>
     </div>
     <!-- Comments -->
     <b-card
