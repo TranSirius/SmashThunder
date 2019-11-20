@@ -9,6 +9,7 @@
               id="postTitle"
               v-model="form.title"
               placeholder="Please input the post title"
+              required
             ></b-form-input>
           </b-form-group>
         </b-col>
@@ -29,6 +30,7 @@
               :hint="form.newFolderHint"
               modalTitle="Please enter the new folder's name"
               modalPlaceholder="New folder name"
+              required
             ></NewableSelect>
           </b-form-group>
         </b-col>
@@ -45,7 +47,10 @@
               style="height:500px"
               @drop.prevent="dropFile"
             ></b-form-textarea>
-            <template v-slot:description>You can use <pre style="display:inline">![title](album/img.png)</pre> to reference your images.</template>
+            <template v-slot:description>
+              You can use
+              <pre style="display:inline">![title](album/img.png)</pre>to reference your images.
+            </template>
           </b-form-group>
         </b-col>
         <b-col cols="6">

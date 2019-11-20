@@ -18,6 +18,7 @@
             :disabled="!$root.$data.user.loggedIn"
             rows="3"
             max-rows="6"
+            required
           ></b-form-textarea>
         </b-form-group>
         <b-button :disabled="!$root.$data.user.loggedIn" variant="primary" type="submit">Comment</b-button>

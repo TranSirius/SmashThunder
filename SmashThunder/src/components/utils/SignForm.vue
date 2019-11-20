@@ -26,6 +26,7 @@
                   v-model="$root.$data.user.username"
                   placeholder="Enter username"
                   type="text"
+                  required
                 />
               </b-form-group>
               <b-form-group label="Password" label-for="signInPassword">
@@ -34,6 +35,7 @@
                   id="signInPassword"
                   placeholder="Password"
                   v-model="password"
+                  required
                 />
               </b-form-group>
               <!-- Collapsable password2 -->
