@@ -47,7 +47,7 @@
               <b-dropdown
                 split
                 :text="data.item.published ? 'Withdraw' : 'Publish'"
-                class="mb-1 ml-3"
+                class="mb-1"
                 variant="primary"
                 v-if="editable"
                 size="sm"
