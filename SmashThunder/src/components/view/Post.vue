@@ -5,12 +5,23 @@
       <PostDisplay :raw="post.content" :format="post.format"></PostDisplay>
     </div>
     <!-- Comments -->
-    <b-card title="Leave a comment" :sub-title="$root.$data.user.username+':'" class="mb-2">
+    <b-card
+      v-if="$root.$data.user.loggedIn"
+      title="Leave a comment"
+      :sub-title="$root.$data.user.loggedIn?$root.$data.user.username+':':''"
+      class="mb-2"
+    >
       <b-form @submit.prevent="comment">
         <b-form-group>
-          <b-form-textarea v-model="text" placeholder="Enter something..." rows="3" max-rows="6"></b-form-textarea>
+          <b-form-textarea
+            v-model="text"
+            :placeholder="$root.$data.user.loggedIn?'Enter something...':'Please sign in/up first'"
+            :disabled="!$root.$data.user.loggedIn"
+            rows="3"
+            max-rows="6"
+          ></b-form-textarea>
         </b-form-group>
-        <b-button variant="primary" type="submit">Comment</b-button>
+        <b-button :disabled="!$root.$data.user.loggedIn" variant="primary" type="submit">Comment</b-button>
       </b-form>
     </b-card>
     <b-card v-for="comment in post.comments" :key="comment.time" class="mb-2">
@@ -22,13 +33,14 @@
     </b-card>
     <!-- Action buttons -->
     <b-button-group vertical id="actionBtns">
-      <b-button>Follow</b-button>
+      <b-button :disabled="!$root.$data.user.loggedIn">Follow</b-button>
       <b-button @click="downloadPost">Download</b-button>
       <b-button
+        v-if="editable"
         @click="$router.push('/'+$root.$data.user.username+'/edit?folder='+$route.params.folder+'&post='+$route.params.title)"
       >Edit</b-button>
-      <b-button>Star</b-button>
-      <b-button>Report</b-button>
+      <b-button :disabled="!$root.$data.user.loggedIn">Star</b-button>
+      <b-button :disabled="!$root.$data.user.loggedIn">Report</b-button>
     </b-button-group>
   </div>
 </template>
@@ -127,6 +139,14 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next(v => v.enter());
+  },
+  computed: {
+    editable() {
+      return (
+        this.$root.$data.user.loggedIn &&
+        this.$route.params.username == this.$root.$data.user.username
+      );
+    }
   }
 };
 </script>
