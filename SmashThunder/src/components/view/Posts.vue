@@ -22,7 +22,7 @@
             :pressed.sync="folder.show"
           >{{ folder.show ? 'Hide' : 'Show' }}</b-button>
         </h2>
-        <h6>Created at {{ folder.createdTime | peekDate }}.</h6>
+        <h6>Edited at {{ folder.createdTime | peekDate }}.</h6>
         <!-- Posts table -->
         <b-collapse v-model="folder.show">
           <b-table
@@ -57,9 +57,16 @@
                   @click="postToMainPage(folder.title,data.item.title)"
                 >Set as HOME</b-dropdown-item>
                 <b-dropdown-item
+                  variant="primary"
+                  @click="$router.push('/'+$root.$data.user.username+'/edit?folder='+folder.title+'&post='+data.item.title)"
+                >Edit</b-dropdown-item>
+                <b-dropdown-item
                   variant="secondary"
                   @click="showRenameForm(data.item.title,folder.title)"
                 >Rename</b-dropdown-item>
+                <b-dropdown-item
+                  @click="downloadPost($route.params.username,folder.title,data.item.title)"
+                >Download</b-dropdown-item>
                 <b-dropdown-item
                   variant="danger"
                   @click="deletePostOrFolder(folder.title, data.item.title)"
@@ -88,10 +95,11 @@ import timeFilter from "../mixin/timeFilter";
 import strCheck from "../mixin/strCheck";
 import arrayCheck from "../mixin/arrayCheck";
 import ModalInput from "../utils/ModalInput";
+import downloadUtils from "../mixin/downloadUtils";
 
 export default {
   name: "Posts",
-  mixins: [timeFilter, strCheck, netapi, arrayCheck],
+  mixins: [timeFilter, strCheck, netapi, arrayCheck, downloadUtils],
   components: { ModalInput },
   data() {
     return {
@@ -115,6 +123,25 @@ export default {
     };
   },
   methods: {
+    downloadPost(username, folder, post) {
+      this.apiPost(
+        {
+          route: "/render",
+          data: {
+            username,
+            folder,
+            post,
+            format: "pdf"
+          }
+        },
+        data => {
+          this.download(
+            "/render/" + data.filename,
+            `${username}_${folder}_${post}`
+          );
+        }
+      );
+    },
     rowStyle(item) {
       if (item.published) {
         return "table-success";

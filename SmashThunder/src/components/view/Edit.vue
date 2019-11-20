@@ -39,11 +39,13 @@
             <b-form-textarea
               id="textarea"
               v-model="form.text"
-              placeholder="Enter something..."
+              placeholder="Enter something or drop a file..."
               no-resize
               rows="20"
               style="height:500px"
+              @drop.prevent="dropFile"
             ></b-form-textarea>
+            <template v-slot:description>You can use <pre style="display:inline">![title](album/img.png)</pre> to reference your images.</template>
           </b-form-group>
         </b-col>
         <b-col cols="6">
@@ -74,7 +76,7 @@ export default {
   data() {
     return {
       form: {
-        text: "# Markdown Here",
+        text: "",
         title: "",
         format: "md",
         folder: "",
@@ -84,6 +86,30 @@ export default {
     };
   },
   methods: {
+    // ref: https://www.raymondcamden.com/2019/08/08/drag-and-drop-file-upload-in-vuejs
+    // ref: https://developer.mozilla.org/zh-CN/docs/Web/API/HTML_Drag_and_Drop_API/File_drag_and_drop
+    dropFile(e) {
+      let droppedFiles = e.dataTransfer.files;
+      for (let i = 0; i < droppedFiles.length; ++i) {
+        if (this.form.text)
+          this.toastErr(
+            "Can not drop file",
+            "Please delete post content first."
+          );
+        this.form.title = droppedFiles[i].name
+          .split(".")
+          .slice(0, -1)
+          .join(".");
+        if (
+          droppedFiles[i].name.endsWith("html") ||
+          droppedFiles[i].name.endsWith("md")
+        )
+          this.form.format = "md";
+        else if (droppedFiles[i].name.endsWith("tex")) this.form.format = "tex";
+        droppedFiles[i].text().then(t => (this.form.text = t));
+        break; // only load one file
+      }
+    },
     submit(publish) {
       if (!this.checkFileName(this.form.title)) {
         this.toastErr(
@@ -162,6 +188,24 @@ export default {
               this.form.folders.filter(v => v.title == this.$route.query.folder)
             )
               this.form.folder = this.$route.query.folder;
+          }
+          // edit existing post
+          if (this.$route.query.post) {
+            this.apiPost(
+              {
+                route: "/get/post",
+                data: {
+                  username: this.$route.params.username,
+                  folder: this.$route.query.folder,
+                  postTitle: this.$route.query.post
+                }
+              },
+              data => {
+                this.form.text = data.content;
+                this.form.format = data.format;
+                this.form.title = this.$route.query.post;
+              }
+            );
           }
         },
         "Error when getting folders"

@@ -85,12 +85,12 @@
               split
               text="Download"
               v-if="editable"
-              @click="downloadImg(img.url, img.title)"
+              @click="download(img.url, img.title)"
             >
               <b-dropdown-item @click="showRenameForm(img.title, album.title)">Rename</b-dropdown-item>
               <b-dropdown-item @click="del(album.title, img.title)" variant="danger">Delete</b-dropdown-item>
             </b-dropdown>
-            <b-button v-else @click="downloadImg(img.url, img.title)">Download</b-button>
+            <b-button v-else @click="download(img.url, img.title)">Download</b-button>
           </b-card>
         </b-card-group>
         <h4 v-else>No image in this album.</h4>
@@ -113,10 +113,11 @@ import strCheck from "../mixin/strCheck";
 import arrayCheck from "../mixin/arrayCheck";
 import ModalInput from "../utils/ModalInput";
 import netapi from "../mixin/netapi";
+import downloadUtils from "../mixin/downloadUtils";
 
 export default {
   name: "Album",
-  mixins: [timeFilter, strCheck, netapi, arrayCheck],
+  mixins: [timeFilter, strCheck, netapi, arrayCheck, downloadUtils],
   components: { ModalInput },
   data() {
     return {
@@ -192,12 +193,6 @@ export default {
         },
         "Refresh album failed"
       );
-    },
-    downloadImg(url, title) {
-      var t = document.createElement("a");
-      t.setAttribute("href", url);
-      t.setAttribute("download", title);
-      t.click();
     },
     filtedImgs(imgs) {
       return imgs.filter(i => {
