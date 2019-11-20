@@ -24,7 +24,9 @@
     <b-button-group vertical id="actionBtns">
       <b-button>Follow</b-button>
       <b-button @click="downloadPost">Download</b-button>
-      <b-button>Edit</b-button>
+      <b-button
+        @click="$router.push('/'+$root.$data.user.username+'/edit?folder='+$route.params.folder+'&post='+$route.params.title)"
+      >Edit</b-button>
       <b-button>Star</b-button>
       <b-button>Report</b-button>
     </b-button-group>
