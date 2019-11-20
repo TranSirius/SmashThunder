@@ -63,7 +63,7 @@ class User(Model):
         user_ID = new_user.ID
         g.user_id = user_ID
 
-        Album.generateAlbum(username, 'My Photos', unix_time)
+        Album.generateAlbum(username, 'MyPhoto', unix_time)
 
     def __eq__(self, other):
         return type(self) is type(other) and self.ID == other.ID

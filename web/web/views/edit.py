@@ -94,7 +94,7 @@ def albumDelete():
     if last_album is None:
         dtime = datetime.datetime.now()
         unix_time = time.mktime(dtime.timetuple()) * 1000
-        Album.generateAlbum(user_name, 'My Photo', create_time = unix_time)
+        Album.generateAlbum(user_name, 'MyPhoto', create_time = unix_time)
 
     ret['status'] = 'ok'
     return ret

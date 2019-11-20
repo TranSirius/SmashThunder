@@ -37,7 +37,7 @@ def create_app(test_config = None):
     from web.views import edit
     app.register_blueprint(edit.mod)
 
-    from web.views import parse
-    app.register_blueprint(parse.mod)
+    from web.views import render
+    app.register_blueprint(render.mod)
 
     return app
