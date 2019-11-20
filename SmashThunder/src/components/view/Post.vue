@@ -128,7 +128,7 @@ export default {
             }
           },
           data => {
-            if (data.status == "ok") {
+            if (data.exist) {
               this.post = data.post;
             }
           }
