@@ -77,7 +77,23 @@ export default {
           }
         },
         data => {
-          this.post = data.post;
+          if (data.status == "ok") {
+            this.post = data.post;
+          } else {
+            this.apiPost(
+              {
+                route: "/get/post",
+                data: {
+                  username: this.$route.params.username,
+                  folder: this.$route.params.folder,
+                  postTitle: this.$route.params.title
+                }
+              },
+              postdata => {
+                this.post = postdata;
+              }
+            );
+          }
         }
       );
     }
