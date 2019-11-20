@@ -6,7 +6,6 @@
     </div>
     <!-- Comments -->
     <b-card
-      v-if="$root.$data.user.loggedIn"
       title="Leave a comment"
       :sub-title="$root.$data.user.loggedIn?$root.$data.user.username+':':''"
       class="mb-2"
