@@ -72,6 +72,11 @@
                   @click="deletePostOrFolder(folder.title, data.item.title)"
                 >Delete</b-dropdown-item>
               </b-dropdown>
+              <b-button
+                v-else
+                size="sm"
+                @click="downloadPost($route.params.username,folder.title,data.item.title)"
+              >Download</b-button>
             </template>
           </b-table>
         </b-collapse>
