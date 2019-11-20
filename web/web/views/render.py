@@ -17,7 +17,7 @@ from werkzeug.security import generate_password_hash
 
 mod = Blueprint('render', __name__, url_prefix = '/render')
 
-@mod.route('/', methods = ['POST'])
+@mod.route('', methods = ['POST'])
 def renderPost():
     ret = dict()
     db_session_instance = databases.db_session()
@@ -42,12 +42,17 @@ def renderPost():
     source_format = down_post.document_format
     source_content = down_post.post_content
 
+    import re
+    source_content = re.sub('[!]\[(.+)\][(](.+)[)]', '![\g<1>](http://localhost/data/ceshiceshi/img/\g<2>)', source_content)
+
+
     pdc.convert_text(
         source = source_content,
         to = 'docx',
-        format = target_format,
+        format = source_format,
         outputfile = '/share/render/' + post + '.docx'
     )
 
     ret['status'] = 'ok'
+    ret['filename'] = post + '.docx'
     return ret

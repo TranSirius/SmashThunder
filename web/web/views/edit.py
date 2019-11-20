@@ -342,12 +342,20 @@ def editPostDelete():
         return ret
 
     from web.index.esclient import es
-    post_index_doc = doctype.Post.get(id = post.ID, using = es)
-    post_index_doc.delete()
+    try:
+        post_index_doc = doctype.Post.get(id = post.ID, using = es)
+        post_index_doc.delete(using = es)
+    except:
+        pass
+
+    folder_db = db_session_instance\
+        .query(Folder)\
+        .filter(Folder.folder_title == folder).filter(Folder.user_ID == g.user_id)\
+        .first()
 
     db_session_instance\
-        .query(Post).join(Folder)\
-        .filter(Folder.user_ID == g.user_id).filter(Folder.folder_title == folder).filter(Post.post_title == title)\
+        .query(Post)\
+        .filter(Post.post_title == title).filter(Post.folder_ID == folder_db.ID)\
         .delete()
     db_session_instance.commit()
 

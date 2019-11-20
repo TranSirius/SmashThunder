@@ -83,7 +83,11 @@ def uploadPost():
     
     unix_time = CurrentTime()()
 
-    folder = db_session_instance.query(User).join(Folder).filter(User.ID == g.user_id).filter(Folder.folder_title == folder_title).first()
+    folder = db_session_instance\
+        .query(Folder).join(User)\
+        .filter(User.ID == g.user_id).filter(Folder.folder_title == folder_title)\
+        .first()
+
     if folder is None:
         folder = Folder(user_ID = g.user_id, folder_title = folder_title, create_time = unix_time)
         db_session_instance.add(folder)
@@ -93,7 +97,7 @@ def uploadPost():
     if old_post is None:
         post_id = "".join(str(uuid.uuid1()).split("-")[:-1])
         new_post = Post(ID = post_id, folder_ID = folder.ID, post_title = post_title, create_time = unix_time, document_format = post_format, post_content = post_content, is_published = is_published)
-        db_session_instance.add(new_post)
+        db_session_instance.merge(new_post)
     else:
         old_post.post_content = post_content
         old_post.create_time = unix_time
