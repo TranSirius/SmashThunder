@@ -71,15 +71,13 @@ export default {
     enter() {
       this.apiPost(
         {
-          route: "/get/post",
+          route: "/get/mainpage",
           data: {
-            username: this.$route.params.username,
-            folder: this.$route.params.folder,
-            postTitle: this.$route.params.title
+            username: this.$route.params.username
           }
         },
         data => {
-          this.post = data;
+          this.post = data.post;
         }
       );
     }

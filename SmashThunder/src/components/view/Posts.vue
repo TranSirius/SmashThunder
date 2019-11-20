@@ -52,7 +52,10 @@
                 size="sm"
                 @click="publishPost(folder.title, data.item.title,data.item.published)"
               >
-              <b-dropdown-item variant="info">Set as HOME</b-dropdown-item>
+                <b-dropdown-item
+                  variant="info"
+                  @click="postToMainPage(folder.title,data.item.title)"
+                >Set as HOME</b-dropdown-item>
                 <b-dropdown-item
                   variant="secondary"
                   @click="showRenameForm(data.item.title,folder.title)"
@@ -261,6 +264,24 @@ export default {
           }
         },
         "Publish failed"
+      );
+    },
+    postToMainPage(folderTitle, postTitle) {
+      var route = "/submit/mainpage";
+      var data = {
+        folder: folderTitle,
+        title: postTitle
+      };
+      this.apiPost(
+        { route, data },
+        retdata => {
+          if (retdata.status == "ok") {
+            ("set mainpage ok!");
+          } else {
+            ("set mainpage failed!");
+          }
+        },
+        "set mainpage failed!"
       );
     }
   },
