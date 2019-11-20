@@ -33,6 +33,7 @@
             sticky-header
             sort-icon-left
             :tbodyTrClass="rowStyle"
+            style="min-height:250px"
           >
             <template v-slot:cell(title)="data">
               <b-link
