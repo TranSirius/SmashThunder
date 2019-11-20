@@ -2,15 +2,26 @@
   <div>
     <!-- Content -->
     <div>
-      <PostDisplay :raw="post.content" :format="post.format"></PostDisplay>
+      <PostDisplay v-if="post.content" :raw="post.content" :format="post.format"></PostDisplay>
     </div>
     <!-- Comments -->
-    <b-card title="Leave a comment" :sub-title="$root.$data.user.username+':'" class="mb-2">
+    <b-card
+      title="Leave a comment"
+      :sub-title="$root.$data.user.loggedIn?$root.$data.user.username+':':''"
+      class="mb-2"
+    >
       <b-form @submit.prevent="comment">
         <b-form-group>
-          <b-form-textarea v-model="text" placeholder="Enter something..." rows="3" max-rows="6"></b-form-textarea>
+          <b-form-textarea
+            v-model="text"
+            :placeholder="$root.$data.user.loggedIn?'Enter something...':'Please sign in/up first'"
+            :disabled="!$root.$data.user.loggedIn"
+            rows="3"
+            max-rows="6"
+            required
+          ></b-form-textarea>
         </b-form-group>
-        <b-button variant="primary" type="submit">Comment</b-button>
+        <b-button :disabled="!$root.$data.user.loggedIn" variant="primary" type="submit">Comment</b-button>
       </b-form>
     </b-card>
     <b-card v-for="comment in post.comments" :key="comment.time" class="mb-2">
@@ -22,11 +33,14 @@
     </b-card>
     <!-- Action buttons -->
     <b-button-group vertical id="actionBtns">
-      <b-button>Follow</b-button>
-      <b-button>Download</b-button>
-      <b-button>Edit</b-button>
-      <b-button>Star</b-button>
-      <b-button>Report</b-button>
+      <b-button :disabled="!$root.$data.user.loggedIn">Follow</b-button>
+      <b-button @click="downloadPost">Download</b-button>
+      <b-button
+        v-if="editable"
+        @click="$router.push('/'+$root.$data.user.username+'/edit?folder='+$route.params.folder+'&post='+$route.params.title)"
+      >Edit</b-button>
+      <b-button :disabled="!$root.$data.user.loggedIn">Star</b-button>
+      <b-button :disabled="!$root.$data.user.loggedIn">Report</b-button>
     </b-button-group>
   </div>
 </template>
@@ -35,10 +49,11 @@
 import PostDisplay from "../utils/PostDisplay";
 import netapi from "../mixin/netapi";
 import timeFilter from "../mixin/timeFilter";
+import downloadUtils from "../mixin/downloadUtils";
 
 export default {
   name: "Post",
-  mixins: [netapi, timeFilter],
+  mixins: [netapi, timeFilter, downloadUtils],
   components: { PostDisplay },
   data() {
     return {
@@ -47,6 +62,28 @@ export default {
     };
   },
   methods: {
+    downloadPost() {
+      let username = this.$route.params.username;
+      let folder = this.$route.params.folder;
+      let post = this.$route.params.title;
+      this.apiPost(
+        {
+          route: "/render",
+          data: {
+            username,
+            folder,
+            post,
+            format: "pdf"
+          }
+        },
+        data => {
+          this.download(
+            "/render/" + data.filename,
+            `${username}_${folder}_${post}`
+          );
+        }
+      );
+    },
     comment() {
       var text = this.text;
       this.apiPost(
@@ -69,23 +106,47 @@ export default {
       );
     },
     enter() {
-      this.apiPost(
-        {
-          route: "/get/post",
-          data: {
-            username: this.$route.params.username,
-            folder: this.$route.params.folder,
-            postTitle: this.$route.params.title
+      if (this.$route.name == "toPost") {
+        this.apiPost(
+          {
+            route: "/get/post",
+            data: {
+              username: this.$route.params.username,
+              folder: this.$route.params.folder,
+              postTitle: this.$route.params.title
+            }
+          },
+          data => {
+            this.post = data;
           }
-        },
-        data => {
-          this.post = data;
-        }
-      );
+        );
+      } else {
+        this.apiPost(
+          {
+            route: "/get/mainpage",
+            data: {
+              username: this.$route.params.username
+            }
+          },
+          data => {
+            if (data.exist) {
+              this.post = data.post;
+            }
+          }
+        );
+      }
     }
   },
   beforeRouteEnter(to, from, next) {
     next(v => v.enter());
+  },
+  computed: {
+    editable() {
+      return (
+        this.$root.$data.user.loggedIn &&
+        this.$route.params.username == this.$root.$data.user.username
+      );
+    }
   }
 };
 </script>

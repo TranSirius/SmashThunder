@@ -22,7 +22,7 @@
             :pressed.sync="folder.show"
           >{{ folder.show ? 'Hide' : 'Show' }}</b-button>
         </h2>
-        <h6>Created at {{ folder.createdTime | peekDate }}.</h6>
+        <h6>Edited at {{ folder.createdTime | peekDate }}.</h6>
         <!-- Posts table -->
         <b-collapse v-model="folder.show">
           <b-table
@@ -33,6 +33,7 @@
             sticky-header
             sort-icon-left
             :tbodyTrClass="rowStyle"
+            style="min-height:250px"
           >
             <template v-slot:cell(title)="data">
               <b-link
@@ -46,21 +47,37 @@
               <b-dropdown
                 split
                 :text="data.item.published ? 'Withdraw' : 'Publish'"
-                class="mb-1 ml-3"
+                class="mb-1"
                 variant="primary"
                 v-if="editable"
                 size="sm"
                 @click="publishPost(folder.title, data.item.title,data.item.published)"
               >
                 <b-dropdown-item
+                  variant="info"
+                  @click="postToMainPage(folder.title,data.item.title)"
+                >Set as HOME</b-dropdown-item>
+                <b-dropdown-item
+                  variant="primary"
+                  @click="$router.push('/'+$root.$data.user.username+'/edit?folder='+folder.title+'&post='+data.item.title)"
+                >Edit</b-dropdown-item>
+                <b-dropdown-item
                   variant="secondary"
                   @click="showRenameForm(data.item.title,folder.title)"
                 >Rename</b-dropdown-item>
+                <b-dropdown-item
+                  @click="downloadPost($route.params.username,folder.title,data.item.title)"
+                >Download</b-dropdown-item>
                 <b-dropdown-item
                   variant="danger"
                   @click="deletePostOrFolder(folder.title, data.item.title)"
                 >Delete</b-dropdown-item>
               </b-dropdown>
+              <b-button
+                v-else
+                size="sm"
+                @click="downloadPost($route.params.username,folder.title,data.item.title)"
+              >Download</b-button>
             </template>
           </b-table>
         </b-collapse>
@@ -84,10 +101,11 @@ import timeFilter from "../mixin/timeFilter";
 import strCheck from "../mixin/strCheck";
 import arrayCheck from "../mixin/arrayCheck";
 import ModalInput from "../utils/ModalInput";
+import downloadUtils from "../mixin/downloadUtils";
 
 export default {
   name: "Posts",
-  mixins: [timeFilter, strCheck, netapi, arrayCheck],
+  mixins: [timeFilter, strCheck, netapi, arrayCheck, downloadUtils],
   components: { ModalInput },
   data() {
     return {
@@ -111,6 +129,25 @@ export default {
     };
   },
   methods: {
+    downloadPost(username, folder, post) {
+      this.apiPost(
+        {
+          route: "/render",
+          data: {
+            username,
+            folder,
+            post,
+            format: "pdf"
+          }
+        },
+        data => {
+          this.download(
+            "/render/" + data.filename,
+            `${username}_${folder}_${post}`
+          );
+        }
+      );
+    },
     rowStyle(item) {
       if (item.published) {
         return "table-success";
@@ -260,6 +297,24 @@ export default {
           }
         },
         "Publish failed"
+      );
+    },
+    postToMainPage(folderTitle, postTitle) {
+      var route = "/submit/mainpage";
+      var data = {
+        folder: folderTitle,
+        title: postTitle
+      };
+      this.apiPost(
+        { route, data },
+        retdata => {
+          if (retdata.status == "ok") {
+            ("set mainpage ok!");
+          } else {
+            ("set mainpage failed!");
+          }
+        },
+        "set mainpage failed!"
       );
     }
   },

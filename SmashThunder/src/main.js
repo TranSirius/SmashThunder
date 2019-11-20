@@ -22,6 +22,10 @@ const routes = [
     path: '/', component: News,
   },
   {
+    path: '/:username', component: Post,
+    name: 'toMainPage'
+  },
+  {
     path: '/:username/album', component: Album
   },
   {
@@ -31,7 +35,8 @@ const routes = [
     path: '/:username/posts', component: Posts
   },
   {
-    path: '/:username/posts/:folder/:title', component: Post
+    path: '/:username/posts/:folder/:title', component: Post,
+    name: 'toPost'
   },
   {
     path: '/admin', component: Admin
