@@ -69,33 +69,35 @@ export default {
       );
     },
     enter() {
-      this.apiPost(
-        {
-          route: "/get/mainpage",
-          data: {
-            username: this.$route.params.username
+      if (this.$route.name == "toPost") {
+        this.apiPost(
+          {
+            route: "/get/post",
+            data: {
+              username: this.$route.params.username,
+              folder: this.$route.params.folder,
+              postTitle: this.$route.params.title
+            }
+          },
+          data => {
+            this.post = data;
           }
-        },
-        data => {
-          if (data.status == "ok") {
-            this.post = data.post;
-          } else {
-            this.apiPost(
-              {
-                route: "/get/post",
-                data: {
-                  username: this.$route.params.username,
-                  folder: this.$route.params.folder,
-                  postTitle: this.$route.params.title
-                }
-              },
-              postdata => {
-                this.post = postdata;
-              }
-            );
+        );
+      } else {
+        this.apiPost(
+          {
+            route: "/get/mainpage",
+            data: {
+              username: this.$route.params.username
+            }
+          },
+          data => {
+            if (data.status == "ok") {
+              this.post = data.post;
+            }
           }
-        }
-      );
+        );
+      }
     }
   },
   beforeRouteEnter(to, from, next) {
