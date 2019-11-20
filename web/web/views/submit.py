@@ -27,7 +27,6 @@ mod = Blueprint('submit', __name__, url_prefix = '/submit')
 @loginRequest
 def uploadPic():
     ret = dict()
-
     db_session_instance = databases.db_session()
     query_res = db_session_instance.query(User).filter(User.ID == g.user_id).first()
     
@@ -123,7 +122,7 @@ def submitMainPage():
 
     post = db_session_instance\
         .query(Post).join(Folder)\
-        .filter(Folder.user_ID == g.user_id).filter(Folder.folder_title == folder).filter(Post.post_title == post)\
+        .filter(Folder.user_ID == g.user_id).filter(Folder.folder_title == folder).filter(Post.post_title == title)\
         .first()
 
     mainpage = MainPage(user_id = g.user_id, post_id = post.ID)

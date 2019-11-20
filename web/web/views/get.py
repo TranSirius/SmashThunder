@@ -106,7 +106,7 @@ def getMainPage():
     ret['exist'] = True
     geter = GetPost()
     return_post = geter.getByPostID(post_id = main_page.post_id)
-    if post is None:
+    if return_post is None:
         ret['status'] = 'Main Page Not Exist! Data Consistency Error!'
         return ret
 

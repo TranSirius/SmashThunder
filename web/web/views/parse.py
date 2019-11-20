@@ -17,3 +17,5 @@ from werkzeug.security import generate_password_hash
 mod = Blueprint('parse', __name__, url_prefix = '/parse')
 
 # mod.route('/', methods = ['POST'])
+
+pdc.convert_text('# title', 'rst', format = 'md')
