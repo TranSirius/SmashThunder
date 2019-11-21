@@ -66,10 +66,11 @@
 import axios from "axios";
 import sha256 from "js-sha256";
 import netapi from "../mixin/netapi";
+import errHandler from "../mixin/errHandler";
 
 export default {
   name: "SignForm",
-  mixins: [netapi],
+  mixins: [netapi, errHandler],
   data() {
     return {
       password: "",
@@ -80,6 +81,10 @@ export default {
     };
   },
   methods: {
+    showFormErr: function(msg) {
+      this.toastErr(this.formMode + " failed", msg);
+      this.submitting = false;
+    },
     resetForm: function() {
       this.password = this.password2 = "";
       this.submitting = false;
