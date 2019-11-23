@@ -33,7 +33,7 @@
           title="report"
           @click="triggerReport(comment.username)"
           size="sm"
-          pill
+          class="ml-3 mb-2"
         >❗</b-button>
       </b-card-title>
       <b-card-sub-title class="mb-2">Comment at {{ comment.time | timeOffset }} ago.</b-card-sub-title>
