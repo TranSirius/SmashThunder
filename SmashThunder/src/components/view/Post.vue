@@ -33,21 +33,32 @@
     </b-card>
     <!-- Action buttons -->
     <b-button-group vertical id="actionBtns">
-      <b-button variant="primary" v-b-tooltip.hover.left title="follow">➕ {{ post.followers }}</b-button>
-      <b-button @click="downloadPost" v-b-tooltip.hover.left title="download">⇓</b-button>
+      <b-button
+        :variant="post.followed?'primary':'outline-primary'"
+        v-b-tooltip.hover.left
+        :title="post.followed?'unfollow':'follow'"
+        @click="follow"
+      >➕ {{ post.followers }}</b-button>
+      <b-button
+        @click="downloadPost"
+        v-b-tooltip.hover.left
+        title="download"
+        variant="outline-secondary"
+      >⇓</b-button>
       <b-button
         v-if="editable"
         @click="$router.push('/'+$root.$data.user.username+'/edit?folder='+$route.params.folder+'&post='+$route.params.title)"
-        variant="info"
+        variant="outline-info"
         v-b-tooltip.hover.left
         title="edit"
       >✍</b-button>
       <b-button
-        variant="warning"
+        :variant="post.starred?'warning':'outline-warning'"
         v-b-tooltip.hover.left
-        title="star"
+        :title="post.starred?'unstar':'star'"
+        @click="star"
       >⭐ {{ post.stars }}</b-button>
-      <b-button variant="danger" v-b-tooltip.hover.left title="report">❗</b-button>
+      <b-button variant="outline-danger" v-b-tooltip.hover.left title="report">❗</b-button>
     </b-button-group>
   </div>
 </template>
