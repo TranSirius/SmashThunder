@@ -30,6 +30,13 @@ export default {
         data => (this.folders = data.folders)
       );
     }
+  },
+  beforeRouteEnter(to, from, next) {
+    next(v => v.enter());
+  },
+  beforeRouteUpdate(to, from, next) {
+    next();
+    this.enter();
   }
 };
 </script>
