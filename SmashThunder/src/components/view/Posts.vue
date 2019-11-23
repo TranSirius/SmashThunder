@@ -6,6 +6,7 @@
       :title="folder.title"
       :data="folder.posts"
     ></NewsCards>
+    <h3 v-if="folders.length == 0">No folders here.</h3>
   </div>
 </template>
 
