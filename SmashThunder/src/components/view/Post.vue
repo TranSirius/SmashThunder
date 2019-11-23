@@ -58,8 +58,19 @@
         :title="post.starred?'unstar':'star'"
         @click="star"
       >⭐ {{ post.stars }}</b-button>
-      <b-button variant="outline-danger" v-b-tooltip.hover.left title="report">❗</b-button>
+      <b-button
+        variant="outline-danger"
+        v-b-tooltip.hover.left
+        title="report"
+        @click="triggerReport()"
+      >❗</b-button>
     </b-button-group>
+    <ReportModal
+      :target="report.target"
+      :reporter="$root.$data.user.username"
+      :reason="report.reason"
+      ref="reportModal"
+    ></ReportModal>
   </div>
 </template>
 
@@ -68,18 +79,37 @@ import PostDisplay from "../utils/PostDisplay";
 import netapi from "../mixin/netapi";
 import timeFilter from "../mixin/timeFilter";
 import downloadUtils from "../mixin/downloadUtils";
+import ReportModal from "../utils/ReportModal";
 
 export default {
   name: "Post",
   mixins: [netapi, timeFilter, downloadUtils],
-  components: { PostDisplay },
+  components: { PostDisplay, ReportModal },
   data() {
     return {
       post: {},
-      text: ""
+      text: "",
+      report: {
+        reason: "",
+        target: ""
+      }
     };
   },
   methods: {
+    triggerReport() {
+      if (!this.$root.$data.user.loggedIn) {
+        this.toastErr("Error", "Please login first.");
+        return;
+      }
+      this.report.target = this.$route.params.username;
+      this.report.reason =
+        "Target post: " +
+        [this.$route.params.username, this.post.folder, this.post.title].join(
+          "/"
+        ) +
+        "\n";
+      this.$refs.reportModal.show();
+    },
     follow() {
       if (!this.$root.$data.user.loggedIn) {
         this.toastErr("Error", "Please login first.");
