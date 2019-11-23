@@ -44,9 +44,10 @@
       <hr />
       <h5>CPU usage</h5>
       <b-progress :value="cpu" show-progress class="mb-3"></b-progress>
-      <!-- TODO: remove this -->
-      <h5>Others</h5>
-      <b-progress :value="others" show-progress></b-progress>
+      <h5>Memory</h5>
+      <b-progress :value="memory" show-progress class="mb-3"></b-progress>
+      <h5>Storage</h5>
+      <b-progress :value="storage" show-progress></b-progress>
     </b-card>
   </div>
 </template>
@@ -60,8 +61,8 @@ export default {
     return {
       search: "",
       cpu: 60,
-      // TODO: remove this
-      others: 80,
+      memory: 60,
+      storage: 60,
       reportTable: {
         fields: [
           { key: "id", sortable: true },
@@ -70,14 +71,11 @@ export default {
           "reason",
           { key: "action", thStyle: { width: "150px" } }
         ],
-        items: [
-          {
-            id: 123,
-            target: "someUsername",
-            reporter: "anotherUsername",
-            reason: "大佬真垃圾".repeat(10)
-          }
-        ]
+        items: []
+      },
+      chart: {
+        labels: [],
+        data: []
       }
     };
   },
@@ -87,21 +85,13 @@ export default {
       new Chart(ctx, {
         type: "line",
         data: {
-          labels: [
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July"
-          ],
+          labels: this.chart.labels,
           datasets: [
             {
-              label: "My First dataset",
+              label: "Latest Visits",
               backgroundColor: "rgb(255, 99, 132)",
               borderColor: "rgb(255, 99, 132)",
-              data: [0, 10, 5, 2, 20, 30, 45]
+              data: this.chart.data
             }
           ]
         },
