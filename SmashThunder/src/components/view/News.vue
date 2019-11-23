@@ -2,10 +2,14 @@
   <div>
     <!-- Friends Activities -->
     <div v-if="$root.$data.user.loggedIn">
-      <PostOverview title="Friends Activities" :data="friendsActivities"></PostOverview>
+      <PostOverview
+        title="Friends Activities"
+        :data="friendsActivities"
+        emptyHint="No friends activities."
+      ></PostOverview>
     </div>
     <!-- New posts -->
-    <PostOverview title="News" :data="news"></PostOverview>
+    <PostOverview title="News" :data="news" emptyHint="No news."></PostOverview>
   </div>
 </template>
 

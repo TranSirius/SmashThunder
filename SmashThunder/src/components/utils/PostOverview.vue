@@ -19,7 +19,7 @@
       </b-card>
     </b-card-group>
     <div v-else>
-      <h3>Nothing new.</h3>
+      <h3>{{emptyHint||'Nothing here.'}}</h3>
     </div>
   </div>
 </template>
@@ -32,7 +32,8 @@ export default {
   mixins: [timeFilter],
   props: {
     title: String,
-    data: Array
+    data: Array,
+    emptyHint: String
   }
 };
 </script>
