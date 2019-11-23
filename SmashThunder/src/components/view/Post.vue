@@ -184,6 +184,7 @@ export default {
         {
           route: "/submit/comment",
           data: {
+            username: this.$route.params.username,
             folder: this.post.folder,
             post: this.post.title,
             comment: text
