@@ -27,6 +27,12 @@
     <b-card v-for="comment in post.comments" :key="comment.time" class="mb-2">
       <b-card-title>
         <b-link :to="'/'+comment.username">{{ comment.username }}</b-link>
+        <b-button
+          variant="outline-danger"
+          v-b-tooltip.hover
+          title="report"
+          @click="triggerReport(comment.username)"
+        >❗</b-button>
       </b-card-title>
       <b-card-sub-title class="mb-2">Comment at {{ comment.time | timeOffset }} ago.</b-card-sub-title>
       <b-card-text>{{ comment.comment }}</b-card-text>
@@ -96,18 +102,19 @@ export default {
     };
   },
   methods: {
-    triggerReport() {
+    triggerReport(commenter) {
       if (!this.$root.$data.user.loggedIn) {
         this.toastErr("Error", "Please login first.");
         return;
       }
-      this.report.target = this.$route.params.username;
-      this.report.reason =
-        "Target post: " +
+      this.report.target = commenter || this.$route.params.username;
+      this.report.reason = commenter
+        ? "Target comment: " + this.report.target + " in "
+        : "Target post: ";
+      this.report.reason +=
         [this.$route.params.username, this.post.folder, this.post.title].join(
           "/"
-        ) +
-        "\n";
+        ) + "\n";
       this.$refs.reportModal.show();
     },
     follow() {
