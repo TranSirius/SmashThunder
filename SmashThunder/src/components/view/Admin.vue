@@ -27,8 +27,13 @@
         </template>
         <template v-slot:cell(reason)="data">{{ data.item.reason }}</template>
         <template v-slot:cell(action)="data">
-          <b-button size="sm" variant="secondary">Dismiss</b-button>
-          <b-button size="sm" class="ml-2" variant="outline-danger">Ban</b-button>
+          <b-button size="sm" variant="secondary" @click="dismiss(data.item.id)">Dismiss</b-button>
+          <b-button
+            size="sm"
+            class="ml-2"
+            variant="outline-danger"
+            @click="ban(data.item.id,data.item.target)"
+          >Ban</b-button>
         </template>
       </b-table>
       <div v-else>
@@ -83,6 +88,28 @@ export default {
     };
   },
   methods: {
+    dismiss(id) {
+      this.apiPost(
+        { route: "/submit/dismiss", data: { target: id } },
+        () => {
+          this.reportTable.items = this.reportTable.items.filter(
+            item => item.id != id
+          );
+        },
+        "Dismiss failed."
+      );
+    },
+    ban(id, target) {
+      this.apiPost(
+        { route: "/submit/ban", data: { target, report: id } },
+        () => {
+          this.reportTable.items = this.reportTable.items.filter(
+            item => item.id != id
+          );
+        },
+        "Ban failed."
+      );
+    },
     enter() {
       var ctx = document.getElementById("accessChart").getContext("2d");
       this.apiPost({ route: "/get/admin" }, data => {
