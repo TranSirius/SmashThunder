@@ -13,7 +13,8 @@ import 'bootstrap-vue/dist/bootstrap-vue.css'
 import News from "./components/view/News.vue"
 import Album from "./components/view/Album.vue"
 import Edit from "./components/view/Edit.vue"
-import Posts from "./components/view/Posts.vue"
+// import Posts from "./components/view/Posts.vue"
+import Manage from "./components/view/Manage.vue"
 import Post from "./components/view/Post.vue"
 import Admin from "./components/view/Admin.vue"
 
@@ -31,8 +32,11 @@ const routes = [
   {
     path: '/:username/edit', component: Edit
   },
+  // {
+  //   path: '/:username/posts', component: Posts
+  // },
   {
-    path: '/:username/posts', component: Posts
+    path: '/:username/manage', component: Manage
   },
   {
     path: '/:username/posts/:folder/:title', component: Post,

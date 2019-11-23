@@ -104,7 +104,7 @@ import ModalInput from "../utils/ModalInput";
 import downloadUtils from "../mixin/downloadUtils";
 
 export default {
-  name: "Posts",
+  name: "Manage",
   mixins: [timeFilter, strCheck, netapi, arrayCheck, downloadUtils],
   components: { ModalInput },
   data() {
