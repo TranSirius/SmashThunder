@@ -32,6 +32,8 @@
           v-b-tooltip.hover
           title="report"
           @click="triggerReport(comment.username)"
+          size="sm"
+          pill
         >❗</b-button>
       </b-card-title>
       <b-card-sub-title class="mb-2">Comment at {{ comment.time | timeOffset }} ago.</b-card-sub-title>
