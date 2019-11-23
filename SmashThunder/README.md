@@ -15,6 +15,8 @@
 - `/:username/posts` - User's posts management page
 - `/:username/posts/:folder/:post` - User's post
 - `/:username/edit` - New post or edit existing post
+- `/:username/star` - User's star management page
+- `/:username/follow` - User's follow management page'
 - `/admin` - Admin homepage
 
 ## Data format
