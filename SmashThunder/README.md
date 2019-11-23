@@ -29,8 +29,9 @@
 		"title": "str",
 		"author": "str",
 		"description": "str",
-		"img": "url",
 		"time": "Unix Time Stamp(int)",
+		"coverAlbum": "str",
+		"coverImage": "str",
 	}],
 	"friendsActivities": [{}] // the same as `news`
 }
