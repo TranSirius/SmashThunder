@@ -56,6 +56,7 @@
                 <b-dropdown-item
                   variant="info"
                   @click="postToMainPage(folder.title,data.item.title)"
+                  v-if="!data.item.homepage"
                 >Set as HOME</b-dropdown-item>
                 <b-dropdown-item
                   variant="primary"
@@ -149,6 +150,9 @@ export default {
       );
     },
     rowStyle(item) {
+      if (item.homepage) {
+        return "table-info";
+      }
       if (item.published) {
         return "table-success";
       }
@@ -313,13 +317,19 @@ export default {
       this.apiPost(
         { route, data },
         retdata => {
-          if (retdata.status == "ok") {
-            ("set mainpage ok!");
-          } else {
-            ("set mainpage failed!");
+          // set this post.homepage to true, others to false
+          for (var i = 0; i < this.folders.length; i++) {
+            for (var j = 0; j < this.folders[i].posts.length; j++) {
+              if (
+                this.folders[i].title == folderTItle &&
+                this.folders[i].posts[j].title == postTitle
+              )
+                this.folders[i].posts[j].homepage = true;
+              else this.folders[i].posts[j].homepage = false;
+            }
           }
         },
-        "set mainpage failed!"
+        "Set mainpage failed!"
       );
     }
   },
