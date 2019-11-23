@@ -155,7 +155,12 @@ export default {
     },
     enter() {
       this.apiPost(
-        { route: "/get/post/foldersDetail" },
+        {
+          route: "/get/post/foldersDetail",
+          data: {
+            username: this.$route.params.username
+          }
+        },
         data => {
           this.folders = [];
           for (let i = 0; i < data.folders.length; ++i) {
