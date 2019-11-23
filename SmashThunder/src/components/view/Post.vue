@@ -80,6 +80,52 @@ export default {
     };
   },
   methods: {
+    follow() {
+      if (!this.$root.$data.user.loggedIn) {
+        this.toastErr("Error", "Please login first.");
+        return;
+      }
+      if (this.$root.$data.user.username == this.$route.params.username) {
+        this.toastErr("Error", "You can not follow yourself.");
+        return;
+      }
+      this.apiPost(
+        {
+          route: "/submit/follow",
+          data: {
+            target: this.$route.params.username,
+            follow: !this.post.followed
+          }
+        },
+        () => {
+          this.post.followed = !this.post.followed;
+          this.post.followers++;
+        },
+        "Follow failed."
+      );
+    },
+    star() {
+      if (!this.$root.$data.user.loggedIn) {
+        this.toastErr("Error", "Please login first.");
+        return;
+      }
+      this.apiPost(
+        {
+          route: "/submit/star",
+          data: {
+            username: this.$route.params.username,
+            folder: this.post.folder,
+            post: this.post.title,
+            star: !this.post.starred
+          }
+        },
+        () => {
+          this.post.starred = !this.post.starred;
+          this.post.stars++;
+        },
+        "Star failed."
+      );
+    },
     downloadPost() {
       let username = this.$route.params.username;
       let folder = this.$route.params.folder;
