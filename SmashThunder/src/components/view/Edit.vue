@@ -265,6 +265,9 @@ export default {
                 this.form.text = data.content;
                 this.form.format = data.format;
                 this.form.title = this.$route.query.post;
+                this.description = data.description;
+                this.selectedImage = data.coverImage;
+                this.selectedAlbum = data.coverAlbum;
               }
             );
           }
