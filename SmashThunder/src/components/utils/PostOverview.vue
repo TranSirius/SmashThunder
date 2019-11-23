@@ -28,7 +28,7 @@
 import timeFilter from "../mixin/timeFilter";
 
 export default {
-  name: "NewsCards",
+  name: "PostOverview",
   mixins: [timeFilter],
   props: {
     title: String,

@@ -1,23 +1,23 @@
 <template>
   <div>
-    <NewsCards
+    <PostOverview
       v-for="folder in folders"
       :key="folder.title"
       :title="folder.title"
       :data="folder.posts"
-    ></NewsCards>
+    ></PostOverview>
     <h3 v-if="folders.length == 0">No folders here.</h3>
   </div>
 </template>
 
 <script>
 import netapi from "../mixin/netapi";
-import NewsCards from "../utils/NewsCards";
+import PostOverview from "../utils/PostOverview";
 
 export default {
   name: "Posts",
   mixins: [netapi],
-  components: { NewsCards },
+  components: { PostOverview },
   data() {
     return { folders: [] };
   },
