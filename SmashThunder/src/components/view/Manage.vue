@@ -316,12 +316,12 @@ export default {
       };
       this.apiPost(
         { route, data },
-        retdata => {
+        () => {
           // set this post.homepage to true, others to false
           for (var i = 0; i < this.folders.length; i++) {
             for (var j = 0; j < this.folders[i].posts.length; j++) {
               if (
-                this.folders[i].title == folderTItle &&
+                this.folders[i].title == folderTitle &&
                 this.folders[i].posts[j].title == postTitle
               )
                 this.folders[i].posts[j].homepage = true;
