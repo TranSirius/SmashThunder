@@ -34,7 +34,7 @@
     <!-- Action buttons -->
     <b-button-group vertical id="actionBtns">
       <b-button
-        :variant="post.followed?'primary':'outline-primary'"
+        :variant="post.followed?'success':'outline-success'"
         v-b-tooltip.hover.left
         :title="post.followed?'unfollow':'follow'"
         @click="follow"
