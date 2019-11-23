@@ -33,14 +33,21 @@
     </b-card>
     <!-- Action buttons -->
     <b-button-group vertical id="actionBtns">
-      <b-button :disabled="!$root.$data.user.loggedIn">Follow</b-button>
-      <b-button @click="downloadPost">Download</b-button>
+      <b-button variant="primary" v-b-tooltip.hover.left title="follow">➕ {{ post.followers }}</b-button>
+      <b-button @click="downloadPost" v-b-tooltip.hover.left title="download">⇓</b-button>
       <b-button
         v-if="editable"
         @click="$router.push('/'+$root.$data.user.username+'/edit?folder='+$route.params.folder+'&post='+$route.params.title)"
-      >Edit</b-button>
-      <b-button :disabled="!$root.$data.user.loggedIn">Star</b-button>
-      <b-button :disabled="!$root.$data.user.loggedIn">Report</b-button>
+        variant="info"
+        v-b-tooltip.hover.left
+        title="edit"
+      >✍</b-button>
+      <b-button
+        variant="warning"
+        v-b-tooltip.hover.left
+        title="star"
+      >⭐ {{ post.stars }}</b-button>
+      <b-button variant="danger" v-b-tooltip.hover.left title="report">❗</b-button>
     </b-button-group>
   </div>
 </template>
