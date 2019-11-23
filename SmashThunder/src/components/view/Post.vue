@@ -114,9 +114,11 @@ export default {
         ? "Target comment: " + this.report.target + " in "
         : "Target post: ";
       this.report.reason +=
-        [this.$route.params.username, this.post.folder, this.post.title].join(
-          "/"
-        ) + "\n";
+        [
+          this.$route.params.username,
+          this.post.folder || this.$route.params.folder,
+          this.post.title || this.$route.params.title
+        ].join("/") + "\n";
       this.$refs.reportModal.show();
     },
     follow() {
@@ -153,8 +155,8 @@ export default {
           route: "/submit/star",
           data: {
             username: this.$route.params.username,
-            folder: this.post.folder,
-            post: this.post.title,
+            folder: this.post.folder || this.$route.params.folder,
+            post: this.post.title || this.$route.params.title,
             star: !this.post.starred
           }
         },
@@ -167,7 +169,7 @@ export default {
     },
     downloadPost() {
       let username = this.$route.params.username;
-      let folder = this.$route.params.folder;
+      let folder = this.post.folder || this.$route.params.folder;
       let post = this.$route.params.title;
       this.apiPost(
         {
@@ -216,7 +218,7 @@ export default {
             route: "/get/post",
             data: {
               username: this.$route.params.username,
-              folder: this.$route.params.folder,
+              folder: this.post.folder || this.$route.params.folder,
               postTitle: this.$route.params.title
             }
           },
