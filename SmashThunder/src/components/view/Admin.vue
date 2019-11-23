@@ -17,7 +17,6 @@
         sort-icon-left
         :fields="reportTable.fields"
         table-variant="danger"
-        fixed
         v-if="reportTable.items.length"
       >
         <template v-slot:cell(target)="data">
@@ -65,13 +64,15 @@ export default {
       others: 80,
       reportTable: {
         fields: [
+          { key: "id", sortable: true },
           { key: "target", sortable: true },
           { key: "reporter", sortable: true },
           "reason",
-          "action"
+          { key: "action", thStyle: { width: "150px" } }
         ],
         items: [
           {
+            id: 123,
             target: "someUsername",
             reporter: "anotherUsername",
             reason: "大佬真垃圾".repeat(10)
