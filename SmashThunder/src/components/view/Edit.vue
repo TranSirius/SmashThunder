@@ -1,7 +1,8 @@
 <template>
   <div>
     <!-- edit post form -->
-    <b-form @submit.prevent="submit(true)" style="height:500px">
+    <b-form @submit.prevent="submit(true)" class="mb-3">
+      <!-- row 1, post title, file format, folder -->
       <b-form-row>
         <b-col cols="6">
           <b-form-group label="Post title" label-for="postTitle">
@@ -35,6 +36,30 @@
           </b-form-group>
         </b-col>
       </b-form-row>
+      <!-- row 2, description, cover image -->
+      <b-form-row>
+        <b-col cols="6">
+          <b-form-group label="Post description(optional)" label-for="postDescription">
+            <b-form-input
+              id="postDescription"
+              v-model="form.description"
+              placeholder="Post description"
+              required
+            ></b-form-input>
+          </b-form-group>
+        </b-col>
+        <b-col cols="3">
+          <b-form-group label="Cover image album(optional)">
+            <b-form-select v-model="form.selectedAlbum" :options="form.albumTitles"></b-form-select>
+          </b-form-group>
+        </b-col>
+        <b-col cols="3">
+          <b-form-group label="Cover image title(optional)">
+            <b-form-select v-model="form.selectedImage" :options="form.imageTitles"></b-form-select>
+          </b-form-group>
+        </b-col>
+      </b-form-row>
+      <!-- row 3, post content, realtime renderer -->
       <b-form-row>
         <b-col cols="6">
           <b-form-group class="h-100" label="Post Content" label-for="textarea">
@@ -83,10 +108,15 @@ export default {
       form: {
         text: "",
         title: "",
+        description: "",
         format: "md",
         folder: "",
         folders: [],
-        newFolderHint: "-- create a new folder --"
+        newFolderHint: "-- create a new folder --",
+        selectedImage: "",
+        selectedAlbum: "",
+        albumTitles: [],
+        imageTitles: []
       }
     };
   },
@@ -152,7 +182,10 @@ export default {
             folder: this.form.folder,
             format: this.form.format,
             content: this.form.text,
-            published: publish
+            published: publish,
+            description: this.form.description,
+            coverAlbum: this.form.selectedAlbum,
+            coverImage: this.form.selectedImage
           }
         },
         () => {
