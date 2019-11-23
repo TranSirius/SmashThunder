@@ -50,12 +50,24 @@
         </b-col>
         <b-col cols="3">
           <b-form-group label="Cover image album(optional)">
-            <b-form-select v-model="form.selectedAlbum" :options="form.albumTitles"></b-form-select>
+            <b-form-select
+              v-model="form.selectedAlbum"
+              :options="form.albumTitles"
+              @input="albumSelected"
+            >
+              <template v-slot:first>
+                <option :value="null" disabled>-- Please select an album --</option>
+              </template>
+            </b-form-select>
           </b-form-group>
         </b-col>
         <b-col cols="3">
           <b-form-group label="Cover image title(optional)">
-            <b-form-select v-model="form.selectedImage" :options="form.imageTitles"></b-form-select>
+            <b-form-select v-model="form.selectedImage" :options="form.imageTitles">
+              <template v-slot:first>
+                <option :value="null" disabled>-- Please select an image --</option>
+              </template>
+            </b-form-select>
           </b-form-group>
         </b-col>
       </b-form-row>
@@ -105,6 +117,7 @@ export default {
   components: { NewableSelect, PostDisplay },
   data() {
     return {
+      albums: [],
       form: {
         text: "",
         title: "",
@@ -113,8 +126,8 @@ export default {
         folder: "",
         folders: [],
         newFolderHint: "-- create a new folder --",
-        selectedImage: "",
-        selectedAlbum: "",
+        selectedImage: null,
+        selectedAlbum: null,
         albumTitles: [],
         imageTitles: []
       }
@@ -144,6 +157,16 @@ export default {
         droppedFiles[i].text().then(t => (this.form.text = t));
         break; // only load one file
       }
+    },
+    albumSelected() {
+      this.form.imageTitles = [];
+      for (let i = 0; i < this.albums.length; i++) {
+        if (this.albums[i].title == this.form.selectedAlbum) {
+          this.albums[i].imgs.map(v => this.form.imageTitles.push(v.title));
+          break;
+        }
+      }
+      this.form.selectedImage = null;
     },
     submit(publish) {
       if (!this.checkFileName(this.form.title)) {
@@ -184,8 +207,8 @@ export default {
             content: this.form.text,
             published: publish,
             description: this.form.description,
-            coverAlbum: this.form.selectedAlbum,
-            coverImage: this.form.selectedImage
+            coverAlbum: this.form.selectedAlbum || "", // prevent `null`
+            coverImage: this.form.selectedImage || "" // prevent `null`
           }
         },
         () => {
@@ -247,6 +270,18 @@ export default {
           }
         },
         "Error when getting folders"
+      );
+      this.apiPost(
+        {
+          route: "/get/album",
+          data: { username: this.$route.params.username }
+        },
+        data => {
+          this.albums = data.albums;
+          this.form.albumTitles = [];
+          this.albums.map(v => this.form.albumTitles.push(v.title));
+        },
+        "Get albums error"
       );
     }
   },
