@@ -90,8 +90,8 @@ export default {
         {
           route: "/submit/comment",
           data: {
-            folder: this.$route.params.folder,
-            post: this.$route.params.title,
+            folder: this.post.folder,
+            post: this.post.title,
             comment: text
           }
         },
