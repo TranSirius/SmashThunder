@@ -5,6 +5,10 @@
     <b-container style="margin-top:80px">
       <router-view></router-view>
     </b-container>
+    <br />
+    <b-navbar>
+      <b-nav-text class="text-center w-100">京ICP备19053534</b-nav-text>
+    </b-navbar>
   </div>
 </template>
 
