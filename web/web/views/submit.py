@@ -15,11 +15,8 @@ from web.db.datamodels import User, Album, Photo, Post, Folder, Comment, MainPag
 from web.index import doctype
 
 from web.views.auth import loginRequest
-
 from web.logic.utils import CurrentTime, UUID
 
-import os
-import uuid
 
 mod = Blueprint('submit', __name__, url_prefix = '/submit')
 
@@ -95,7 +92,7 @@ def uploadPost():
 
     old_post = db_session_instance.query(Post).filter(Post.post_title == post_title).filter(Post.folder_ID == folder.ID).first()
     if old_post is None:
-        post_id = "".join(str(uuid.uuid1()).split("-")[:-1])
+        post_id = UUID()()
         new_post = Post(ID = post_id, folder_ID = folder.ID, post_title = post_title, create_time = unix_time, document_format = post_format, post_content = post_content, is_published = is_published)
         db_session_instance.merge(new_post)
     else:
@@ -171,46 +168,5 @@ def uploadComment():
     comment_index = doctype.Comment(meta={'id':post_id}, content = comment)
     comment_index.save(using=es)
 
-    ret['status'] = 'ok'
-    return ret
-
-
-@mod.route('/star', methods = ['POST'])
-@loginRequest
-def submitStar():
-    ret = dict()
-    db_session_instance = databases.db_session()
-
-    try:
-        user = request.json['username']
-        folder = request.json['folder']
-        title = request.json['title']
-    except KeyError:
-        ret['status'] = "KeyError!"
-        return ret
-
-    post = db_session_instance\
-        .query(Post).join(Folder).join(User)\
-        .filter(User.user_name == user).filter(Folder.folder_title == folder).filter(Post.post_title == title)\
-        .first()
-
-    if post is None:
-        ret['status'] = 'Post Not Exist'
-        return ret
-
-    star = db_session_instance\
-        .query(Star)\
-        .filter(Star.user_id == g.user_id).filter(Star.post_id == post.ID)\
-        .first()
-    if star is None:
-        star = Star(user_id = g.user_id, post_id = post.ID)
-        db_session_instance.add(star)
-    else:
-        db_session_instance\
-        .query(Star)\
-        .filter(Star.user_id == g.user_id).filter(Star.post_id == post.ID)\
-        .delete()
-
-    db_session_instance.commit()
     ret['status'] = 'ok'
     return ret

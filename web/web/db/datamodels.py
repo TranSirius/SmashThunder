@@ -187,3 +187,9 @@ class Star(Model):
 
     user_id = Column('UserID', Integer, ForeignKey('User.ID', ondelete = 'CASCADE', onupdate = 'CASCADE'), primary_key = True)
     post_id = Column('PostID', String(20), ForeignKey('Post.ID', ondelete = 'CASCADE', onupdate = 'CASCADE'), primary_key = True)
+
+class Follow(Model):
+    __tablename__ = 'Follow'
+
+    follower_id = Column('FollowerID', Integer, ForeignKey('User.ID', ondelete = 'CASCADE', onupdate = 'CASCADE'), primary_key = True)
+    followee_id = Column('FolloweeID', Integer, ForeignKey('User.ID', ondelete = 'CASCADE', onupdate = 'CASCADE'), primary_key = True)
