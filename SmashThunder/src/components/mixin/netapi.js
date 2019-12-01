@@ -10,10 +10,14 @@ export default {
 		/**
 		 * `data`, `config`, `okFunc`, `errTitle` and `errFunc` can be undefined
 		 * 
-		 * if `errTitle` is `''`, no err toast will be shown.
+		 * If `errTitle` is `''`, no err toast will be shown.
+		 * 
+		 * For debug, every request should be sent by this api 
+		 * because this api will modify the path to an absolute path
+		 * to fit CORS
 		 */
 		apiPost({ route, data, config }, okFunc, errTitle, errFunc) {
-			axios.post(route, data, config).then(res => {
+			axios.post((process.env.NODE_ENV === 'development' ? 'http://smaththunder.com' : '') + route, data, config).then(res => {
 				if (res.data.status == 'ok') { okFunc && okFunc(res.data) }
 				else {
 					if (errTitle)
