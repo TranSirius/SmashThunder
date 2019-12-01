@@ -9,16 +9,20 @@ export default {
 		toastErr: errHandler.methods.toastErr,
 		/**
 		 * `data`, `config`, `okFunc`, `errTitle` and `errFunc` can be undefined
+		 * 
+		 * if `errTitle` is `''`, no err toast will be shown.
 		 */
 		apiPost({ route, data, config }, okFunc, errTitle, errFunc) {
 			axios.post(route, data, config).then(res => {
 				if (res.data.status == 'ok') { okFunc && okFunc(res.data) }
 				else {
-					this.toastErr(errTitle, res.data.status);
+					if (errTitle)
+						this.toastErr(errTitle, res.data.status);
 					errFunc && errFunc()
 				}
 			}).catch(() => {
-				this.toastErr(errTitle)
+				if (errTitle)
+					this.toastErr(errTitle)
 				errFunc && errFunc()
 			})
 		}
