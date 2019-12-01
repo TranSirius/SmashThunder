@@ -42,10 +42,4 @@ def create_app(test_config = None):
     from web.views import render
     app.register_blueprint(render.mod)
 
-    from web.views import follow
-    app.register_blueprint(follow.mod)
-
-    from web.views import star
-    app.register_blueprint(star.mod)
-
     return app
