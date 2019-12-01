@@ -9,9 +9,15 @@
         :img-src="'/data/'+post.author+'/img/'+post.coverAlbum+'/'+post.coverImage"
         img-top
       >
-        <b-card-title>{{ post.title }}</b-card-title>
-        <b-card-sub-title class="mb-2">{{ post.author }}</b-card-sub-title>
-        <b-card-text>{{ post.description }}</b-card-text>
+        <b-card-title>
+          <b-link :to="'/'+post.author+'/posts/'+post.folder+'/'+post.title">{{ post.title }}</b-link>
+        </b-card-title>
+        <b-card-sub-title class="mb-2">
+          <b-link :to="'/'+post.author">{{ post.author }}</b-link>
+        </b-card-sub-title>
+        <b-card-text>
+          <b-link :to="'/'+post.author+'/posts/'+post.folder+'/'+post.title">{{ post.description }}</b-link>
+        </b-card-text>
         <b-card-text class="small text-muted">
           Posted {{ post.time | timeOffset }}
           ago
@@ -37,3 +43,9 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+a {
+  color: inherit;
+}
+</style>
