@@ -17,7 +17,7 @@ export default {
 		 * to fit CORS
 		 */
 		apiPost({ route, data, config }, okFunc, errTitle, errFunc) {
-			axios.post((process.env.NODE_ENV === 'development' ? 'http://smaththunder.com' : '') + route, data, config).then(res => {
+			axios.post((process.env.NODE_ENV === 'development' ? 'http://smashthunder.com' : '') + route, data, config).then(res => {
 				if (res.data.status == 'ok') { okFunc && okFunc(res.data) }
 				else {
 					if (errTitle)
