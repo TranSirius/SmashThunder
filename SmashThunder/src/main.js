@@ -17,6 +17,8 @@ import Posts from "./components/view/Posts.vue"
 import Manage from "./components/view/Manage.vue"
 import Post from "./components/view/Post.vue"
 import Admin from "./components/view/Admin.vue"
+import Star from "./components/view/Star.vue"
+import Follow from "./components/view/Follow.vue"
 
 const routes = [
   {
@@ -37,6 +39,12 @@ const routes = [
   },
   {
     path: '/:username/posts', component: Posts
+  },
+  {
+    path: '/:username/star', component: Star
+  },
+  {
+    path: '/:username/follow', component: Follow
   },
   {
     path: '/:username/manage', component: Manage
