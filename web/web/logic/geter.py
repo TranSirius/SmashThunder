@@ -155,6 +155,10 @@ class GetPost():
             return_post['followed'] = False if followed is None else True
             return_post['followers'] = follower
 
+            return_post['description'] = post.description
+            return_post['coverAlbum'] = post.cover_album
+            return_post['coverImage'] = post.cover_photo
+
             comments = db_session_instance\
                 .query(Comment, User.user_name).join(Post)\
                 .filter(Post.ID == post.ID).filter(User.ID == Comment.user_id)\
@@ -248,7 +252,7 @@ class GetStar(object):
         for post in posts:
             author, folder = db_session_instance\
                 .query(User.user_name, Folder.folder_title).join(Post)\
-                .filter(Post.ID == post.ID)\
+                .filter(Post.ID == post.ID).filter(Folder.user_ID == User.ID)\
                 .first()
             entry = dict()
             entry['username'] = author

@@ -10,7 +10,7 @@ import sqlalchemy
 
 from web.db import databases
 from web.db import datamodels
-from web.db.datamodels import User, Album, Photo, Post, Folder, Comment, MainPage, Star
+from web.db.datamodels import User, Album, Photo, Post, Folder, Comment, MainPage, Star, Follow
 
 from web.index import doctype
 
@@ -78,6 +78,10 @@ def uploadPost():
         ret['status'] = "KeyError!"
         return ret
     
+    description = request.json['description'] if 'description' in request.json else None
+    cover_album = request.json['coverAlbum'] if 'coverAlbum' in request.json else None
+    cover_photo = request.json['coverImage'] if 'coverImage' in request.json else None
+
     unix_time = CurrentTime()()
 
     folder = db_session_instance\
@@ -93,12 +97,27 @@ def uploadPost():
     old_post = db_session_instance.query(Post).filter(Post.post_title == post_title).filter(Post.folder_ID == folder.ID).first()
     if old_post is None:
         post_id = UUID()()
-        new_post = Post(ID = post_id, folder_ID = folder.ID, post_title = post_title, create_time = unix_time, document_format = post_format, post_content = post_content, is_published = is_published)
+        new_post = Post(
+            ID = post_id, 
+            folder_ID = folder.ID, 
+            post_title = post_title, 
+            create_time = unix_time, 
+            document_format = post_format, 
+            post_content = post_content, 
+            is_published = is_published, 
+            description = description, 
+            cover_album = cover_album, 
+            cover_photo = cover_photo
+        )
         db_session_instance.merge(new_post)
     else:
         old_post.post_content = post_content
         old_post.create_time = unix_time
         old_post.is_published = is_published
+        old_post.description = str(description)
+        old_post.cover_album = str(cover_album)
+        old_post.cover_photo = str(cover_photo)
+
         post_id = old_post.ID
     db_session_instance.commit()
 
@@ -170,3 +189,75 @@ def uploadComment():
 
     ret['status'] = 'ok'
     return ret
+
+
+@mod.route('/star', methods = ['POST'])
+@loginRequest
+def submitStar():
+    ret = dict()
+    db_session_instance = databases.db_session()
+    print(request.json)
+    try:
+        user = request.json['username']
+        folder = request.json['folder']
+        title = request.json['post']
+        star_flag = request.json['star']
+    except:
+        ret['status'] = "Request Format Error!"
+        return ret
+
+    post = db_session_instance\
+        .query(Post).join(Folder).join(User)\
+        .filter(User.user_name == user).filter(Folder.folder_title == folder).filter(Post.post_title == title)\
+        .first()
+
+    if star_flag:
+        star = Star(user_id = g.user_id, post_id = post.ID)
+        db_session_instance.merge(star)
+        db_session_instance.commit()
+        ret['status'] = 'ok'
+    else:
+        db_session_instance\
+            .query(Star)\
+            .filter(Star.user_id == g.user_id).filter(Star.post_id == post.ID)
+        db_session_instance.commit()
+        ret['status'] = 'ok'
+    return ret
+
+@mod.route('/follow', methods = ['POST'])
+@loginRequest
+def followAPI():
+    ret = dict()
+    db_session_instance = databases.db_session()
+    print(request.json)
+    try:
+        follow_flag = request.json['follow']
+        follow_target = request.json['target']
+    except:
+        ret['status'] = 'Request Format Error!'
+        return ret
+
+    followee_id = db_session_instance\
+        .query(User)\
+        .filter(User.user_name == follow_target)\
+        .first()\
+        .ID
+    follower_id = g.user_id
+    if followee_id == follower_id:
+        ret['status'] = 'You Cannot Follow Yourself!'
+        return ret
+
+    if follow_flag:
+        follow = Follow(follower_id = follower_id, followee_id = followee_id)
+        db_session_instance.merge(follow)
+        db_session_instance.commit()
+        ret['status'] = 'ok'
+        return ret
+    else:
+        follow = db_session_instance\
+            .query(Follow)\
+            .filter(Follow.followee_id == followee_id).filter(Follow.follower_id == follower_id)\
+            .delete()
+        db_session_instance.commit()
+        ret['status'] = 'ok'
+        return ret

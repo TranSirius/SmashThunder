@@ -6,7 +6,7 @@ from flask import url_for
 from flask import request
 
 from web.db import databases
-from web.db.datamodels import User, Album, Photo, MainPage, Comment
+from web.db.datamodels import User, Album, Photo, MainPage, Comment, Post, Folder, Follow
 from web.logic.geter import GetPhotos
 from web.logic.geter import GetFolderDetail
 from web.logic.geter import GetPost
@@ -162,4 +162,109 @@ def getFollow():
     ret['followings'] = followee_list
     ret['followers'] = follower_list
     ret['status'] = 'ok'
+    return ret
+
+@mod.route('/news', methods = ['POST'])
+def getNew():
+    ret = dict()
+    db_session_instance = databases.db_session()
+    try:
+        target = request.json['target']
+    except:
+        ret['status'] = 'Request Format Error!'
+        return ret
+
+    posts = []
+    if target == 'news':
+        news = db_session_instance\
+            .query(Post.create_time, Post.description, Post.cover_album, Post.cover_photo, Post.post_title ,User.user_name, Folder.folder_title)\
+            .filter(User.ID == Folder.user_ID).filter(Post.folder_ID == Folder.ID)\
+            .limit(20)\
+            .all()
+        for create_time, description, cover_album, cover_photo, title, username, folder_title in news:
+            single_news = dict()
+            single_news['title'] = title
+            single_news['author'] = username
+            single_news['description'] = description
+            single_news['coverAlbum'] = cover_album
+            single_news['coverImage'] = cover_photo
+            single_news['time'] = create_time
+            single_news['folder'] = folder_title
+            posts.append(single_news)
+
+    elif target == 'friendsActivities':
+        if g.user_id is None:
+            ret['status'] = 'Please Login First!'
+            return ret
+
+        news = db_session_instance\
+            .query(
+                Post.create_time, 
+                Post.description, 
+                Post.cover_album, 
+                Post.cover_photo, 
+                Post.post_title ,
+                User.user_name, 
+                Folder.folder_title,
+                ).join(
+                 Follow,
+                 User.ID == Follow.followee_id
+                )\
+            .filter(User.ID == Folder.user_ID).filter(Post.folder_ID == Folder.ID).filter(Follow.follower_id == g.user_id)\
+            .limit(20)\
+            .all()
+        
+        for create_time, description, cover_album, cover_photo, title, username, folder_title in news:
+            single_news = dict()
+            single_news['title'] = title
+            single_news['author'] = username
+            single_news['description'] = description
+            single_news['coverAlbum'] = cover_album
+            single_news['coverImage'] = cover_photo
+            single_news['time'] = create_time
+            single_news['folder'] = folder_title
+            posts.append(single_news)
+
+    else:
+        ret['status'] = 'Request Format Error! target error!'
+        return ret
+
+    ret['status'] = 'ok'
+    ret['posts'] = posts
+    return ret
+
+@mod.route('/posts', methods = ['POST'])
+@loginRequest
+def getUsersPosts():
+    ret = dict()
+    try:
+        username = request.json['username']
+    except:
+        ret['status'] = 'Request Format Error!'
+        return ret
+    db_session_instance = databases.db_session()
+    posts = db_session_instance\
+        .query(
+            Post.create_time, 
+            Post.description, 
+            Post.cover_album, 
+            Post.cover_photo, 
+            Post.post_title ,
+            Folder.folder_title,
+        ).join(User, User.ID == Folder.user_ID)\
+        .filter(User.user_name == username).filter(Post.folder_ID == Folder.ID)\
+        .all()
+
+    ret['posts'] = []
+    for create_time, description, cover_album, cover_photo, post_title, folder_title in posts:
+        single_posts = dict()
+        single_posts['title'] = post_title
+        single_posts['author'] = username
+        single_posts['description'] = description
+        single_posts['coverAlbum'] = cover_album
+        single_posts['coverImage'] = cover_photo
+        single_posts['time'] = create_time
+        ret['posts'].append(single_posts)
+    ret['status'] = 'ok'
+    print(ret)
     return ret

@@ -150,6 +150,14 @@ class Post(Model):
     is_published = Column('IsPublish', Boolean, default = False, nullable = False)
     stars = Column('Stars', Integer, default = 0, nullable = False)
 
+    description = Column('Description', String(400))
+    cover_album = Column('CoverAlbum', String(200))
+    cover_photo = Column('CoverPhoto', String(200))
+
+    __mapper_args__ = {
+        "order_by": create_time.desc()
+    }
+
     def __str__(self):
         return '%s(ID=%r, FolderID=%r, PostTitle=%r, CreateTime=%r, Format=%r)' % (
             self.__class__.__name__,
