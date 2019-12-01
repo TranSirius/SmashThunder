@@ -45,7 +45,7 @@ export default {
 </script>
 
 <style scoped>
-.b-link {
+a {
   color: inherit;
 }
 </style>
