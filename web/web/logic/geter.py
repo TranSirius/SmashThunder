@@ -113,6 +113,11 @@ class GetPost():
             .filter(User.user_name == user_name).filter(Folder.folder_title == folder_name).filter(Post.post_title == post_title)\
             .first()
 
+        author = db_session_instance\
+            .query(User)\
+            .filter(User.user_name == user_name)\
+            .first()
+
         if post is None:
             return None
 
@@ -122,6 +127,22 @@ class GetPost():
                 .filter(Star.post_id == post.ID)\
                 .group_by(Star.post_id)\
                 .first()
+
+            stared = db_session_instance\
+                .query(Star)\
+                .filter(Star.user_id == g.user_id)\
+                .first()
+
+            follower = db_session_instance\
+                .query(func.count(Follow.follower_id))\
+                .filter(Follow.followee_id == author.ID)\
+                .first()
+
+            followed = db_session_instance\
+                .query(Follow)\
+                .filter(Follow.follower_id == g.user_id).filter(Follow.followee_id)\
+                .first()
+            
             return_post['title'] = post.post_title
             return_post['createTime'] = post.create_time
             return_post['content'] = post.post_content
@@ -129,6 +150,10 @@ class GetPost():
             return_post['postID'] = post.ID
             return_post['stars'] = star_num
             return_post['published'] = post.is_published
+
+            return_post['starred'] = False if stared is None else True
+            return_post['followed'] = False if followed is None else True
+            return_post['followers'] = follower
 
             comments = db_session_instance\
                 .query(Comment, User.user_name).join(Post)\
@@ -163,6 +188,27 @@ class GetPost():
                 .filter(Star.post_id == post.ID)\
                 .group_by(Star.post_id)\
                 .first()
+
+            author = db_session_instance\
+                .query(User).join(Folder).join(Post)\
+                .filter(Post.ID == post_id)\
+                .first()
+
+            stared = db_session_instance\
+                .query(Star)\
+                .filter(Star.user_id == g.user_id)\
+                .first()
+
+            follower = db_session_instance\
+                .query(func.count(Follow.follower_id))\
+                .filter(Follow.followee_id == post.ID)\
+                .first()
+
+            followed = db_session_instance\
+                .query(Follow)\
+                .filter(Follow.follower_id == g.user_id).filter(Follow.followee_id)\
+                .first()
+
             return_post['title'] = post.post_title
             return_post['createTime'] = post.create_time
             return_post['content'] = post.post_content
@@ -170,6 +216,10 @@ class GetPost():
             return_post['postID'] = post.ID
             return_post['stars'] = star_num
             return_post['published'] = post.is_published
+
+            return_post['starred'] = False if stared is None else True
+            return_post['followed'] = False if followed is None else True
+            return_post['followers'] = follower
 
             comments = db_session_instance\
                 .query(Comment, User.user_name).join(Post)\
@@ -185,3 +235,25 @@ class GetPost():
             return_post['comments'] = comment_list
  
             return return_post
+
+class GetStar(object):
+    def __call__(self, username):
+        db_session_instance = databases.db_session()
+        ret = []
+        posts = db_session_instance\
+            .query(Star).join(User)\
+            .filter(User.user_name == username)\
+            .all()
+        
+        for post in posts:
+            author, folder = db_session_instance\
+                .query(User.user_name, Folder.folder_title).join(Post)\
+                .filter(Post.ID == post.ID)\
+                .first()
+            entry = dict()
+            entry['username'] = author
+            entry['folder'] = folder
+            entry['post'] = post.post_title
+            ret.append(entry)
+        
+        return ret

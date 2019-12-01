@@ -11,6 +11,7 @@ from web.logic.geter import GetPhotos
 from web.logic.geter import GetFolderDetail
 from web.logic.geter import GetPost
 from web.logic.geter import GetFolder
+from web.logic.geter import GetStar
 from web.views.auth import loginRequest
 
 mod = Blueprint('get', __name__, url_prefix = '/get')
@@ -111,5 +112,54 @@ def getMainPage():
         return ret
 
     ret['post'] = return_post
+    ret['status'] = 'ok'
+    return ret
+
+@mod.route('/star', methods = ['POST'])
+def getStar():
+    ret = dict()
+
+    try:
+        username = request.json['username']
+    except:
+        ret['status'] = 'Request Format Error!'
+        return ret
+
+    ret['stars'] = GetStar()()
+    ret['status'] = 'ok'
+    return ret
+
+
+@mod.route('/follow', methods = ['POST'])
+def getFollow():
+    ret = dict()
+    db_session_instance = databases.db_session()
+    try:
+        username = request.json['username']
+    except:
+        ret['status'] = 'Request Format Error!'
+        return ret
+    
+    user = db_session_instance\
+        .query(User)\
+        .filter(User.user_name == username)\
+        .first()
+
+    follower, _ = db_session_instance\
+        .query(User.user_name, Follow)\
+        .filter(Follow.followee_id == user.ID).filter(Follow.follower_id == User.ID)\
+        .all()
+    
+    follower_list = [f.user_name for f in follower]
+
+    followee, _ = db_session_instance\
+        .query(User.user_name, Follow)\
+        .filter(Follow.follower_id == user.ID).filter(Follow.followee_id == User.ID)\
+        .all()
+    
+    followee_list = [f.user_name for f in followee]
+
+    ret['followings'] = followee_list
+    ret['followers'] = follower_list
     ret['status'] = 'ok'
     return ret
