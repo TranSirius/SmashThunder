@@ -95,15 +95,18 @@ def getMainPage():
         ret['status'] = 'Requesting Format Error!'
         return ret
 
-    main_page = db_session_instance\
-        .query(MainPage).join(User)\
-        .filter(User.user_name == user_name)\
+    qry = db_session_instance\
+        .query(MainPage, Folder.folder_title).join(User, User.ID == MainPage.user_id).join(Post)\
+        .filter(User.user_name == user_name).filter(Post.folder_ID == Folder.ID)\
         .first()
 
-    if main_page is None:
+    if qry is None:
         ret['status'] = 'ok'
         ret['exist'] = False
         return ret
+
+    main_page, main_page_folder = qry
+
     ret['exist'] = True
     geter = GetPost()
     return_post = geter.getByPostID(post_id = main_page.post_id)
@@ -112,6 +115,7 @@ def getMainPage():
         return ret
 
     ret['post'] = return_post
+    ret['post']['folder'] = main_page_folder
     ret['status'] = 'ok'
     return ret
 
@@ -242,29 +246,6 @@ def getUsersPosts():
     except:
         ret['status'] = 'Request Format Error!'
         return ret
-    db_session_instance = databases.db_session()
-    posts = db_session_instance\
-        .query(
-            Post.create_time, 
-            Post.description, 
-            Post.cover_album, 
-            Post.cover_photo, 
-            Post.post_title ,
-            Folder.folder_title,
-        ).join(User, User.ID == Folder.user_ID)\
-        .filter(User.user_name == username).filter(Post.folder_ID == Folder.ID)\
-        .all()
-
-    ret['posts'] = []
-    for create_time, description, cover_album, cover_photo, post_title, folder_title in posts:
-        single_posts = dict()
-        single_posts['title'] = post_title
-        single_posts['author'] = username
-        single_posts['description'] = description
-        single_posts['coverAlbum'] = cover_album
-        single_posts['coverImage'] = cover_photo
-        single_posts['time'] = create_time
-        ret['posts'].append(single_posts)
+    ret['folders'] = GetFolderDetail().getPosts(username)
     ret['status'] = 'ok'
-    print(ret)
     return ret

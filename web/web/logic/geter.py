@@ -45,6 +45,14 @@ class GetFolderDetail():
             .query(Folder).join(User)\
             .filter(User.ID == user_id)\
             .all()
+
+        main_page = db_session_instance\
+            .query(MainPage)\
+            .filter(MainPage.user_id == user_id)\
+            .first()
+        
+        main_page = main_page.post_id if main_page is not None else 'main page not exist'
+
         for folder in folders:
             folder_id = folder.ID
             folder_title = folder.folder_title
@@ -72,6 +80,45 @@ class GetFolderDetail():
                 post_dict['published'] = post.is_published
                 post_dict['stars'] = star_num
                 post_dict['comments'] = comment_num
+                post_dict['homepage'] = True if post.ID == main_page else False
+                folder_dict['posts'].append(post_dict)
+            return_posts.append(folder_dict)
+        return return_posts
+
+    def getPosts(self, username):
+        db_session_instance = db_session()
+        return_posts = []
+
+        folders = db_session_instance\
+            .query(Folder).join(User)\
+            .filter(User.user_name == username)\
+            .all()
+
+        for folder in folders:
+            folder_id = folder.ID
+            folder_title = folder.folder_title
+            create_time = folder.create_time
+            folder_dict = dict()
+            folder_dict['title'] = str(folder_title)
+            folder_dict['posts'] = []
+            posts = db_session_instance\
+                .query(Post, func.count(Comment.ID)).outerjoin(Comment)\
+                .filter(Post.folder_ID == folder_id)\
+                .group_by(Post.ID)\
+                .all()
+            for post, comment_num in posts:
+                post_dict = dict()
+                star_num = db_session_instance\
+                    .query(func.count(Star.user_id)).outerjoin(Post)\
+                    .filter(Star.post_id == post.ID)\
+                    .group_by(Star.post_id)\
+                    .first()
+                post_dict['title'] = post.post_title
+                post_dict['author'] = username
+                post_dict['description'] = post.description
+                post_dict['coverAlbum'] = post.cover_album
+                post_dict['coverImage'] = post.cover_photo
+                post_dict['time'] = post.create_time
                 folder_dict['posts'].append(post_dict)
             return_posts.append(folder_dict)
         return return_posts
@@ -123,10 +170,12 @@ class GetPost():
 
         else:
             star_num = db_session_instance\
-                .query(func.count(Star.user_id)).outerjoin(Post)\
+                .query(func.count(Star.user_id))\
                 .filter(Star.post_id == post.ID)\
                 .group_by(Star.post_id)\
                 .first()
+
+            star_num = 0 if star_num is None else star_num[0]
 
             stared = db_session_instance\
                 .query(Star)\
@@ -137,6 +186,8 @@ class GetPost():
                 .query(func.count(Follow.follower_id))\
                 .filter(Follow.followee_id == author.ID)\
                 .first()
+
+            follower = 0 if follower is None else follower[0]
 
             followed = db_session_instance\
                 .query(Follow)\

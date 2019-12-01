@@ -219,7 +219,8 @@ def submitStar():
     else:
         db_session_instance\
             .query(Star)\
-            .filter(Star.user_id == g.user_id).filter(Star.post_id == post.ID)
+            .filter(Star.user_id == g.user_id).filter(Star.post_id == post.ID)\
+            .delete()
         db_session_instance.commit()
         ret['status'] = 'ok'
     return ret
