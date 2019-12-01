@@ -63,7 +63,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import sha256 from "js-sha256";
 import netapi from "../mixin/netapi";
 import errHandler from "../mixin/errHandler";
@@ -101,14 +100,16 @@ export default {
       return true;
     },
     logout: function() {
-      axios
-        .post("/auth/logout")
-        .then(() => {
+      this.apiPost(
+        { route: "/auth/logout" },
+        () => {
           this.$root.$data.user.loggedIn = false;
-        })
-        .catch(() => {
-          this.showFormErr();
-        });
+        },
+        "Logout failed.",
+        () => {
+          this.submitting = false;
+        }
+      );
     },
     submitClicked: function() {
       this.submitting = true;
@@ -134,15 +135,14 @@ export default {
     }
   },
   mounted: function() {
-    axios
-      .post("/auth/autoLogin")
-      .then(res => {
-        if (res.data.status == "ok") {
-          this.$root.$data.user.username = res.data.username;
-          this.$root.$data.user.loggedIn = true;
-        }
-      })
-      .catch(() => {});
+    this.apiPost(
+      { route: "/auth/autoLogin" },
+      () => {
+        this.$root.$data.user.username = res.data.username;
+        this.$root.$data.user.loggedIn = true;
+      },
+      "" // empty err title, no toast will be shown
+    );
   }
 };
 </script>
