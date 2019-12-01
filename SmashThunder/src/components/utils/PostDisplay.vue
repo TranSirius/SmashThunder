@@ -3,6 +3,7 @@
   <div>
     <iframe
       :srcdoc="resultHTML"
+      src="/static/"
       width="100%"
       seamless
       frameborder="0"

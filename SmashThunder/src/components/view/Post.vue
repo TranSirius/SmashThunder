@@ -27,21 +27,58 @@
     <b-card v-for="comment in post.comments" :key="comment.time" class="mb-2">
       <b-card-title>
         <b-link :to="'/'+comment.username">{{ comment.username }}</b-link>
+        <b-button
+          variant="outline-danger"
+          v-b-tooltip.hover
+          title="report"
+          @click="triggerReport(comment.username)"
+          size="sm"
+          class="ml-3 mb-2"
+        >❗</b-button>
       </b-card-title>
       <b-card-sub-title class="mb-2">Comment at {{ comment.time | timeOffset }} ago.</b-card-sub-title>
       <b-card-text>{{ comment.comment }}</b-card-text>
     </b-card>
     <!-- Action buttons -->
     <b-button-group vertical id="actionBtns">
-      <b-button :disabled="!$root.$data.user.loggedIn">Follow</b-button>
-      <b-button @click="downloadPost">Download</b-button>
+      <b-button
+        :variant="post.followed?'success':'outline-success'"
+        v-b-tooltip.hover.left
+        :title="post.followed?'unfollow':'follow'"
+        @click="follow"
+      >➕ {{ post.followers }}</b-button>
+      <b-button
+        @click="downloadPost"
+        v-b-tooltip.hover.left
+        title="download"
+        variant="outline-secondary"
+      >⇓</b-button>
       <b-button
         v-if="editable"
         @click="$router.push('/'+$root.$data.user.username+'/edit?folder='+$route.params.folder+'&post='+$route.params.title)"
-      >Edit</b-button>
-      <b-button :disabled="!$root.$data.user.loggedIn">Star</b-button>
-      <b-button :disabled="!$root.$data.user.loggedIn">Report</b-button>
+        variant="outline-info"
+        v-b-tooltip.hover.left
+        title="edit"
+      >✍</b-button>
+      <b-button
+        :variant="post.starred?'warning':'outline-warning'"
+        v-b-tooltip.hover.left
+        :title="post.starred?'unstar':'star'"
+        @click="star"
+      >⭐ {{ post.stars }}</b-button>
+      <b-button
+        variant="outline-danger"
+        v-b-tooltip.hover.left
+        title="report"
+        @click="triggerReport()"
+      >❗</b-button>
     </b-button-group>
+    <ReportModal
+      :target="report.target"
+      :reporter="$root.$data.user.username"
+      :reason="report.reason"
+      ref="reportModal"
+    ></ReportModal>
   </div>
 </template>
 
@@ -50,21 +87,89 @@ import PostDisplay from "../utils/PostDisplay";
 import netapi from "../mixin/netapi";
 import timeFilter from "../mixin/timeFilter";
 import downloadUtils from "../mixin/downloadUtils";
+import ReportModal from "../utils/ReportModal";
 
 export default {
   name: "Post",
   mixins: [netapi, timeFilter, downloadUtils],
-  components: { PostDisplay },
+  components: { PostDisplay, ReportModal },
   data() {
     return {
       post: {},
-      text: ""
+      text: "",
+      report: {
+        reason: "",
+        target: ""
+      }
     };
   },
   methods: {
+    triggerReport(commenter) {
+      if (!this.$root.$data.user.loggedIn) {
+        this.toastErr("Error", "Please login first.");
+        return;
+      }
+      this.report.target = commenter || this.$route.params.username;
+      this.report.reason = commenter
+        ? "Target comment: " + this.report.target + " in "
+        : "Target post: ";
+      this.report.reason +=
+        [
+          this.$route.params.username,
+          this.post.folder || this.$route.params.folder,
+          this.post.title || this.$route.params.title
+        ].join("/") + "\n";
+      this.$refs.reportModal.show();
+    },
+    follow() {
+      if (!this.$root.$data.user.loggedIn) {
+        this.toastErr("Error", "Please login first.");
+        return;
+      }
+      if (this.$root.$data.user.username == this.$route.params.username) {
+        this.toastErr("Error", "You can not follow yourself.");
+        return;
+      }
+      this.apiPost(
+        {
+          route: "/submit/follow",
+          data: {
+            target: this.$route.params.username,
+            follow: !this.post.followed
+          }
+        },
+        () => {
+          this.post.followed = !this.post.followed;
+          this.post.followers++;
+        },
+        "Follow failed."
+      );
+    },
+    star() {
+      if (!this.$root.$data.user.loggedIn) {
+        this.toastErr("Error", "Please login first.");
+        return;
+      }
+      this.apiPost(
+        {
+          route: "/submit/star",
+          data: {
+            username: this.$route.params.username,
+            folder: this.post.folder || this.$route.params.folder,
+            post: this.post.title || this.$route.params.title,
+            star: !this.post.starred
+          }
+        },
+        () => {
+          this.post.starred = !this.post.starred;
+          this.post.stars++;
+        },
+        "Star failed."
+      );
+    },
     downloadPost() {
       let username = this.$route.params.username;
-      let folder = this.$route.params.folder;
+      let folder = this.post.folder || this.$route.params.folder;
       let post = this.$route.params.title;
       this.apiPost(
         {
@@ -90,8 +195,9 @@ export default {
         {
           route: "/submit/comment",
           data: {
-            folder: this.$route.params.folder,
-            post: this.$route.params.title,
+            username: this.$route.params.username,
+            folder: this.post.folder || this.$route.params.folder,
+            post: this.post.title || this.$route.params.title,
             comment: text
           }
         },
@@ -112,7 +218,7 @@ export default {
             route: "/get/post",
             data: {
               username: this.$route.params.username,
-              folder: this.$route.params.folder,
+              folder: this.post.folder || this.$route.params.folder,
               postTitle: this.$route.params.title
             }
           },

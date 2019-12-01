@@ -2,22 +2,26 @@
   <div>
     <!-- Friends Activities -->
     <div v-if="$root.$data.user.loggedIn">
-      <NewsCards title="Friends Activities" :data="friendsActivities"></NewsCards>
+      <PostOverview
+        title="Friends Activities"
+        :data="friendsActivities"
+        emptyHint="No friends activities."
+      ></PostOverview>
     </div>
     <!-- New posts -->
-    <NewsCards title="News" :data="news"></NewsCards>
+    <PostOverview title="News" :data="news" emptyHint="No news."></PostOverview>
   </div>
 </template>
 
 <script>
-import NewsCards from "../utils/NewsCards.vue";
+import PostOverview from "../utils/PostOverview.vue";
 import netapi from "../mixin/netapi";
 
 export default {
   name: "News",
   mixins: [netapi],
   components: {
-    NewsCards
+    PostOverview
   },
   data() {
     return {

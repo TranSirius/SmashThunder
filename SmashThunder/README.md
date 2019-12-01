@@ -12,9 +12,12 @@
 - `/static/` - Static asset files
 - `/:username` - User homepage
 - `/:username/album` - User's image management page
-- `/:username/posts` - User's posts management page
+- `/:username/manage` - User's posts management page
+- `/:username/posts` - User's posts show page
 - `/:username/posts/:folder/:post` - User's post
 - `/:username/edit` - New post or edit existing post
+- `/:username/star` - User's star management page
+- `/:username/follow` - User's follow management page'
 - `/admin` - Admin homepage
 
 ## Data format
@@ -27,8 +30,9 @@
 		"title": "str",
 		"author": "str",
 		"description": "str",
-		"img": "url",
 		"time": "Unix Time Stamp(int)",
+		"coverAlbum": "str",
+		"coverImage": "str",
 	}],
 	"friendsActivities": [{}] // the same as `news`
 }

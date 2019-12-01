@@ -17,7 +17,6 @@
         sort-icon-left
         :fields="reportTable.fields"
         table-variant="danger"
-        fixed
         v-if="reportTable.items.length"
       >
         <template v-slot:cell(target)="data">
@@ -28,8 +27,13 @@
         </template>
         <template v-slot:cell(reason)="data">{{ data.item.reason }}</template>
         <template v-slot:cell(action)="data">
-          <b-button size="sm" variant="secondary">Dismiss</b-button>
-          <b-button size="sm" class="ml-2" variant="outline-danger">Ban</b-button>
+          <b-button size="sm" variant="secondary" @click="dismiss(data.item.id)">Dismiss</b-button>
+          <b-button
+            size="sm"
+            class="ml-2"
+            variant="outline-danger"
+            @click="ban(data.item.id,data.item.target)"
+          >Ban</b-button>
         </template>
       </b-table>
       <div v-else>
@@ -45,66 +49,90 @@
       <hr />
       <h5>CPU usage</h5>
       <b-progress :value="cpu" show-progress class="mb-3"></b-progress>
-      <!-- TODO: remove this -->
-      <h5>Others</h5>
-      <b-progress :value="others" show-progress></b-progress>
+      <h5>Memory</h5>
+      <b-progress :value="memory" show-progress class="mb-3"></b-progress>
+      <h5>Storage</h5>
+      <b-progress :value="storage" show-progress></b-progress>
     </b-card>
   </div>
 </template>
 
 <script>
 import { Chart } from "chart.js";
+import netapi from "../mixin/netapi";
 
 export default {
   name: "Admin",
+  mixins: [netapi],
   data() {
     return {
       search: "",
       cpu: 60,
-      // TODO: remove this
-      others: 80,
+      memory: 60,
+      storage: 60,
       reportTable: {
         fields: [
+          { key: "id", sortable: true },
           { key: "target", sortable: true },
           { key: "reporter", sortable: true },
           "reason",
-          "action"
+          { key: "action", thStyle: { width: "150px" } }
         ],
-        items: [
-          {
-            target: "someUsername",
-            reporter: "anotherUsername",
-            reason: "大佬真垃圾".repeat(10)
-          }
-        ]
+        items: []
+      },
+      chart: {
+        labels: [],
+        data: [],
+        title: "Latest Visits"
       }
     };
   },
   methods: {
+    dismiss(id) {
+      this.apiPost(
+        { route: "/submit/dismiss", data: { target: id } },
+        () => {
+          this.reportTable.items = this.reportTable.items.filter(
+            item => item.id != id
+          );
+        },
+        "Dismiss failed."
+      );
+    },
+    ban(id, target) {
+      this.apiPost(
+        { route: "/submit/ban", data: { target, report: id } },
+        () => {
+          this.reportTable.items = this.reportTable.items.filter(
+            item => item.id != id
+          );
+        },
+        "Ban failed."
+      );
+    },
     enter() {
       var ctx = document.getElementById("accessChart").getContext("2d");
-      new Chart(ctx, {
-        type: "line",
-        data: {
-          labels: [
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July"
-          ],
-          datasets: [
-            {
-              label: "My First dataset",
-              backgroundColor: "rgb(255, 99, 132)",
-              borderColor: "rgb(255, 99, 132)",
-              data: [0, 10, 5, 2, 20, 30, 45]
-            }
-          ]
-        },
-        options: {}
+      this.apiPost({ route: "/get/admin" }, data => {
+        this.reportTable.items = data.reports;
+        this.cpu = data.cpu;
+        this.memory = data.memory;
+        this.storage = data.storage;
+        this.chart = data.chart;
+        new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: this.chart.labels,
+            datasets: [
+              {
+                label: this.chart.title,
+                backgroundColor: "rgb(255, 99, 132)",
+                borderColor: "rgb(255, 99, 132)",
+                data: this.chart.data
+              }
+            ]
+          },
+          options: {}
+        });
       });
     }
   },

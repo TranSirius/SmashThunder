@@ -14,12 +14,16 @@ import News from "./components/view/News.vue"
 import Album from "./components/view/Album.vue"
 import Edit from "./components/view/Edit.vue"
 import Posts from "./components/view/Posts.vue"
+import Manage from "./components/view/Manage.vue"
 import Post from "./components/view/Post.vue"
 import Admin from "./components/view/Admin.vue"
 
 const routes = [
   {
     path: '/', component: News,
+  },
+  {
+    path: '/admin', component: Admin
   },
   {
     path: '/:username', component: Post,
@@ -35,11 +39,11 @@ const routes = [
     path: '/:username/posts', component: Posts
   },
   {
-    path: '/:username/posts/:folder/:title', component: Post,
-    name: 'toPost'
+    path: '/:username/manage', component: Manage
   },
   {
-    path: '/admin', component: Admin
+    path: '/:username/posts/:folder/:title', component: Post,
+    name: 'toPost'
   }
 ]
 
