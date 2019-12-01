@@ -137,8 +137,8 @@ export default {
   mounted: function() {
     this.apiPost(
       { route: "/auth/autoLogin" },
-      () => {
-        this.$root.$data.user.username = res.data.username;
+      data => {
+        this.$root.$data.user.username = data.username;
         this.$root.$data.user.loggedIn = true;
       },
       "" // empty err title, no toast will be shown
