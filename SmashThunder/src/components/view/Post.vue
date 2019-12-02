@@ -205,7 +205,7 @@ export default {
         },
         () => {
           this.text = "";
-          this.post.comments.push({
+          this.post.comments.unshift({
             username: this.$route.params.username,
             comment: text,
             time: Date.now()
