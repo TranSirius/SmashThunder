@@ -63,8 +63,6 @@ def getPost():
         ret['status'] = 'ok'
         return ret
 
-
-
 @mod.route('/post/foldersDetail', methods = ['POST'])
 def postFolderDetail():
     user_id = g.user_id
@@ -168,7 +166,7 @@ def getFollow():
     ret['status'] = 'ok'
     return ret
 
-@mod.route('/news', methods = ['POST'])
+@mod.route('/news', methods = ['POST', 'OPTIONS'])
 def getNew():
     ret = dict()
     db_session_instance = databases.db_session()

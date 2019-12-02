@@ -72,7 +72,8 @@ class GetFolderDetail():
                     .query(func.count(Star.user_id)).outerjoin(Post)\
                     .filter(Star.post_id == post.ID)\
                     .group_by(Star.post_id)\
-                    .first()
+                    .scalar()
+                star_num = 0 if star_num is None else star_num
                 post_dict['title'] = post.post_title
                 post_dict['createTime'] = post.create_time
                 post_dict['format'] = post.document_format
@@ -112,7 +113,8 @@ class GetFolderDetail():
                     .query(func.count(Star.user_id)).outerjoin(Post)\
                     .filter(Star.post_id == post.ID)\
                     .group_by(Star.post_id)\
-                    .first()
+                    .scalar()
+                star_num = 0 if star_num is None else star_num
                 post_dict['title'] = post.post_title
                 post_dict['author'] = username
                 post_dict['description'] = post.description
@@ -173,9 +175,9 @@ class GetPost():
                 .query(func.count(Star.user_id))\
                 .filter(Star.post_id == post.ID)\
                 .group_by(Star.post_id)\
-                .first()
+                .scalar()
 
-            star_num = 0 if star_num is None else star_num[0]
+            star_num = 0 if star_num is None else star_num
 
             stared = db_session_instance\
                 .query(Star)\
@@ -185,9 +187,9 @@ class GetPost():
             follower = db_session_instance\
                 .query(func.count(Follow.follower_id))\
                 .filter(Follow.followee_id == author.ID)\
-                .first()
+                .scalar()
 
-            follower = 0 if follower is None else follower[0]
+            follower = 0 if follower is None else follower
 
             followed = db_session_instance\
                 .query(Follow)\
@@ -242,7 +244,8 @@ class GetPost():
                 .query(func.count(Star.user_id)).outerjoin(Post)\
                 .filter(Star.post_id == post.ID)\
                 .group_by(Star.post_id)\
-                .first()
+                .scalar()
+            star_num = 0 if star_num is None else star_num
 
             author = db_session_instance\
                 .query(User).join(Folder).join(Post)\
@@ -257,7 +260,8 @@ class GetPost():
             follower = db_session_instance\
                 .query(func.count(Follow.follower_id))\
                 .filter(Follow.followee_id == post.ID)\
-                .first()
+                .scalar()
+            follower = 0 if follower is None else follower
 
             followed = db_session_instance\
                 .query(Follow)\

@@ -230,7 +230,6 @@ def submitStar():
 def followAPI():
     ret = dict()
     db_session_instance = databases.db_session()
-    print(request.json)
     try:
         follow_flag = request.json['follow']
         follow_target = request.json['target']
