@@ -40,14 +40,20 @@ export default {
     getNews() {
       this.apiPost(
         { route: "/get/news", data: { target: "news" } },
-        data => (this.news = data.posts),
+        data => {
+          this.news = data.posts;
+          this.news.sort((a, b) => b.time - a.time);
+        },
         "Can't load news!"
       );
     },
     getFriendsActivities() {
       this.apiPost(
         { route: "/get/news", data: { target: "friendsActivities" } },
-        data => (this.friendsActivities = data.posts),
+        data => {
+          this.friendsActivities = data.posts;
+          this.friendsActivities.sort((a, b) => b.time - a.time);
+        },
         "Can't load friends activities!"
       );
     }
