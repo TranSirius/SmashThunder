@@ -15,11 +15,11 @@
       >
         <template v-slot:cell(title)="data">
           <b-link
-            :to="'/'+$route.params.username+'/posts/'+data.item.folder+'/'+data.item.post"
+            :to="'/'+data.item.username+'/posts/'+data.item.folder+'/'+data.item.post"
           >{{ data.item.post }}</b-link>
         </template>
-        <template v-slot:cell(author)="data"></template>
-        <template v-slot:cell(folder)="data"></template>
+        <template v-slot:cell(author)="data">{{ data.item.username }}</template>
+        <template v-slot:cell(folder)="data">{{ data.item.folder }}</template>
         <template v-slot:cell(actions)="data">
           <b-button
             class="mb-1"
@@ -38,7 +38,7 @@ import netapi from "../mixin/netapi";
 import timeFilter from "../mixin/timeFilter";
 import strCheck from "../mixin/strCheck";
 import arrayCheck from "../mixin/arrayCheck";
-import ModalInput from "../utils/ModalInput";
+// import ModalInput from "../utils/ModalInput";
 import downloadUtils from "../mixin/downloadUtils";
 
 export default {
@@ -75,7 +75,7 @@ export default {
     deleteStar(author, folder, post){
         this.apiPost(
         {
-          route: "/star",
+          route: "/submit/star",
           data: {
             username: author,
             folder: folder,
@@ -93,9 +93,16 @@ export default {
               }
             }
         },
-        "Get stars error"
+        "unstar error"
       );
     }
+  },
+  beforeRouteEnter(to, from, next) {
+    next(v => v.enter());
+  },
+  beforeRouteUpdate(to, from, next) {
+    next();
+    this.enter();
   }
 };
 </script>

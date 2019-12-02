@@ -22,9 +22,6 @@
           <template v-slot:cell(follower)="data">
             <b-link :to="'/'+$route.params.username">{{ data.item }}</b-link>
           </template>
-          <template v-slot:cell(actions)="data">
-            <b-button class="mb-1" variant="danger" @click="unfollow(data.item)">Delete</b-button>
-          </template>
         </b-table>
       </b-collapse>
     </div>
@@ -35,8 +32,8 @@
       <b-button
         class="mb-1 ml-3"
         variant="outline-info"
-        :pressed.sync="followings.show"
-      >{{ followings.show ? 'Hide' : 'Show' }}</b-button>
+        :pressed.sync="followingShow"
+      >{{ followingShow ? 'Hide' : 'Show' }}</b-button>
       <h6>You can find your followings here.</h6>
       <b-collapse v-model="followingShow">
         <b-table
@@ -52,6 +49,9 @@
           <template v-slot:cell(following)="data">
             <b-link :to="'/'+$route.params.username">{{ data.item }}</b-link>
           </template>
+          <template v-slot:cell(actions)="data">
+            <b-button class="mb-1" variant="danger" @click="unfollow(data.item)">Delete</b-button>
+          </template>
         </b-table>
       </b-collapse>
     </div>
@@ -64,7 +64,7 @@ import netapi from "../mixin/netapi";
 import timeFilter from "../mixin/timeFilter";
 import strCheck from "../mixin/strCheck";
 import arrayCheck from "../mixin/arrayCheck";
-import ModalInput from "../utils/ModalInput";
+// import ModalInput from "../utils/ModalInput";
 import downloadUtils from "../mixin/downloadUtils";
 
 export default {
@@ -73,10 +73,10 @@ export default {
   data() {
     return {
       table1: {
-        fields: [{ key: "follower", sortable: true }, "actions"]
+        fields: [{ key: "follower", sortable: true }]
       },
       table2: {
-        fields: [{ key: "following", sortable: true }]
+        fields: [{ key: "following", sortable: true }, "actions"]
       },
       followers: [],
       followings: [],
@@ -103,7 +103,7 @@ export default {
     unfollow(unfollowName) {
       this.apiPost(
         {
-          route: "/follow",
+          route: "/submit/follow",
           data: {
             target: unfollowName,
             star: false
@@ -119,9 +119,16 @@ export default {
             }
           }
         },
-        "Get stars error"
+        "unfollow error"
       );
     }
+  },
+  beforeRouteEnter(to, from, next) {
+    next(v => v.enter());
+  },
+  beforeRouteUpdate(to, from, next) {
+    next();
+    this.enter();
   }
 };
 </script>
