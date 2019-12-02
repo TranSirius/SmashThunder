@@ -6,8 +6,8 @@
       <b-card
         v-for="post in data"
         :key="post.time"
-        :img-src="'/data/'+post.author+'/img/'+post.coverAlbum+'/'+post.coverImage"
-        img-top
+        :img-src="post.coverImage?'/data/'+post.author+'/img/'+post.coverAlbum+'/'+post.coverImage:undefined"
+        :img-top="post.coverImage?true:undefined"
       >
         <b-card-title>
           <b-link :to="'/'+post.author+'/posts/'+post.folder+'/'+post.title">{{ post.title }}</b-link>

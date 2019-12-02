@@ -205,8 +205,8 @@ export default {
         },
         () => {
           this.text = "";
-          this.post.comments.push({
-            username: this.$route.params.username,
+          this.post.comments.unshift({
+            username: this.$root.$data.user.username,
             comment: text,
             time: Date.now()
           });
@@ -226,6 +226,9 @@ export default {
           },
           data => {
             this.post = data;
+            this.post.comments.sort((a, b) => {
+              return b.time - a.time;
+            });
           }
         );
       } else {
