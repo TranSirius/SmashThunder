@@ -140,7 +140,8 @@ export default {
         },
         () => {
           this.post.followed = !this.post.followed;
-          this.post.followers++;
+          if (this.post.followed) this.post.followers++;
+          else this.post.followers--;
         },
         "Follow failed."
       );
@@ -162,7 +163,8 @@ export default {
         },
         () => {
           this.post.starred = !this.post.starred;
-          this.post.stars++;
+          if (this.post.starred) this.post.stars++;
+          else this.post.stars--;
         },
         "Star failed."
       );

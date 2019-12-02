@@ -56,7 +56,7 @@
               @input="albumSelected"
             >
               <template v-slot:first>
-                <option :value="null" disabled>-- Please select an album --</option>
+                <option :value="null">-- Please select an album --</option>
               </template>
             </b-form-select>
           </b-form-group>
@@ -65,7 +65,7 @@
           <b-form-group label="Cover image title(optional)">
             <b-form-select v-model="form.selectedImage" :options="form.imageTitles">
               <template v-slot:first>
-                <option :value="null" disabled>-- Please select an image --</option>
+                <option :value="null">-- Please select an image --</option>
               </template>
             </b-form-select>
           </b-form-group>
