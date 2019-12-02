@@ -86,14 +86,14 @@ export default {
         () => {
           for (let i = 0; i < this.stars.length; ++i) {
               if (this.stars[i].post == post && this.stars[i].folder == folder && this.stars[i].username == author) {
-                this.stars = this.folders.filter(s => {
+                this.stars = this.stars.filter(s => {
                   return (s.folder != folder) && (s.post != post) && (s.username != author);
                 });
                 return;
               }
             }
         },
-        "unstar error"
+        //"unstar error"
       );
     }
   },
