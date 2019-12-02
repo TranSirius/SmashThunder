@@ -226,6 +226,9 @@ export default {
           },
           data => {
             this.post = data;
+            this.post.comments.sort((a, b) => {
+              return b.time - a.time;
+            });
           }
         );
       } else {
