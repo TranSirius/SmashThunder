@@ -20,7 +20,7 @@
             <b-link :to="'/'+post.author+'/posts/'+post.folder+'/'+post.title">{{ post.title }}</b-link>
           </b-card-title>
           <b-card-sub-title class="mb-2">
-            <b-link :to="'/'+post.author">{{ post.author }}</b-link>
+            <b-link @click.stop="$router.push('/'+post.author)">{{ post.author }}</b-link>
           </b-card-sub-title>
           <b-card-text>{{ post.description }}</b-card-text>
           <b-card-text class="small text-muted">
