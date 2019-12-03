@@ -39,40 +39,58 @@
       <b-card-sub-title class="mb-2">Comment at {{ comment.time | timeOffset }} ago.</b-card-sub-title>
       <b-card-text>{{ comment.comment }}</b-card-text>
     </b-card>
-    <!-- Action buttons -->
-    <b-button-group vertical id="actionBtns">
-      <b-button
-        :variant="post.followed?'success':'outline-success'"
-        v-b-tooltip.hover.left
-        :title="post.followed?'unfollow':'follow'"
-        @click="follow"
-      >➕ {{ post.followers }}</b-button>
-      <b-button
-        @click="downloadPost"
-        v-b-tooltip.hover.left
-        title="download"
-        variant="outline-secondary"
-      >⇓</b-button>
-      <b-button
-        v-if="editable"
-        @click="$router.push('/'+$root.$data.user.username+'/edit?folder='+$route.params.folder+'&post='+$route.params.title)"
-        variant="outline-info"
-        v-b-tooltip.hover.left
-        title="edit"
-      >✍</b-button>
-      <b-button
-        :variant="post.starred?'warning':'outline-warning'"
-        v-b-tooltip.hover.left
-        :title="post.starred?'unstar':'star'"
-        @click="star"
-      >⭐ {{ post.stars }}</b-button>
-      <b-button
-        variant="outline-danger"
-        v-b-tooltip.hover.left
-        title="report"
-        @click="triggerReport()"
-      >❗</b-button>
-    </b-button-group>
+    <div id="btnGroup">
+      <!-- homepage only buttons -->
+      <b-button-group vertical>
+        <b-button
+          v-if="$route.name=='toMainPage'"
+          variant="outline-info"
+          v-b-tooltip.hover.left
+          title="See his/her followers"
+          @click="$router.push('/'+$route.params.username+'/follow')"
+        >➕</b-button>
+        <b-button
+          v-if="$route.name=='toMainPage'"
+          variant="outline-info"
+          v-b-tooltip.hover.left
+          title="See his/her stars"
+          @click="$router.push('/'+$route.params.username+'/star')"
+          class="mb-3"
+        >⭐</b-button>
+        <!-- Action buttons -->
+        <b-button
+          :variant="post.followed?'success':'outline-success'"
+          v-b-tooltip.hover.left
+          :title="post.followed?'unfollow':'follow'"
+          @click="follow"
+        >➕ {{ post.followers }}</b-button>
+        <b-button
+          @click="downloadPost"
+          v-b-tooltip.hover.left
+          title="download"
+          variant="outline-secondary"
+        >⇓</b-button>
+        <b-button
+          v-if="editable"
+          @click="$router.push('/'+$root.$data.user.username+'/edit?folder='+$route.params.folder+'&post='+$route.params.title)"
+          variant="outline-info"
+          v-b-tooltip.hover.left
+          title="edit"
+        >✍</b-button>
+        <b-button
+          :variant="post.starred?'warning':'outline-warning'"
+          v-b-tooltip.hover.left
+          :title="post.starred?'unstar':'star'"
+          @click="star"
+        >⭐ {{ post.stars }}</b-button>
+        <b-button
+          variant="outline-danger"
+          v-b-tooltip.hover.left
+          title="report"
+          @click="triggerReport()"
+        >❗</b-button>
+      </b-button-group>
+    </div>
     <ReportModal
       :target="report.target"
       :reporter="$root.$data.user.username"
@@ -263,9 +281,9 @@ export default {
 </script>
 
 <style scoped>
-#actionBtns {
+#btnGroup {
   position: fixed;
-  bottom: 200px;
-  right: 100px;
+  right: 3%;
+  bottom: 10%;
 }
 </style>
