@@ -59,4 +59,8 @@ a {
   border-color: #bdbdbd;
   transition: all 0.2s;
 }
+.hoverCard:hover img {
+  transition: all 0.2s;
+  transform: scale(1.1);
+}
 </style>
