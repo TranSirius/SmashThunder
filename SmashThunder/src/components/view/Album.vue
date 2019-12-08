@@ -81,12 +81,7 @@
           >
             <b-card-title>{{ img.title }}</b-card-title>
             <b-card-sub-title class="mb-2">Uploaded {{ img.time | timeOffset }} ago.</b-card-sub-title>
-            <b-dropdown
-              split
-              text="Download"
-              v-if="editable"
-              @click="download(img.url, img.title)"
-            >
+            <b-dropdown split text="Download" v-if="editable" @click="download(img.url, img.title)">
               <b-dropdown-item @click="showRenameForm(img.title, album.title)">Rename</b-dropdown-item>
               <b-dropdown-item @click="del(album.title, img.title)" variant="danger">Delete</b-dropdown-item>
             </b-dropdown>
@@ -155,6 +150,13 @@ export default {
     };
   },
   methods: {
+    /**
+     * `s` can be undefined.
+     */
+    showSubmitErr(s) {
+      this.submitting = false;
+      this.toastErr("Submit failed", s);
+    },
     /**
      * Reset form(set album title, get options, reset files, reset newAlbumTitle) then show form
      */
