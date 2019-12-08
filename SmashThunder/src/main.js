@@ -4,7 +4,7 @@ import BootstrapVue from 'bootstrap-vue'
 import VueRouter from 'vue-router'
 
 Vue.config.productionTip = false
-Vue.use(VueRouter)
+// Vue.use(VueRouter)
 Vue.use(BootstrapVue)
 
 import 'bootstrap/dist/css/bootstrap.css'

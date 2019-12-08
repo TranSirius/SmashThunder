@@ -20,7 +20,7 @@
 <script>
 import { parse, HtmlGenerator } from "latex.js";
 import showdown from "showdown";
-import iFrameResize from "iframe-resizer/js/iframeResizer";
+import iFrameResize from "iframe-resizer";
 import math from "showdown-math";
 
 var converter = new showdown.Converter({
@@ -65,7 +65,7 @@ export default {
         result +=
           '<link rel="stylesheet" href="/static/css/katex.css">' + // for markdown math
           "<style>body{margin:0;padding:20px}</style>" + // to make `body` has correct height
-          '<script src="/static/js/iframeResizer.contentWindow.min.js"></' +
+          '<script src="https://cdn.bootcss.com/iframe-resizer/4.2.1/iframeResizer.contentWindow.min.js"></' +
           "script>"; // for iframe-resizer
         return result;
       } else {
@@ -83,7 +83,7 @@ export default {
           var s = doc.createElement("script");
           s.setAttribute(
             "src",
-            "/static/js/iframeResizer.contentWindow.min.js" // for iframe resizer
+            "https://cdn.bootcss.com/iframe-resizer/4.2.1/iframeResizer.contentWindow.min.js" // for iframe resizer
           );
           doc.documentElement.appendChild(s);
 
