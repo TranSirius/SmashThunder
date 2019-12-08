@@ -54,7 +54,9 @@ export default {
   computed: {
     resultHTML() {
       if (this.format == "md") {
+        // for user img display
         var result = `<head><base href="/data/${this.$route.params.username}/img/"></head>`;
+        // render markdown
         try {
           result += converter.makeHtml(this.raw);
         } catch (e) {
@@ -75,6 +77,7 @@ export default {
           }).htmlDocument(
             window.location.protocol + "//" + window.location.host + "/static/"
           );
+
           // append iframe resizer script
           // ref: https://stackoverflow.com/questions/9413737/how-to-append-script-script-in-javascript
           var s = doc.createElement("script");
@@ -83,6 +86,20 @@ export default {
             "/static/js/iframeResizer.contentWindow.min.js" // for iframe resizer
           );
           doc.documentElement.appendChild(s);
+
+          // fix links in iframe
+          [...doc.getElementsByTagName("a")].map(el => {
+            var href = el.getAttribute("href");
+            if (href.startsWith("#")) {
+              // fix anchors in iframe
+              // ref: https://stackoverflow.com/questions/42475012/how-to-make-href-anchors-in-iframe-srcdoc-actually-work/59004815#59004815
+              el.setAttribute("href", "about:srcdoc" + href);
+            } else {
+              // open absolute link in parent page
+              el.setAttribute("target", "_parent");
+            }
+          });
+
           return doc.documentElement.outerHTML;
         } catch (e) {
           return e.message;
