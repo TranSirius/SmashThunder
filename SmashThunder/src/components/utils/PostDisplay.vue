@@ -74,9 +74,7 @@ export default {
           // The path of resource file is `/static`
           var doc = parse(this.raw, {
             generator: generator
-          }).htmlDocument(
-            window.location.protocol + "//" + window.location.host + "/static/"
-          );
+          }).htmlDocument("https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/");
 
           // append iframe resizer script
           // ref: https://stackoverflow.com/questions/9413737/how-to-append-script-script-in-javascript
