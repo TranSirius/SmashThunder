@@ -10,7 +10,7 @@ import sqlalchemy
 
 from web.db import databases
 from web.db import datamodels
-from web.db.datamodels import User, Album, Photo, Post, Folder, Comment, MainPage, Star, Follow
+from web.db.datamodels import User, Album, Photo, Post, Folder, Comment, MainPage, Star, Follow, Report
 
 from web.index import doctype
 
@@ -261,3 +261,24 @@ def followAPI():
         db_session_instance.commit()
         ret['status'] = 'ok'
         return ret
+
+@mod.route('/report', methods = ['POST'])
+@loginRequest
+def submitReport():
+    ret = dict()
+    db_session_instance = databases.db_session()
+
+    try:
+        reporter = request.json['reporter']
+        target = request.json['target']
+        reason = request.json['reason']
+    except:
+        ret['status'] = 'Request Format Error!'
+        return ret
+
+    report = Report(reporter_id = g.user_id, description = str(reason), target = target)
+    db_session_instance.add(report)
+    db_session_instance.commit()
+
+    ret['status'] = 'ok'
+    return ret

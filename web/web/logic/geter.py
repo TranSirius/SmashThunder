@@ -181,7 +181,7 @@ class GetPost():
 
             stared = db_session_instance\
                 .query(Star)\
-                .filter(Star.user_id == g.user_id)\
+                .filter(Star.user_id == g.user_id).filter(Star.post_id == post.ID)\
                 .first()
 
             follower = db_session_instance\
@@ -193,7 +193,7 @@ class GetPost():
 
             followed = db_session_instance\
                 .query(Follow)\
-                .filter(Follow.follower_id == g.user_id).filter(Follow.followee_id)\
+                .filter(Follow.follower_id == g.user_id).filter(Follow.followee_id == author.ID)\
                 .first()
             
             return_post['title'] = post.post_title
@@ -224,7 +224,7 @@ class GetPost():
                 comment['time'] = c.create_time
                 comment_list.append(comment)
             return_post['comments'] = comment_list
- 
+            print(return_post)
             return return_post
 
     def getByPostID(self, post_id):
@@ -307,7 +307,11 @@ class GetStar(object):
         for post in posts:
             author, folder = db_session_instance\
                 .query(User.user_name, Folder.folder_title).join(Post)\
-                .filter(Post.ID == post.ID).filter(Folder.user_ID == User.ID)\
+                .filter(Post.ID == post.post_id).filter(Folder.user_ID == User.ID)\
+                .first()
+            post = db_session_instance\
+                .query(Post)\
+                .filter(Post.ID == post.post_id)\
                 .first()
             entry = dict()
             entry['username'] = author

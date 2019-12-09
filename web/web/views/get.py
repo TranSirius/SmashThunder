@@ -58,6 +58,7 @@ def getPost():
     post = geter(user_name, folder_name, post_name)
     if post is None:
         ret['status'] = 'Post Not Exist!'
+        return ret
     else:
         ret = post
         ret['status'] = 'ok'
@@ -127,7 +128,7 @@ def getStar():
         ret['status'] = 'Request Format Error!'
         return ret
 
-    ret['stars'] = GetStar()()
+    ret['stars'] = GetStar()(username)
     ret['status'] = 'ok'
     return ret
 
@@ -147,16 +148,16 @@ def getFollow():
         .filter(User.user_name == username)\
         .first()
 
-    follower, _ = db_session_instance\
-        .query(User.user_name, Follow)\
-        .filter(Follow.followee_id == user.ID).filter(Follow.follower_id == User.ID)\
+    follower = db_session_instance\
+        .query(User.user_name).join(Follow, User.ID == Follow.follower_id)\
+        .filter(Follow.followee_id == user.ID)\
         .all()
     
     follower_list = [f.user_name for f in follower]
 
-    followee, _ = db_session_instance\
-        .query(User.user_name, Follow)\
-        .filter(Follow.follower_id == user.ID).filter(Follow.followee_id == User.ID)\
+    followee = db_session_instance\
+        .query(User.user_name, Follow).join(Follow, User.ID == Follow.followee_id)\
+        .filter(Follow.follower_id == user.ID)\
         .all()
     
     followee_list = [f.user_name for f in followee]
