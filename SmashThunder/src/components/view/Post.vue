@@ -4,7 +4,7 @@
     <div>
       <PostDisplay v-if="post.content" :raw="post.content" :format="post.format"></PostDisplay>
     </div>
-    <!-- Comments -->
+    <!-- New comment card -->
     <b-card
       title="Leave a comment"
       :sub-title="$root.$data.user.loggedIn?$root.$data.user.username+':':''"
@@ -24,6 +24,7 @@
         <b-button :disabled="!$root.$data.user.loggedIn" variant="primary" type="submit">Comment</b-button>
       </b-form>
     </b-card>
+    <!-- Comments -->
     <b-card v-for="comment in post.comments" :key="comment.time" class="mb-2">
       <b-card-title>
         <b-link :to="'/'+comment.username">{{ comment.username }}</b-link>
@@ -39,9 +40,10 @@
       <b-card-sub-title class="mb-2">Comment at {{ comment.time | timeOffset }} ago.</b-card-sub-title>
       <b-card-text>{{ comment.comment }}</b-card-text>
     </b-card>
+    <!-- btns -->
     <div id="btnGroup">
-      <!-- homepage only buttons -->
       <b-button-group vertical>
+        <!-- homepage only buttons -->
         <b-button
           v-if="$route.name=='toMainPage'"
           variant="outline-info"
