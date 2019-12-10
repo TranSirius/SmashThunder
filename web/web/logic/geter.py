@@ -223,6 +223,7 @@ class GetPost():
                 comment['username'] = str(u)
                 comment['comment'] = c.content
                 comment['time'] = c.create_time
+                comment['ID'] = c.ID
                 comment_list.append(comment)
             return_post['comments'] = comment_list
             return return_post
