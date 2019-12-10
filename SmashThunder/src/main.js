@@ -1,14 +1,8 @@
 import Vue from 'vue'
 import App from './App.vue'
-import BootstrapVue from 'bootstrap-vue'
 import VueRouter from 'vue-router'
 
 Vue.config.productionTip = false
-Vue.use(VueRouter)
-Vue.use(BootstrapVue)
-
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 import News from "./components/view/News.vue"
 import Album from "./components/view/Album.vue"
@@ -17,6 +11,8 @@ import Posts from "./components/view/Posts.vue"
 import Manage from "./components/view/Manage.vue"
 import Post from "./components/view/Post.vue"
 import Admin from "./components/view/Admin.vue"
+import Star from "./components/view/Star.vue"
+import Follow from "./components/view/Follow.vue"
 
 const routes = [
   {
@@ -37,6 +33,12 @@ const routes = [
   },
   {
     path: '/:username/posts', component: Posts
+  },
+  {
+    path: '/:username/star', component: Star
+  },
+  {
+    path: '/:username/follow', component: Follow
   },
   {
     path: '/:username/manage', component: Manage
