@@ -6,7 +6,7 @@ from datetime import timedelta
 
 def create_app(test_config = None):
     app = Flask(__name__, instance_relative_config = True)
-    cors = CORS(app, origins = ['http://123.56.23.140:8080'], support_credentials=True)
+    cors = CORS(app, origins = ['http://123.56.23.140:8080'], supports_credentials = True)
     app.permanent_session_lifetime = timedelta(hours = 24)
 
     if test_config == 'debug':
@@ -41,5 +41,8 @@ def create_app(test_config = None):
 
     from web.views import render
     app.register_blueprint(render.mod)
+    
+    from web.views import search
+    app.register_blueprint(search.mod)
 
     return app

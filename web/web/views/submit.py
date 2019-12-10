@@ -10,11 +10,11 @@ import sqlalchemy
 
 from web.db import databases
 from web.db import datamodels
-from web.db.datamodels import User, Album, Photo, Post, Folder, Comment, MainPage, Star, Follow
+from web.db.datamodels import User, Album, Photo, Post, Folder, Comment, MainPage, Star, Follow, Report
 
 from web.index import doctype
 
-from web.views.auth import loginRequest
+from web.views.auth import loginRequest, adminRequest
 from web.logic.utils import CurrentTime, UUID
 
 
@@ -117,7 +117,8 @@ def uploadPost():
         old_post.description = str(description)
         old_post.cover_album = str(cover_album)
         old_post.cover_photo = str(cover_photo)
-
+        old_post.document_format = str(post_format)
+        
         post_id = old_post.ID
     db_session_instance.commit()
 
@@ -159,6 +160,7 @@ def uploadComment():
     db_session_instance = databases.db_session()
 
     try:
+        author_name = request.json['username']
         folder_name = request.json['folder']
         post_title = request.json['post']
         comment = request.json['comment']
@@ -167,8 +169,8 @@ def uploadComment():
         return ret
 
     post = db_session_instance\
-        .query(Post).join(Folder)\
-        .filter(Folder.folder_title == folder_name).filter(Post.post_title == post_title)\
+        .query(Post).join(Folder).join(User)\
+        .filter(Folder.folder_title == folder_name).filter(Post.post_title == post_title).filter(User.user_name == author_name)\
         .first()
     if post is None:
         ret['status'] = 'Post Not Exist!'
@@ -230,7 +232,6 @@ def submitStar():
 def followAPI():
     ret = dict()
     db_session_instance = databases.db_session()
-    print(request.json)
     try:
         follow_flag = request.json['follow']
         follow_target = request.json['target']
@@ -262,3 +263,74 @@ def followAPI():
         db_session_instance.commit()
         ret['status'] = 'ok'
         return ret
+
+@mod.route('/report', methods = ['POST'])
+@loginRequest
+def submitReport():
+    ret = dict()
+    db_session_instance = databases.db_session()
+
+    try:
+        reporter = request.json['reporter']
+        target = request.json['target']
+        reason = request.json['reason']
+    except:
+        ret['status'] = 'Request Format Error!'
+        return ret
+
+    report = Report(reporter_id = g.user_id, description = str(reason), target = target)
+    db_session_instance.add(report)
+    db_session_instance.commit()
+
+    ret['status'] = 'ok'
+    return ret
+
+@mod.route('/dismiss', methods = ['POST'])
+@loginRequest
+# @adminRequest
+def submitDismiss():
+    ret = dict()
+    try:
+        target = request.json['target']
+    except:
+        ret['status'] = 'Request Format Error'
+        return ret
+
+    db_session_instance = databases.db_session()
+    report = db_session_instance\
+        .query(Report)\
+        .filter(Report.ID == int(target))\
+        .first()
+    report.seen = True
+    db_session_instance.commit()
+    ret['status'] = 'ok'
+    return ret
+
+@mod.route('/ban', methods = ['POST'])
+@loginRequest
+# @adminRequest
+def submitBan():
+    ret = dict()
+    try:
+        report = request.json['report']
+        target = request.json['target']
+    except:
+        ret['status'] = 'Request Format Error'
+        return ret
+    
+    db_session_instance = databases.db_session()
+    report = db_session_instance\
+        .query(Report)\
+        .filter(Report.ID == int(report))\
+        .first()
+    report.seen = True
+
+    user = db_session_instance\
+        .query(User)\
+        .filter(User.user_name == target)\
+        .first()
+    user.ban = True
+    
+    db_session_instance.commit()
+    ret['status'] = 'ok'
+    return ret

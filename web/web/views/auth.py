@@ -39,6 +39,33 @@ def loginRequest(view):
         return view(**kwargs)
     return wrapped_view
 
+def notBanRequest(view):
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        db_session_instance = databases.db_session()
+        user = db_session_instance\
+            .query(datamodels.User)\
+            .filter(User.ID == g.user_id)\
+            .first()
+        if user.ban:
+            ret['status'] = 'You are temporarily not allowed to use this function'
+            return ret
+        return view(**kwargs)
+    return wrapped_view
+
+def adminRequest(view):
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        db_session_instance = databases.db_session()
+        user = db_session_instance\
+            .query(datamodels.User)\
+            .filter(User.ID == g.user_id)\
+            .first()
+        if not (user.user_type == 'admin' or user.user_type == 'super_admin'):
+            ret['status'] = 'This function was reserved for system administrator'
+            return ret
+        return view(**kwargs)
+    return wrapped_view
 
 @mod.route('/register', methods = ['POST'])
 def register():

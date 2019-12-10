@@ -31,6 +31,9 @@ def renderPost():
         ret['status'] = 'Requesting Format Error!'
         return ret
 
+    if target_format not in ['docx', 'pdf']:
+        target_format = 'pdf'
+
     down_post = db_session_instance\
         .query(Post).join(Folder).join(User)\
         .filter(User.user_name == username).filter(Folder.folder_title == folder).filter(Post.post_title == post)\
@@ -46,13 +49,43 @@ def renderPost():
     source_content = re.sub('[!]\[(.+)\][(](.+)[)]', '![\g<1>](http://localhost/data/ceshiceshi/img/\g<2>)', source_content)
 
 
-    pdc.convert_text(
-        source = source_content,
-        to = 'docx',
-        format = source_format,
-        outputfile = '/share/render/' + post + '.docx'
-    )
+    # pdc.convert_text(
+    #     source = source_content,
+    #     to = 'docx',
+    #     format = source_format,
+    #     outputfile = '/share/render/' + post + '.docx'
+    # )
+
+    # ret['status'] = 'ok'
+    # ret['filename'] = post + '.docx'
+
+    if target_format == 'pdf':
+        try:
+            pdc.convert_text(
+                source = source_content,
+                to = 'pdf',
+                format = source_format,
+                outputfile = '/share/render/' + post + '.pdf',
+                extra_args = ('--pdf-engine=xelatex',)
+            )
+        except:
+            ret['status'] = 'Something wrong during the conversion, standard latex syntax is required!'
+            return ret
+        ret['filename'] = post + '.pdf'
+
+    else:
+        try:
+            pdc.convert_text(
+                source = source_content,
+                to = 'docx',
+                format = source_format,
+                outputfile = '/share/render/' + post + '.docx'
+            )
+        except:
+            ret['status'] = 'Something wrong during the conversion'
+            return ret
+        ret['filename'] = post + '.docx'
+
 
     ret['status'] = 'ok'
-    ret['filename'] = post + '.docx'
     return ret

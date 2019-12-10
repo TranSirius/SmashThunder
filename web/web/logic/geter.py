@@ -1,6 +1,7 @@
 from web.db.datamodels import *
 from web.db.databases import db_session
 from sqlalchemy import func
+from flask import current_app as app
 
 class GetPhotos():
     def __call__(self, user_name, album_name = None):
@@ -72,7 +73,8 @@ class GetFolderDetail():
                     .query(func.count(Star.user_id)).outerjoin(Post)\
                     .filter(Star.post_id == post.ID)\
                     .group_by(Star.post_id)\
-                    .first()
+                    .scalar()
+                star_num = 0 if star_num is None else star_num
                 post_dict['title'] = post.post_title
                 post_dict['createTime'] = post.create_time
                 post_dict['format'] = post.document_format
@@ -112,7 +114,8 @@ class GetFolderDetail():
                     .query(func.count(Star.user_id)).outerjoin(Post)\
                     .filter(Star.post_id == post.ID)\
                     .group_by(Star.post_id)\
-                    .first()
+                    .scalar()
+                star_num = 0 if star_num is None else star_num
                 post_dict['title'] = post.post_title
                 post_dict['author'] = username
                 post_dict['description'] = post.description
@@ -173,25 +176,25 @@ class GetPost():
                 .query(func.count(Star.user_id))\
                 .filter(Star.post_id == post.ID)\
                 .group_by(Star.post_id)\
-                .first()
+                .scalar()
 
-            star_num = 0 if star_num is None else star_num[0]
+            star_num = 0 if star_num is None else star_num
 
             stared = db_session_instance\
                 .query(Star)\
-                .filter(Star.user_id == g.user_id)\
+                .filter(Star.user_id == g.user_id).filter(Star.post_id == post.ID)\
                 .first()
 
             follower = db_session_instance\
                 .query(func.count(Follow.follower_id))\
                 .filter(Follow.followee_id == author.ID)\
-                .first()
+                .scalar()
 
-            follower = 0 if follower is None else follower[0]
+            follower = 0 if follower is None else follower
 
             followed = db_session_instance\
                 .query(Follow)\
-                .filter(Follow.follower_id == g.user_id).filter(Follow.followee_id)\
+                .filter(Follow.follower_id == g.user_id).filter(Follow.followee_id == author.ID)\
                 .first()
             
             return_post['title'] = post.post_title
@@ -220,9 +223,9 @@ class GetPost():
                 comment['username'] = str(u)
                 comment['comment'] = c.content
                 comment['time'] = c.create_time
+                comment['ID'] = c.ID
                 comment_list.append(comment)
             return_post['comments'] = comment_list
- 
             return return_post
 
     def getByPostID(self, post_id):
@@ -242,7 +245,8 @@ class GetPost():
                 .query(func.count(Star.user_id)).outerjoin(Post)\
                 .filter(Star.post_id == post.ID)\
                 .group_by(Star.post_id)\
-                .first()
+                .scalar()
+            star_num = 0 if star_num is None else star_num
 
             author = db_session_instance\
                 .query(User).join(Folder).join(Post)\
@@ -257,7 +261,8 @@ class GetPost():
             follower = db_session_instance\
                 .query(func.count(Follow.follower_id))\
                 .filter(Follow.followee_id == post.ID)\
-                .first()
+                .scalar()
+            follower = 0 if follower is None else follower
 
             followed = db_session_instance\
                 .query(Follow)\
@@ -303,7 +308,11 @@ class GetStar(object):
         for post in posts:
             author, folder = db_session_instance\
                 .query(User.user_name, Folder.folder_title).join(Post)\
-                .filter(Post.ID == post.ID).filter(Folder.user_ID == User.ID)\
+                .filter(Post.ID == post.post_id).filter(Folder.user_ID == User.ID)\
+                .first()
+            post = db_session_instance\
+                .query(Post)\
+                .filter(Post.ID == post.post_id)\
                 .first()
             entry = dict()
             entry['username'] = author

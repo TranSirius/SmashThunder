@@ -30,6 +30,7 @@ class User(Model):
     user_name = Column('UserName', String(200), unique = True, nullable = True)
     pass_word = Column('PassWord', String(100), nullable = False)
     create_time = Column('CreateTime', BigInteger, nullable = False, default = 0)
+    ban = Column('Ban', Boolean, default = False, nullable = False)
 
     def __str__(self):
         return '%s(ID=%r, UserType=%r, UserName=%r, PassWord=%r)' % (
@@ -54,10 +55,11 @@ class User(Model):
         new_user = doctype.User(meta={'id':new_user.ID}, user_name = username)
         new_user.save(using=esclient.es)
 
-        os.mkdir(app.config['USER_DATA'] + 'data/' + str(username))
-        os.mkdir(app.config['USER_DATA'] + 'data/' + str(username) + '/img')
-        # os.mkdir(app.config['USER_DATA'] + 'data/' + str(username) + '/post')
-        # os.mkdir(app.config['USER_DATA'] + 'data/' + str(username) + '/html')
+        try:
+            os.mkdir(app.config['USER_DATA'] + 'data/' + str(username))
+            os.mkdir(app.config['USER_DATA'] + 'data/' + str(username) + '/img')
+        except FileExistsError:
+            pass
 
         new_user = db_session.query(User).filter_by(user_name = username).first()
         user_ID = new_user.ID
@@ -201,3 +203,12 @@ class Follow(Model):
 
     follower_id = Column('FollowerID', Integer, ForeignKey('User.ID', ondelete = 'CASCADE', onupdate = 'CASCADE'), primary_key = True)
     followee_id = Column('FolloweeID', Integer, ForeignKey('User.ID', ondelete = 'CASCADE', onupdate = 'CASCADE'), primary_key = True)
+
+class Report(Model):
+    __tablename__ = 'Report'
+
+    ID = Column('ID', Integer, primary_key = True, autoincrement = True)
+    reporter_id = Column('ReporterID', Integer, ForeignKey('User.ID', ondelete = 'CASCADE', onupdate = 'CASCADE'))
+    description = Column('Description', String(500), nullable = True)
+    target = Column('Target', String(200), nullable = False)
+    seen = Column('Seen', Boolean, default = False, nullable = False)
