@@ -36,6 +36,14 @@
           size="sm"
           class="ml-3 mb-2"
         >❗</b-button>
+        <b-button
+          v-if="editable"
+          variant="outline-secondary"
+          v-b-tooltip.hover
+          title="remove this comment"
+          size="sm"
+          class="mb-2 ml-2"
+        >❌</b-button>
       </b-card-title>
       <b-card-sub-title class="mb-2">Comment at {{ comment.time | timeOffset }} ago.</b-card-sub-title>
       <b-card-text>{{ comment.comment }}</b-card-text>
