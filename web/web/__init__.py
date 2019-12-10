@@ -41,5 +41,8 @@ def create_app(test_config = None):
 
     from web.views import render
     app.register_blueprint(render.mod)
+    
+    from web.views import search
+    app.register_blueprint(search.mod)
 
     return app

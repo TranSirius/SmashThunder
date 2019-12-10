@@ -14,7 +14,7 @@ from web.db.datamodels import User, Album, Photo, Post, Folder, Comment, MainPag
 
 from web.index import doctype
 
-from web.views.auth import loginRequest
+from web.views.auth import loginRequest, adminRequest
 from web.logic.utils import CurrentTime, UUID
 
 
@@ -159,6 +159,7 @@ def uploadComment():
     db_session_instance = databases.db_session()
 
     try:
+        author_name = request.json['username']
         folder_name = request.json['folder']
         post_title = request.json['post']
         comment = request.json['comment']
@@ -167,8 +168,8 @@ def uploadComment():
         return ret
 
     post = db_session_instance\
-        .query(Post).join(Folder)\
-        .filter(Folder.folder_title == folder_name).filter(Post.post_title == post_title)\
+        .query(Post).join(Folder).join(User)\
+        .filter(Folder.folder_title == folder_name).filter(Post.post_title == post_title).filter(User.user_name == author_name)\
         .first()
     if post is None:
         ret['status'] = 'Post Not Exist!'
@@ -280,5 +281,55 @@ def submitReport():
     db_session_instance.add(report)
     db_session_instance.commit()
 
+    ret['status'] = 'ok'
+    return ret
+
+@mod.route('/dismiss', methods = ['POST'])
+@loginRequest
+# @adminRequest
+def submitDismiss():
+    ret = dict()
+    try:
+        target = request.json['target']
+    except:
+        ret['status'] = 'Request Format Error'
+        return ret
+
+    db_session_instance = databases.db_session()
+    report = db_session_instance\
+        .query(Report)\
+        .filter(Report.ID == int(target))\
+        .first()
+    report.seen = True
+    db_session_instance.commit()
+    ret['status'] = 'ok'
+    return ret
+
+@mod.route('/ban', methods = ['POST'])
+@loginRequest
+# @adminRequest
+def submitBan():
+    ret = dict()
+    try:
+        report = request.json['report']
+        target = request.json['target']
+    except:
+        ret['status'] = 'Request Format Error'
+        return ret
+    
+    db_session_instance = databases.db_session()
+    report = db_session_instance\
+        .query(Report)\
+        .filter(Report.ID == int(report))\
+        .first()
+    report.seen = True
+
+    user = db_session_instance\
+        .query(User)\
+        .filter(User.user_name == target)\
+        .first()
+    user.ban = True
+    
+    db_session_instance.commit()
     ret['status'] = 'ok'
     return ret

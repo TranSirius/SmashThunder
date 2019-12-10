@@ -4,15 +4,19 @@ from flask import g
 from flask import redirect
 from flask import url_for
 from flask import request
+from flask import current_app as app
 
 from web.db import databases
-from web.db.datamodels import User, Album, Photo, MainPage, Comment, Post, Folder, Follow
+from web.db.datamodels import User, Album, Photo, MainPage, Comment, Post, Folder, Follow, Report
 from web.logic.geter import GetPhotos
 from web.logic.geter import GetFolderDetail
 from web.logic.geter import GetPost
 from web.logic.geter import GetFolder
 from web.logic.geter import GetStar
-from web.views.auth import loginRequest
+from web.views.auth import loginRequest, adminRequest
+
+from web.index import doctype
+from web.index import esclient
 
 mod = Blueprint('get', __name__, url_prefix = '/get')
 
@@ -176,13 +180,19 @@ def getNew():
     except:
         ret['status'] = 'Request Format Error!'
         return ret
+    
+    try:
+        page = request.json['page']
+    except:
+        page = 0
 
     posts = []
     if target == 'news':
         news = db_session_instance\
             .query(Post.create_time, Post.description, Post.cover_album, Post.cover_photo, Post.post_title ,User.user_name, Folder.folder_title)\
             .filter(User.ID == Folder.user_ID).filter(Post.folder_ID == Folder.ID)\
-            .limit(20)\
+            .filter(Post.is_published == True)\
+            .limit(app.config['PAGE_SIZE']).offset(app.config['PAGE_SIZE'] * page)\
             .all()
         for create_time, description, cover_album, cover_photo, title, username, folder_title in news:
             single_news = dict()
@@ -214,7 +224,8 @@ def getNew():
                  User.ID == Follow.followee_id
                 )\
             .filter(User.ID == Folder.user_ID).filter(Post.folder_ID == Folder.ID).filter(Follow.follower_id == g.user_id)\
-            .limit(20)\
+            .filter(Post.is_published == True)\
+            .limit(app.config['PAGE_SIZE']).offset(app.config['PAGE_SIZE'] * page)\
             .all()
         
         for create_time, description, cover_album, cover_photo, title, username, folder_title in news:
@@ -247,4 +258,78 @@ def getUsersPosts():
         return ret
     ret['folders'] = GetFolderDetail().getPosts(username)
     ret['status'] = 'ok'
+    return ret
+
+@mod.route('/admin', methods = ['POST'])
+@loginRequest
+# @adminRequest
+def getAdmin():
+    ret = dict()
+    db_session_instance = databases.db_session()
+
+    rep = db_session_instance\
+        .query(User.user_name, Report)\
+        .filter(User.ID == Report.reporter_id).filter(Report.seen == False)\
+        .all()
+    
+    reports = []
+    for reporter, r in rep:
+        s = dict()
+        s['reporter'] = reporter
+        s['target'] = r.target
+        s['reason'] = r.description
+        s['id'] = r.ID
+        reports.append(s)
+
+    ret['reports'] = reports
+
+    import psutil
+    cpu = int(psutil.cpu_percent())
+    memory = int(psutil.virtual_memory().percent)
+    disk = int(psutil.disk_usage('/').percent)
+
+    ret['cpu'] = cpu
+    ret['storage'] = disk
+    ret['memory'] = memory
+
+    users = db_session_instance\
+        .query(User)\
+        .filter(User.ban == True)\
+        .all()
+    banned_user = [user.user_name for user in users]
+    chart = dict()
+    chart['labels'] = banned_user
+    chart['data'] = banned_user
+    chart['title'] = 'Banned Users'
+    ret['chart'] = chart
+    ret['status'] = 'ok'
+
+    # search_engine = doctype.User.search(using = esclient.es)
+    # search_result = search_engine.query("match", user_name = 'ceshiceshi_dalao')
+    # search_result = search_result.execute().to_dict()
+    # _shards = search_result['_shards']
+    # total = _shards['total']
+    # hits = search_result['hits']['hits']
+    
+    # users = [str(hit['_source']['user_name']) for hit in hits]
+
+    # print(total)
+    # print(users)
+
+    search_engine = doctype.Post.search(using = esclient.es)
+    search_result = search_engine.query("multi_match", query = 'Hey', fields = ['post_title', 'post_content'])
+    search_result = search_result.execute().to_dict()
+
+    _shards = search_result['_shards']
+    total = _shards['total']
+    hits = search_result['hits']['hits']
+    
+    posts = [{'title': str(hit['_source']['post_title']), 'content': str(hit['_source']['post_content'])} for hit in hits]
+
+    # print(total)
+    # print(posts)
+
+    for hit in hits:
+        print(hit)
+
     return ret

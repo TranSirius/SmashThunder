@@ -10,3 +10,4 @@ ELASTIC_SEARCH_INDEX = {
     "POST": "post",
     "COMMENT": "comment"
 }
+PAGE_SIZE = 20

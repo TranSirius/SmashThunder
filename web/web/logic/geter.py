@@ -1,6 +1,7 @@
 from web.db.datamodels import *
 from web.db.databases import db_session
 from sqlalchemy import func
+from flask import current_app as app
 
 class GetPhotos():
     def __call__(self, user_name, album_name = None):

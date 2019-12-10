@@ -30,6 +30,7 @@ class User(Model):
     user_name = Column('UserName', String(200), unique = True, nullable = True)
     pass_word = Column('PassWord', String(100), nullable = False)
     create_time = Column('CreateTime', BigInteger, nullable = False, default = 0)
+    ban = Column('Ban', Boolean, default = False, nullable = False)
 
     def __str__(self):
         return '%s(ID=%r, UserType=%r, UserName=%r, PassWord=%r)' % (
@@ -206,7 +207,8 @@ class Follow(Model):
 class Report(Model):
     __tablename__ = 'Report'
 
-    report_id = Column('ReportID', Integer, primary_key = True, autoincrement = True)
+    ID = Column('ID', Integer, primary_key = True, autoincrement = True)
     reporter_id = Column('ReporterID', Integer, ForeignKey('User.ID', ondelete = 'CASCADE', onupdate = 'CASCADE'))
     description = Column('Description', String(500), nullable = True)
     target = Column('Target', String(200), nullable = False)
+    seen = Column('Seen', Boolean, default = False, nullable = False)
