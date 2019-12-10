@@ -117,7 +117,8 @@ def uploadPost():
         old_post.description = str(description)
         old_post.cover_album = str(cover_album)
         old_post.cover_photo = str(cover_photo)
-
+        old_post.document_format = str(post_format)
+        
         post_id = old_post.ID
     db_session_instance.commit()
 

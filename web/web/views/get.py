@@ -316,20 +316,20 @@ def getAdmin():
     # print(total)
     # print(users)
 
-    search_engine = doctype.Post.search(using = esclient.es)
-    search_result = search_engine.query("multi_match", query = 'Hey', fields = ['post_title', 'post_content'])
-    search_result = search_result.execute().to_dict()
+    # search_engine = doctype.Post.search(using = esclient.es)
+    # search_result = search_engine.query("multi_match", query = 'Hey', fields = ['post_title', 'post_content'])
+    # search_result = search_result.execute().to_dict()
 
-    _shards = search_result['_shards']
-    total = _shards['total']
-    hits = search_result['hits']['hits']
+    # _shards = search_result['_shards']
+    # total = _shards['total']
+    # hits = search_result['hits']['hits']
     
-    posts = [{'title': str(hit['_source']['post_title']), 'content': str(hit['_source']['post_content'])} for hit in hits]
+    # posts = [{'title': str(hit['_source']['post_title']), 'content': str(hit['_source']['post_content'])} for hit in hits]
 
     # print(total)
     # print(posts)
 
-    for hit in hits:
-        print(hit)
+    # for hit in hits:
+    #     print(hit)
 
     return ret

@@ -225,7 +225,6 @@ class GetPost():
                 comment['time'] = c.create_time
                 comment_list.append(comment)
             return_post['comments'] = comment_list
-            print(return_post)
             return return_post
 
     def getByPostID(self, post_id):
