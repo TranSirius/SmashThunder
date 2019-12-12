@@ -140,7 +140,7 @@ export default {
           data: { id: commentId }
         },
         () =>
-          (this.post.comments = this.post.comments.filter(c => c.id !== commentId)),
+          (this.post.comments = this.post.comments.filter(c => c.ID !== commentId)),
         "Delete comment failed."
       );
     },
