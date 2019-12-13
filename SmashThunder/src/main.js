@@ -25,6 +25,15 @@ const routes = [
     path: '/admin', component: Admin
   },
   {
+    path: '/searchusers', component: UserSearched
+  },
+  {
+    path: '/searchposts', component: PostSearched
+  },
+  {
+    path: '/searchphotos', component: PhotoSearched
+  },
+  {
     path: '/:username', component: Post,
     name: 'toMainPage'
   },
@@ -45,15 +54,6 @@ const routes = [
   },
   {
     path: '/:username/manage', component: Manage
-  },
-  {
-    path: '/searchusers', component: UserSearched
-  },
-  {
-    path: '/searchposts', component: PostSearched
-  },
-  {
-    path: '/searchphotos', component: PhotoSearched
   },
   {
     path: '/:username/posts/:folder/:title', component: Post,

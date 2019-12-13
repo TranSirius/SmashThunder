@@ -14,7 +14,7 @@
           <!-- Search bar -->
           <b-nav-form class="form-inline ml-auto">
             <b-input-group>
-              <b-form-input size="sm" placeholder="User or post" ref="searchbox"/>
+              <b-form-input size="sm" placeholder="User post or photo" ref="searchbox"/>
               <b-input-group-append>
                 <!-- <b-button variant="outline-light" size="sm">Search</b-button> -->
                 <b-dropdown right class="mb-1" variant="outline-light" size="sm">
@@ -61,25 +61,13 @@ export default {
   },
   methods: {
     searchusers(){
-      this.apiPost(
-        {
-          route: '/searchusers?keyword=' + this.$refs.searchbox.$refs.input.value
-        },
-      );
+      this.$router.push('/searchusers?keyword=' + this.$refs.searchbox.$refs.input.value);
     },
     searchposts(){
-      this.apiPost(
-        {
-          route: '/searchposts?keyword=' + this.$refs.searchbox.$refs.input.value
-        },
-      );
+      this.$router.push('/searchposts?keyword=' + this.$refs.searchbox.$refs.input.value);
     },
     searchphotos(){
-      this.apiPost(
-        {
-          route: '/searchphotos?keyword=' + this.$refs.searchbox.$refs.input.value
-        },
-      );
+      this.$router.push('/searchphotos?keyword=' + this.$refs.searchbox.$refs.input.value);
     }
   }
 };

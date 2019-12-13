@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- <h6>Find users below.</h6> -->
     <div v-if="users.length">
       <h6>Find users below.</h6>
       <b-table
@@ -47,7 +48,8 @@ export default {
         {
           route: "/search/user",
           data: {
-            keyword: this.$route.params.keyword
+            keyword: this.$route.query.keyword,
+            scroll_id:""
           }
         },
         data => {
