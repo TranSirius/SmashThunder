@@ -13,6 +13,9 @@ import Post from "./components/view/Post.vue"
 import Admin from "./components/view/Admin.vue"
 import Star from "./components/view/Star.vue"
 import Follow from "./components/view/Follow.vue"
+import UserSearched from "./components/view/UserSearched.vue"
+import PostSearched from "./components/view/PostSearched.vue"
+import PhotoSearched from "./components/view/PhotoSearched.vue"
 
 const routes = [
   {
@@ -42,6 +45,15 @@ const routes = [
   },
   {
     path: '/:username/manage', component: Manage
+  },
+  {
+    path: '/searchusers', component: UserSearched
+  },
+  {
+    path: '/searchposts', component: PostSearched
+  },
+  {
+    path: '/searchphotos', component: PhotoSearched
   },
   {
     path: '/:username/posts/:folder/:title', component: Post,

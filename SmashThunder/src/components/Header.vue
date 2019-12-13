@@ -14,9 +14,14 @@
           <!-- Search bar -->
           <b-nav-form class="form-inline ml-auto">
             <b-input-group>
-              <b-form-input size="sm" placeholder="User or post" />
+              <b-form-input size="sm" placeholder="User or post" ref="searchbox"/>
               <b-input-group-append>
-                <b-button variant="outline-light" size="sm">Search</b-button>
+                <!-- <b-button variant="outline-light" size="sm">Search</b-button> -->
+                <b-dropdown right class="mb-1" variant="outline-light" size="sm">
+                  <b-dropdown-item class="text-right" @click="searchusers()">Search Users</b-dropdown-item>
+                  <b-dropdown-item class="text-right" @click="searchposts()">Search Posts</b-dropdown-item>
+                  <b-dropdown-item class="text-right" @click="searchphotos()">Search Photos</b-dropdown-item>
+                </b-dropdown>
               </b-input-group-append>
             </b-input-group>
           </b-nav-form>
@@ -43,11 +48,39 @@
 
 <script>
 import SignForm from "./utils/SignForm.vue";
-
+import netapi from "./mixin/netapi";
+import timeFilter from "./mixin/timeFilter";
+import strCheck from "./mixin/strCheck";
+import arrayCheck from "./mixin/arrayCheck";
+import downloadUtils from "./mixin/downloadUtils";
 export default {
   name: "Navbar",
+  mixins: [timeFilter, strCheck, netapi, arrayCheck, downloadUtils],
   components: {
     SignForm
+  },
+  methods: {
+    searchusers(){
+      this.apiPost(
+        {
+          route: '/searchusers?keyword=' + this.$refs.searchbox.$refs.input.value
+        },
+      );
+    },
+    searchposts(){
+      this.apiPost(
+        {
+          route: '/searchposts?keyword=' + this.$refs.searchbox.$refs.input.value
+        },
+      );
+    },
+    searchphotos(){
+      this.apiPost(
+        {
+          route: '/searchphotos?keyword=' + this.$refs.searchbox.$refs.input.value
+        },
+      );
+    }
   }
 };
 </script>
