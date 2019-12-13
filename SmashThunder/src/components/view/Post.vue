@@ -43,6 +43,7 @@
           title="remove this comment"
           size="sm"
           class="mb-2 ml-2"
+          @click="deleteComment(comment.ID)"
         >❌</b-button>
       </b-card-title>
       <b-card-sub-title class="mb-2">Comment at {{ comment.time | timeOffset }} ago.</b-card-sub-title>
@@ -132,6 +133,17 @@ export default {
     };
   },
   methods: {
+    deleteComment(commentId) {
+      this.apiPost(
+        {
+          route: "/admin/comment/delete/author",
+          data: { id: commentId }
+        },
+        () =>
+          (this.post.comments = this.post.comments.filter(c => c.ID !== commentId)),
+        "Delete comment failed."
+      );
+    },
     triggerReport(commenter) {
       if (!this.$root.$data.user.loggedIn) {
         this.toastErr("Error", "Please login first.");
