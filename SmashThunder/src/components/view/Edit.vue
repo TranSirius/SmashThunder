@@ -44,7 +44,6 @@
               id="postDescription"
               v-model="form.description"
               placeholder="Post description"
-              required
             ></b-form-input>
           </b-form-group>
         </b-col>
