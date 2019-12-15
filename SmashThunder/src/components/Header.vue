@@ -16,12 +16,12 @@
             <b-input-group>
               <b-form-input size="sm" placeholder="User post or photo" ref="searchbox"/>
               <b-input-group-append>
-                <!-- <b-button variant="outline-light" size="sm">Search</b-button> -->
-                <b-dropdown right class="mb-1" variant="outline-light" size="sm">
+                <b-button variant="outline-light" size="sm" @click="search()">Search</b-button>
+                <!-- <b-dropdown right class="mb-1" variant="outline-light" size="sm">
                   <b-dropdown-item class="text-right" @click="searchusers()">Search Users</b-dropdown-item>
                   <b-dropdown-item class="text-right" @click="searchposts()">Search Posts</b-dropdown-item>
                   <b-dropdown-item class="text-right" @click="searchphotos()">Search Photos</b-dropdown-item>
-                </b-dropdown>
+                </b-dropdown> -->
               </b-input-group-append>
             </b-input-group>
           </b-nav-form>
@@ -60,14 +60,8 @@ export default {
     SignForm
   },
   methods: {
-    searchusers(){
-      this.$router.push('/searchusers?keyword=' + this.$refs.searchbox.$refs.input.value);
-    },
-    searchposts(){
-      this.$router.push('/searchposts?keyword=' + this.$refs.searchbox.$refs.input.value);
-    },
-    searchphotos(){
-      this.$router.push('/searchphotos?keyword=' + this.$refs.searchbox.$refs.input.value);
+    search(){
+      this.$router.push('/search?keyword=' + this.$refs.searchbox.$refs.input.value);
     }
   }
 };
