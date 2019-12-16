@@ -12,11 +12,11 @@
       <b-collapse is-nav id="nav-collapse">
         <b-navbar-nav class="ml-auto mt-1 mb-auto">
           <!-- Search bar -->
-          <b-nav-form class="form-inline ml-auto">
+          <b-nav-form class="form-inline ml-auto" autocomplete="off" @submit.prevent="onSubmit">
             <b-input-group>
-              <b-form-input size="sm" placeholder="User post or photo" ref="searchbox"/>
+              <b-form-input size="sm" placeholder="User post or photo" autofocus="autofocus" ref="searchbox"/>
               <b-input-group-append>
-                <b-button variant="outline-light" size="sm" @click="search()">Search</b-button>
+                <b-button variant="outline-light" size="sm"   @click="search()">Search</b-button>
                 <!-- <b-dropdown right class="mb-1" variant="outline-light" size="sm">
                   <b-dropdown-item class="text-right" @click="searchusers()">Search Users</b-dropdown-item>
                   <b-dropdown-item class="text-right" @click="searchposts()">Search Posts</b-dropdown-item>
@@ -62,7 +62,20 @@ export default {
   methods: {
     search(){
       this.$router.push('/search?keyword=' + this.$refs.searchbox.$refs.input.value);
+    },
+    keyupEnter(){
+      document.onkeydown = e =>{
+        if (e.keyCode === 13) {
+          this.search();
+        }
+      }
+    },
+    onSubmit(){
+      return false;
     }
+  },
+  created(){
+       this.keyupEnter()
   }
 };
 </script>
