@@ -52,7 +52,7 @@
             <b-form-select
               v-model="form.selectedAlbum"
               :options="form.albumTitles"
-              @input="albumSelected"
+              @change="albumSelected"
             >
               <template v-slot:first>
                 <option :value="null">-- Please select an album --</option>
@@ -125,8 +125,8 @@ export default {
         folder: "",
         folders: [],
         newFolderHint: "-- create a new folder --",
-        selectedImage: null,
-        selectedAlbum: null,
+        selectedImage: "",
+        selectedAlbum: "",
         albumTitles: [],
         imageTitles: []
       }
@@ -265,8 +265,9 @@ export default {
                 this.form.format = data.format;
                 this.form.title = this.$route.query.post;
                 this.form.description = data.description;
-                this.form.selectedImage = data.coverImage;
                 this.form.selectedAlbum = data.coverAlbum;
+                this.albumSelected();
+                this.form.selectedImage = data.coverImage;
               }
             );
           }
