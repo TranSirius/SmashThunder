@@ -125,8 +125,8 @@ export default {
         folder: "",
         folders: [],
         newFolderHint: "-- create a new folder --",
-        selectedImage: "",
-        selectedAlbum: "",
+        selectedImage: null,
+        selectedAlbum: null,
         albumTitles: [],
         imageTitles: []
       }
