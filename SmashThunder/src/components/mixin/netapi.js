@@ -22,6 +22,11 @@ String.prototype.replaceAll = function (search, replacement) {
  * Because the function `apiPost` need to use the mixin `errHandler` to this file has to be a mixin.
  */
 export default {
+	data() {
+		return {
+			urlInvalidCharacters: urlEncodeTable.reduce((p, c) => { p.push(c.raw); return p }, [])
+		}
+	},
 	methods: {
 		toastErr: errHandler.methods.toastErr,
 		/**
@@ -47,6 +52,15 @@ export default {
 				errFunc && errFunc()
 			})
 		},
+		urlSafe(s) {
+			for (let i = 0; i < s.length; ++i) {
+				for (let j = 0; j < urlEncodeTable.length; ++j) {
+					if (s[i] == urlEncodeTable[j].raw)
+						return false;
+				}
+			}
+			return true;
+		}
 	},
 	filters: {
 		urlEncode(s) {
