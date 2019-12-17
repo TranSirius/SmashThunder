@@ -10,7 +10,7 @@ export default {
   name: "Page404",
   data() {
     return {
-      countDown: 3
+      countDown: 4
     };
   },
   methods: {
