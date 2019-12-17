@@ -13,6 +13,8 @@ import Post from "./components/view/Post.vue"
 import Admin from "./components/view/Admin.vue"
 import Star from "./components/view/Star.vue"
 import Follow from "./components/view/Follow.vue"
+import Search from "./components/view/Search.vue"
+import Page404 from "./components/view/Page404.vue"
 
 const routes = [
   {
@@ -20,6 +22,12 @@ const routes = [
   },
   {
     path: '/admin', component: Admin
+  },
+  {
+    path: '/search', component: Search
+  },
+  {
+    path: '/404', component: Page404
   },
   {
     path: '/:username', component: Post,
@@ -46,6 +54,10 @@ const routes = [
   {
     path: '/:username/posts/:folder/:title', component: Post,
     name: 'toPost'
+  },
+  {
+    path: "*",
+    redirect: "/404"
   }
 ]
 

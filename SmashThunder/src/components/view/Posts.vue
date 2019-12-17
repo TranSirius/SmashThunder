@@ -33,7 +33,9 @@ export default {
           this.folders.map(folder => {
             folder.posts.map(post => (post.folder = folder.title));
           });
-        }
+        },
+        "",
+        () => this.to404()
       );
     }
   },

@@ -67,9 +67,9 @@ export default {
   data() {
     return {
       search: "",
-      cpu: 60,
-      memory: 60,
-      storage: 60,
+      cpu: 0,
+      memory: 0,
+      storage: 0,
       reportTable: {
         fields: [
           { key: "id", sortable: true },
@@ -112,28 +112,33 @@ export default {
     },
     enter() {
       var ctx = document.getElementById("accessChart").getContext("2d");
-      this.apiPost({ route: "/get/admin" }, data => {
-        this.reportTable.items = data.reports;
-        this.cpu = data.cpu;
-        this.memory = data.memory;
-        this.storage = data.storage;
-        this.chart = data.chart;
-        new Chart(ctx, {
-          type: "line",
-          data: {
-            labels: this.chart.labels,
-            datasets: [
-              {
-                label: this.chart.title,
-                backgroundColor: "rgb(255, 99, 132)",
-                borderColor: "rgb(255, 99, 132)",
-                data: this.chart.data
-              }
-            ]
-          },
-          options: {}
-        });
-      });
+      this.apiPost(
+        { route: "/get/admin" },
+        data => {
+          this.reportTable.items = data.reports;
+          this.cpu = data.cpu;
+          this.memory = data.memory;
+          this.storage = data.storage;
+          this.chart = data.chart;
+          new Chart(ctx, {
+            type: "line",
+            data: {
+              labels: this.chart.labels,
+              datasets: [
+                {
+                  label: this.chart.title,
+                  backgroundColor: "rgb(255, 99, 132)",
+                  borderColor: "rgb(255, 99, 132)",
+                  data: this.chart.data
+                }
+              ]
+            },
+            options: {}
+          });
+        },
+        "",
+        () => this.to404()
+      );
     }
   },
   beforeRouteEnter(to, from, next) {

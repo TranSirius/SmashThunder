@@ -271,7 +271,7 @@ export default {
     /**
      * This function is used by route guards. Reload this whole page, refresh all albums.
      */
-    updatePage() {
+    enter() {
       this.apiPost(
         {
           route: "/get/album",
@@ -283,7 +283,9 @@ export default {
             data.albums[i].show = true;
             this.albums.push(data.albums[i]);
           }
-        }
+        },
+        "",
+        () => this.to404()
       );
     },
     showDupImgErr() {
@@ -415,7 +417,7 @@ export default {
             this.albums = this.albums.filter(s => {
               return s.title != albumTitle;
             });
-            if (!this.albums.length) this.updatePage();
+            if (!this.albums.length) this.enter();
           }
         },
         "Delete failed"
@@ -424,11 +426,11 @@ export default {
   },
   beforeRouteUpdate(to, from, next) {
     next();
-    this.updatePage();
+    this.enter();
   },
   beforeRouteEnter(to, from, next) {
     next(v => {
-      v.updatePage();
+      v.enter();
     });
   },
   computed: {

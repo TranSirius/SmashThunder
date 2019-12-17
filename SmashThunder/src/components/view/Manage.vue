@@ -172,7 +172,8 @@ export default {
             this.folders.push(data.folders[i]);
           }
         },
-        "Get posts error"
+        "",
+        () => this.to404()
       );
     },
     showRenameForm(oldName, folderTitle) {

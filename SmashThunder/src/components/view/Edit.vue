@@ -44,7 +44,6 @@
               id="postDescription"
               v-model="form.description"
               placeholder="Post description"
-              required
             ></b-form-input>
           </b-form-group>
         </b-col>
@@ -53,7 +52,7 @@
             <b-form-select
               v-model="form.selectedAlbum"
               :options="form.albumTitles"
-              @input="albumSelected"
+              @change="albumSelected"
             >
               <template v-slot:first>
                 <option :value="null">-- Please select an album --</option>
@@ -266,8 +265,9 @@ export default {
                 this.form.format = data.format;
                 this.form.title = this.$route.query.post;
                 this.form.description = data.description;
-                this.form.selectedImage = data.coverImage;
                 this.form.selectedAlbum = data.coverAlbum;
+                this.albumSelected();
+                this.form.selectedImage = data.coverImage;
               }
             );
           }
@@ -284,7 +284,8 @@ export default {
           this.form.albumTitles = [];
           this.albums.map(v => this.form.albumTitles.push(v.title));
         },
-        "Get albums error"
+        "",
+        () => this.to404()
       );
     }
   },
