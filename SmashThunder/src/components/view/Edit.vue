@@ -284,7 +284,8 @@ export default {
           this.form.albumTitles = [];
           this.albums.map(v => this.form.albumTitles.push(v.title));
         },
-        "Get albums error"
+        "",
+        () => this.to404()
       );
     }
   },

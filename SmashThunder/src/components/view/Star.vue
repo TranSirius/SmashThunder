@@ -54,11 +54,11 @@ export default {
           "actions"
         ]
       },
-      stars: [],
+      stars: []
     };
   },
   methods: {
-      enter() {
+    enter() {
       this.apiPost(
         {
           route: "/get/star",
@@ -69,11 +69,12 @@ export default {
         data => {
           this.stars = data.stars;
         },
-        "Get stars error"
+        "",
+        () => this.to404()
       );
     },
-    deleteStar(author, folder, post){
-        this.apiPost(
+    deleteStar(author, folder, post) {
+      this.apiPost(
         {
           route: "/submit/star",
           data: {
@@ -85,14 +86,20 @@ export default {
         },
         () => {
           for (let i = 0; i < this.stars.length; ++i) {
-              if (this.stars[i].post == post && this.stars[i].folder == folder && this.stars[i].username == author) {
-                this.stars = this.stars.filter(s => {
-                  return (s.folder != folder) && (s.post != post) && (s.username != author);
-                });
-                return;
-              }
+            if (
+              this.stars[i].post == post &&
+              this.stars[i].folder == folder &&
+              this.stars[i].username == author
+            ) {
+              this.stars = this.stars.filter(s => {
+                return (
+                  s.folder != folder && s.post != post && s.username != author
+                );
+              });
+              return;
             }
-        },
+          }
+        }
         //"unstar error"
       );
     }

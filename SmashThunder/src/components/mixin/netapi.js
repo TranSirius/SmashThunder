@@ -60,6 +60,9 @@ export default {
 				}
 			}
 			return true;
+		},
+		to404() {
+			this.$router.push('/404')
 		}
 	},
 	filters: {

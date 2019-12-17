@@ -97,7 +97,8 @@ export default {
           this.followers = data.followers;
           this.followings = data.followings;
         },
-        "Get stars error"
+        "",
+        () => this.to404()
       );
     },
     unfollow(unfollowName) {

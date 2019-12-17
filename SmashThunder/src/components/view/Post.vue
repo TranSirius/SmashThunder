@@ -140,7 +140,9 @@ export default {
           data: { id: commentId }
         },
         () =>
-          (this.post.comments = this.post.comments.filter(c => c.ID !== commentId)),
+          (this.post.comments = this.post.comments.filter(
+            c => c.ID !== commentId
+          )),
         "Delete comment failed."
       );
     },
@@ -269,7 +271,9 @@ export default {
             this.post.comments.sort((a, b) => {
               return b.time - a.time;
             });
-          }
+          },
+          "",
+          () => this.to404()
         );
       } else {
         this.apiPost(
@@ -282,6 +286,8 @@ export default {
           data => {
             if (data.exist) {
               this.post = data.post;
+            } else {
+              to404();
             }
           }
         );
