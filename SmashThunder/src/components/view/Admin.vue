@@ -67,9 +67,9 @@ export default {
   data() {
     return {
       search: "",
-      cpu: 60,
-      memory: 60,
-      storage: 60,
+      cpu: 0,
+      memory: 0,
+      storage: 0,
       reportTable: {
         fields: [
           { key: "id", sortable: true },
