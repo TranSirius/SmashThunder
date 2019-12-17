@@ -45,4 +45,7 @@ def create_app(test_config = None):
     from web.views import search
     app.register_blueprint(search.mod)
 
+    from web.views import admin
+    app.register_blueprint(admin.mod)
+
     return app

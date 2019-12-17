@@ -49,10 +49,12 @@ def deleteComment():
     except:
         pass
 
-    db_session_instance\
-        .query(Comment).join(Post).join(Folder).join(User)\
-        .filter(User.ID == g.user_id).filter(Comment.ID == comment_id)\
-        .delete()
+    # db_session_instance\
+    #     .query(Comment).join(Post).join(Folder).join(User)\
+    #     .filter(User.ID == g.user_id).filter(Comment.ID == comment_id)\
+    #     .delete()
 
+    db_session_instance.delete(comment)
+    db_session_instance.commit()
     ret['status'] = 'ok'
     return ret

@@ -22,10 +22,9 @@ import datetime
 
 mod = Blueprint('search', __name__, url_prefix = '/search')
 
-@mod.route('/user')
+@mod.route('/user', methods = ['POST'])
 def searchUser():
     ret = dict()
-    
     try:
         user_name = request.json['keyword']
     except:
@@ -33,23 +32,25 @@ def searchUser():
         return ret
 
     search_engine = doctype.User.search(using = esclient.es)
-    search_result = search_engine.query("match", user_name = 'ceshiceshi_dalao')
+    search_result = search_engine.query("match", user_name = user_name)
     search_result = search_result.execute().to_dict()
     _shards = search_result['_shards']
     total = _shards['total']
     hits = search_result['hits']['hits']
     
-    users = [str(hit['_source']['user_name']) for hit in hits]
+    users = [{'username': str(hit['_source']['user_name'])} for hit in hits]
 
     ret['total'] = total
     ret['username'] = users
     ret['scroll_id'] = 'not implemented yet'
 
+    ret['status'] = 'ok'
     return ret
 
-@mod.route('/img')
+@mod.route('/img', methods = ['POST'])
 def searchImg():
     ret = dict()
+    db_session_instance = databases.db_session()
 
     try:
         keyword = request.json['keyword']
@@ -70,17 +71,27 @@ def searchImg():
         photo = dict()
         photo['ID'] = hit['_id']
         photo['photoname'] = hit['_source']['photo_name']
+        photo['user'] = db_session_instance\
+            .query(datamodels.User).join(datamodels.Album).join(datamodels.Photo)\
+            .filter(datamodels.Photo.ID == photo['ID'])\
+            .first().user_name
+        photo['album'] = db_session_instance\
+            .query(datamodels.Album).join(datamodels.Photo)\
+            .filter(datamodels.Photo.ID == photo['ID'])\
+            .first().album_title
         photos.append(photo)
 
     ret['total'] = total
     ret['photo'] = photos
     ret['scroll_id'] = 'not implemented yet'
 
+    ret['status'] = 'ok'
     return ret
 
-@mod.route('post')
+@mod.route('post', methods = ['POST'])
 def searchPost():
     ret = dict()
+    db_session_instance = databases.db_session()
 
     try:
         keyword = request.json['keyword']
@@ -89,16 +100,33 @@ def searchPost():
         return ret
 
     search_engine = doctype.Post.search(using = esclient.es)
-    search_result = search_engine.query("multi_match", query = keyword, fields = ['post_title', 'post_content'])
+    search_result = search_engine.query("multi_match", query = keyword, fields = ['post_title', 'post_content', 'folder_name'])
     search_result = search_result.execute().to_dict()
 
     _shards = search_result['_shards']
     total = _shards['total']
     hits = search_result['hits']['hits']
     
-    posts = [{'title': str(hit['_source']['post_title']), 'content': str(hit['_source']['post_content'])} for hit in hits]
+    # posts = [{'title': str(hit['_source']['post_title']), 'content': str(hit['_source']['post_content']), 'folder': str(hit['_source']['folder_name'])} for hit in hits]
+    posts = []
+    for hit in hits:
+        source = hit['_source']
+        post_id = hit['_id']
+        user = db_session_instance\
+            .query(datamodels.User).join(datamodels.Folder).join(datamodels.Post)\
+            .filter(datamodels.Post.ID == post_id)\
+            .first()
+        user = user.user_name
+        post = dict()
+        post['title'] = source['post_title']
+        post['content'] = source['post_content']
+        post['folder'] = source['folder_name']
+        post['author'] = user
+        posts.append(post)
 
     ret['total'] = total
     ret['posts'] = posts
     ret['scroll_id'] = 'not implemented yet'
+
+    ret['status'] = 'ok'
     return ret

@@ -10,6 +10,7 @@ from flask import current_app as app
 
 from web.db import datamodels
 from web.db import databases
+from web.logic import utils
 
 import sqlalchemy
 
@@ -48,6 +49,7 @@ def notBanRequest(view):
             .filter(User.ID == g.user_id)\
             .first()
         if user.ban:
+            ret = dict()
             ret['status'] = 'You are temporarily not allowed to use this function'
             return ret
         return view(**kwargs)
@@ -59,9 +61,10 @@ def adminRequest(view):
         db_session_instance = databases.db_session()
         user = db_session_instance\
             .query(datamodels.User)\
-            .filter(User.ID == g.user_id)\
+            .filter(datamodels.User.ID == g.user_id)\
             .first()
         if not (user.user_type == 'admin' or user.user_type == 'super_admin'):
+            ret = dict()
             ret['status'] = 'This function was reserved for system administrator'
             return ret
         return view(**kwargs)
@@ -109,8 +112,8 @@ def login():
         ret['status'] = 'Login Request Error!'
         return ret
     
-    db_session = databases.db_session()
-    user = db_session.query(databases.User).filter_by(user_name = username).first()
+    db_session_instance = databases.db_session()
+    user = db_session_instance.query(databases.User).filter_by(user_name = username).first()
 
     if user is None:
         ret['status'] = 'User not exists!'
@@ -121,7 +124,11 @@ def login():
 
     flask_session['ID'] = user.ID
     flask_session.permanent = True
-    
+
+    login_record = datamodels.LoginActivity(user_id = user.ID, login_time = utils.CurrentTime()())
+    db_session_instance.add(login_record)
+    db_session_instance.commit()
+
     ret['status'] = 'ok'
     return ret
 
@@ -133,13 +140,17 @@ def autoLogin():
         ret['status'] = 'error'
         return ret
     
-    db_session = databases.db_session()
-    user = db_session.query(databases.User).filter_by(ID = user_id).first()
+    db_session_instance = databases.db_session()
+    user = db_session_instance.query(databases.User).filter_by(ID = user_id).first()
 
     if user is None:
         ret['status'] = 'error'
         return ret
     
+    login_record = datamodels.LoginActivity(user_id = user.ID, login_time = utils.CurrentTime()())
+    db_session_instance.add(login_record)
+    db_session_instance.commit()
+
     ret['status'] = 'ok'
     ret['username'] = user.user_name
     return ret

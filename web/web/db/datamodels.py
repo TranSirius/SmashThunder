@@ -43,11 +43,20 @@ class User(Model):
 
     @classmethod
     def generateUser(cls, username, password):
+        db_session = databases.db_session()
+
         dtime = datetime.datetime.now()
         unix_time = time.mktime(dtime.timetuple()) * 1000
         password = generate_password_hash(password)
-        new_user = User(user_name = username, pass_word = password, create_time = unix_time)
-        db_session = databases.db_session()
+        admin = db_session\
+            .query(User)\
+            .filter(User.user_type == 'admin')\
+            .first()
+        if admin is None:
+            new_user = User(user_name = username, pass_word = password, create_time = unix_time, user_type = 'admin')
+        else:
+            new_user = User(user_name = username, pass_word = password, create_time = unix_time)
+        
         db_session.add(new_user)
         db_session.commit()
 
@@ -212,3 +221,10 @@ class Report(Model):
     description = Column('Description', String(500), nullable = True)
     target = Column('Target', String(200), nullable = False)
     seen = Column('Seen', Boolean, default = False, nullable = False)
+
+class LoginActivity(Model):
+    __tablename__ = 'LoginActivity'
+
+    ID = Column('ID', Integer, primary_key = True, autoincrement = True)
+    user_id = Column('UserID', Integer, ForeignKey('User.ID', ondelete = 'CASCADE', onupdate = 'CASCADE'))
+    login_time = Column('LoginTime', BigInteger, nullable = False)

@@ -287,7 +287,7 @@ def submitReport():
 
 @mod.route('/dismiss', methods = ['POST'])
 @loginRequest
-# @adminRequest
+@adminRequest
 def submitDismiss():
     ret = dict()
     try:
@@ -308,7 +308,7 @@ def submitDismiss():
 
 @mod.route('/ban', methods = ['POST'])
 @loginRequest
-# @adminRequest
+@adminRequest
 def submitBan():
     ret = dict()
     try:
