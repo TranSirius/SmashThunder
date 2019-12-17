@@ -20,7 +20,7 @@ export default {
     toIndex() {
       if (this.countDown) {
         this.countDown--;
-        setTimeout(this.toIndex);
+        setTimeout(this.toIndex, 1000);
       } else {
         this.$router.push("/");
       }
