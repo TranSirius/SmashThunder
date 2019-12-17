@@ -14,6 +14,7 @@ import Admin from "./components/view/Admin.vue"
 import Star from "./components/view/Star.vue"
 import Follow from "./components/view/Follow.vue"
 import Search from "./components/view/Search.vue"
+import Page404 from "./components/view/Page404.vue"
 
 const routes = [
   {
@@ -24,6 +25,9 @@ const routes = [
   },
   {
     path: '/search', component: Search
+  },
+  {
+    path: '/404', component: Page404
   },
   {
     path: '/:username', component: Post,
