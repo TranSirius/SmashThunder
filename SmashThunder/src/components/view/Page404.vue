@@ -15,7 +15,7 @@ export default {
   },
   methods: {
     enter() {
-      toIndex();
+      this.toIndex();
     },
     toIndex() {
       if (this.countDown) {
