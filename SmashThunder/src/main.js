@@ -54,6 +54,10 @@ const routes = [
   {
     path: '/:username/posts/:folder/:title', component: Post,
     name: 'toPost'
+  },
+  {
+    path: "*",
+    redirect: "/404"
   }
 ]
 
