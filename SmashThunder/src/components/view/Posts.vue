@@ -28,7 +28,12 @@ export default {
           route: "/get/posts",
           data: { username: this.$route.params.username }
         },
-        data => (this.folders = data.folders)
+        data => {
+          this.folders = data.folders;
+          this.folders.map(folder => {
+            folder.posts.map(post => (post.folder = folder.title));
+          });
+        }
       );
     }
   },

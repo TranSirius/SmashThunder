@@ -20,7 +20,7 @@
 <script>
 import { parse, HtmlGenerator } from "latex.js";
 import showdown from "showdown";
-import iFrameResize from "iframe-resizer/js/iframeResizer";
+import iFrameResize from "iframe-resizer";
 import math from "showdown-math";
 
 var converter = new showdown.Converter({
@@ -54,7 +54,9 @@ export default {
   computed: {
     resultHTML() {
       if (this.format == "md") {
+        // for user img display
         var result = `<head><base href="/data/${this.$route.params.username}/img/"></head>`;
+        // render markdown
         try {
           result += converter.makeHtml(this.raw);
         } catch (e) {
@@ -63,7 +65,7 @@ export default {
         result +=
           '<link rel="stylesheet" href="/static/css/katex.css">' + // for markdown math
           "<style>body{margin:0;padding:20px}</style>" + // to make `body` has correct height
-          '<script src="/static/js/iframeResizer.contentWindow.min.js"></' +
+          '<script src="https://cdn.bootcss.com/iframe-resizer/4.2.1/iframeResizer.contentWindow.min.js"></' +
           "script>"; // for iframe-resizer
         return result;
       } else {
@@ -72,17 +74,30 @@ export default {
           // The path of resource file is `/static`
           var doc = parse(this.raw, {
             generator: generator
-          }).htmlDocument(
-            window.location.protocol + "//" + window.location.host + "/static/"
-          );
+          }).htmlDocument("https://cdn.jsdelivr.net/npm/latex.js@0.11.1/dist/");
+
           // append iframe resizer script
           // ref: https://stackoverflow.com/questions/9413737/how-to-append-script-script-in-javascript
           var s = doc.createElement("script");
           s.setAttribute(
             "src",
-            "/static/js/iframeResizer.contentWindow.min.js" // for iframe resizer
+            "https://cdn.bootcss.com/iframe-resizer/4.2.1/iframeResizer.contentWindow.min.js" // for iframe resizer
           );
           doc.documentElement.appendChild(s);
+
+          // fix links in iframe
+          [...doc.getElementsByTagName("a")].map(el => {
+            var href = el.getAttribute("href");
+            if (href.startsWith("#")) {
+              // fix anchors in iframe
+              // ref: https://stackoverflow.com/questions/42475012/how-to-make-href-anchors-in-iframe-srcdoc-actually-work/59004815#59004815
+              el.setAttribute("href", "about:srcdoc" + href);
+            } else {
+              // open absolute link in parent page
+              el.setAttribute("target", "_parent");
+            }
+          });
+
           return doc.documentElement.outerHTML;
         } catch (e) {
           return e.message;
