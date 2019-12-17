@@ -287,7 +287,7 @@ export default {
             if (data.exist) {
               this.post = data.post;
             } else {
-              to404();
+              this.to404();
             }
           }
         );
