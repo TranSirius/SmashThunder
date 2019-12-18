@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import { Chart } from "chart.js";
+import Chart from "chart.js";
 import netapi from "../mixin/netapi";
 
 export default {
