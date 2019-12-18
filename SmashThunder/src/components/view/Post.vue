@@ -76,11 +76,27 @@
           @click="follow"
         >➕ {{ post.followers }}</b-button>
         <b-button
-          @click="downloadPost"
           v-b-tooltip.hover.left
           title="download"
           variant="outline-secondary"
-        >⇓</b-button>
+        >
+        <b-dropdown text='⇓' dropleft variant="transparent" style="margin-left:-100px;margin-right:-100px;margin-top:-100px;margin-bottom:-100px">
+          <b-dropdown-item 
+          @click="downloadPost('docx')"
+            v-b-tooltip.hover.left
+            title="download docx"
+            variant="outline-secondary">
+            docx
+          </b-dropdown-item>
+          <b-dropdown-item
+          @click="downloadPost('pdf')"
+              v-b-tooltip.hover.left
+              title="download pdf"
+              variant="outline-secondary">
+            pdf
+          </b-dropdown-item>
+        </b-dropdown>
+        </b-button>
         <b-button
           v-if="editable"
           @click="$router.push('/'+$root.$data.user.username+'/edit?folder='+$route.params.folder+'&post='+$route.params.title)"
@@ -211,7 +227,7 @@ export default {
         "Star failed."
       );
     },
-    downloadPost() {
+    downloadPost(type) {
       let username = this.$route.params.username;
       let folder = this.post.folder || this.$route.params.folder;
       let post = this.$route.params.title;
@@ -222,7 +238,7 @@ export default {
             username,
             folder,
             post,
-            format: "pdf"
+            format: type
           }
         },
         data => {
