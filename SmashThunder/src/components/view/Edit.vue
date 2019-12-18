@@ -196,6 +196,10 @@ export default {
         );
         return;
       }
+      if (this.form.folder == this.form.newFolderHint) {
+        this.toastErr("Submit failed", "Please choose a valid folder.");
+        return;
+      }
       this.apiPost(
         {
           route: "/submit/post",
