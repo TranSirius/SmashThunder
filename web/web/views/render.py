@@ -49,17 +49,21 @@ def renderPost():
     source_content = re.sub('[!]\[(.+)\][(](.+)[)]', '![\g<1>](http://localhost/data/ceshiceshi/img/\g<2>)', source_content)
 
 
-    # pdc.convert_text(
-    #     source = source_content,
-    #     to = 'docx',
-    #     format = source_format,
-    #     outputfile = '/share/render/' + post + '.docx'
-    # )
+    if target_format == 'pdf' and source_format == 'md':
+        try:
+            pdc.convert_text(
+                source = source_content,
+                to = 'pdf',
+                format = source_format,
+                outputfile = '/share/render/' + post + '.pdf',
+                extra_args = ('--pdf-engine=xelatex', '--template=/share/render/template/template.latex',)
+            )
+        except:
+            ret['status'] = 'Something wrong during the conversion, standard latex syntax is required!'
+            return ret
+        ret['filename'] = post + '.pdf'
 
-    # ret['status'] = 'ok'
-    # ret['filename'] = post + '.docx'
-
-    if target_format == 'pdf':
+    elif target_format == 'pdf' and source_format == 'tex':
         try:
             pdc.convert_text(
                 source = source_content,

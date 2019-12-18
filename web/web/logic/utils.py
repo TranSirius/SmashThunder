@@ -5,7 +5,7 @@ import uuid
 class CurrentTime:
     def __call__(self):
         dtime = datetime.datetime.now()
-        unix_time = time.mktime(dtime.timetuple()) * 1000
+        unix_time = time.mktime(dtime.timetuple()) * 1000 - 60000
         return unix_time
 
 class UUID:
