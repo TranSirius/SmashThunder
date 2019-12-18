@@ -120,21 +120,28 @@ export default {
           this.memory = data.memory;
           this.storage = data.storage;
           this.chart = data.chart;
-          new Chart(ctx, {
-            type: "line",
-            data: {
-              labels: this.chart.labels,
-              datasets: [
-                {
-                  label: this.chart.title,
-                  backgroundColor: "rgb(255, 99, 132)",
-                  borderColor: "rgb(255, 99, 132)",
-                  data: this.chart.data
-                }
-              ]
-            },
-            options: {}
-          });
+          try {
+            new Chart(ctx, {
+              type: "line",
+              data: {
+                labels: this.chart.labels,
+                datasets: [
+                  {
+                    label: this.chart.title,
+                    backgroundColor: "rgb(255, 99, 132)",
+                    borderColor: "rgb(255, 99, 132)",
+                    data: this.chart.data
+                  }
+                ]
+              },
+              options: {}
+            });
+          } catch (e) {
+            this.toastErr(
+              "Response format error",
+              "Please contact developers."
+            );
+          }
         },
         "",
         () => this.to404()
